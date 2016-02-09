@@ -1,6 +1,6 @@
 /*CS3113 HW1: Animated Stuff
 By: Stefan N. Cherubin
-Filename: HW1 Animations
+HW1: Animations
 Animated Elements: emoji, ghost, dead ghost
 The emoji is initially hiding behind the dead ghost
 Note: Use arrow keys or WASD keys to move emoji
@@ -88,7 +88,7 @@ void BlendSprite(GLuint& texture) {
 	glDisable(GL_TEXTURE_2D);
 
 }
-void matrixStuff(ShaderProgram& program, Matrix& projectionMatrix, Matrix& modelMatrix, Matrix& viewMatrix) {
+void matrixStuff(ShaderProgram& program, Matrix& projectionMatrix, Matrix& modelMatrix, Matrix& viewMatrix) { //Performs matrix operations
 	program.setModelMatrix(modelMatrix); program.setProjectionMatrix(projectionMatrix); program.setViewMatrix(viewMatrix);
 	projectionMatrix.setOrthoProjection(-3.55f, 3.55f, -2.0f, 2.0f, -1.0f, 1.0f);
 	modelMatrix.identity();
@@ -96,7 +96,7 @@ void matrixStuff(ShaderProgram& program, Matrix& projectionMatrix, Matrix& model
 	modelMatrix.Translate(0.5f * elapsed, 0.0f, 0.0f);
 }
 
-
+//Initalizes textures, matrices, vertices, and texCoords
 void setupAndRender(ShaderProgram& program, Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix, float vertices[], float texCoords[], GLuint& texture) {
 	BlendSprite(texture); //Blend first? Why?
 	glUseProgram(program.programID);
@@ -115,7 +115,7 @@ void setupAndRender(ShaderProgram& program, Matrix& modelMatrix, Matrix& project
 	glDisableVertexAttribArray(program.texCoordAttribute);
 
 }
-void processInput();
+void processInput(); //Meant to read input, will implement at a later time
 
 int main(int argc, char *argv[])
 {
