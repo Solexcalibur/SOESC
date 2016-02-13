@@ -7,6 +7,8 @@
 #include "Matrix.h"
 #include "ShaderProgram.h"
 #include "Entity.h"
+#include <math.h>
+
 
 #ifdef _WINDOWS
 #define RESOURCE_FOLDER ""
@@ -42,9 +44,12 @@ float texCoords2[] = { 0.0, 1.0,
 0.0, 1.0,
 1.0, 0.0,
 0.0, 0.0 };
+
+
+
 class Element{
 
-	float xPos, yPos, angle, width, height, speed, speedCap ;
+	float xPos, yPos;
 
 	bool victory = false;
 
@@ -64,7 +69,7 @@ public:
 	
 	}
 
-	float HDirection, VDirection;
+	float HDirection, VDirection, width, height;
 	void render(ShaderProgram* program, float vertices[], float texCoords[]) {
 		glUseProgram(program->programID);
 
@@ -122,9 +127,24 @@ public:
 	}
 	
 
-	void setWidthAndHeight(float widthvar, float heightvar){
-		width = widthvar;
-		height = heightvar;
+	void setWidthAndHeight(float vertices[]){
+		if (vertices[0] != vertices[2]){
+			//width = abs()
+			width = abs(vertices[0] - vertices[2]);
+		}
+		else
+		{
+			width = abs(vertices[0] - vertices[4]);
+		}
+		if (vertices[1] != vertices[3]){
+			//width = abs()
+			height = abs(vertices[1] - vertices[3]);
+		}
+		else
+		{
+			height = abs(vertices[1] - vertices[5]);
+		}
+		
 	}
 
 	bool victoryCondition(){
@@ -159,6 +179,11 @@ void processBallMovement(Element* ball, float elapsed){
 	float y = ball->getYPos();
 	ball->moveMatrix(ball->getXPos(),  ball->getYPos(), 0.0);
     
+	
+
+}
+
+void collisionDetection(Element* ball, Element* leftPaddle, Element* rightPaddle, float elapsed){
 	if (ball->getYPos() > 0.79){
 		ball->VDirection *= -1;
 		//ball->incrementYPos(-200.75f * elapsed);
@@ -169,13 +194,23 @@ void processBallMovement(Element* ball, float elapsed){
 		//ball->incrementYPos(-200.75f * elapsed);
 		//ball->moveMatrix(0.0, ball->getYPos() * elapsed, 0.0);
 	}
-	if (ball->getXPos() > 1.5){
-		ball->HDirection *= -1;
-	}
-	if (ball->getXPos() < -1.6){
-		ball->HDirection *= -1;
-	}
+	/*if (ball->getXPos() > 1.6){
+	ball->HDirection *= -1;
+	}*/
 
+	/*if (ball->getXPos() <- 1.6){
+	ball->HDirection *= -1;
+	}*/
+	//Left Paddle Collison
+	if (((ball->getXPos() - ball->width * 0.5) < leftPaddle->getXPos()) && ((ball->getYPos() + ball->height * 0.5) > (leftPaddle->getYPos() - leftPaddle->height * 0.5))
+		&& ((ball->getYPos() - ball->height * 0.5) < (leftPaddle->getYPos() + leftPaddle->height * 0.5))){
+		ball->HDirection *= -1;
+	}
+	//Right Paddle Collision 
+	if (((ball->getXPos() + ball->width * 0.5) > rightPaddle->getXPos() - rightPaddle->width * 0.2) && ((ball->getYPos() + ball->height * 0.5) > (rightPaddle->getYPos() - rightPaddle->height * 0.5))
+		&& ((ball->getYPos() - ball->height * 0.5) < (rightPaddle->getYPos() + rightPaddle->height * 0.5))){
+		ball->HDirection *= -1;
+	}
 }
 
 void processInput(Element* element, Element* element2, float elapsed){
@@ -279,6 +314,7 @@ int main(int argc, char *argv[]){
 		//ball
 		ball.setMatrices(&program);
 		ball.setOrthoProjection();
+		ball.setWidthAndHeight(vertices2);
 		ball.render(&program, vertices2, texCoords);
 		//ball.setYPos(0.25 * elapsed);
 		//ball.incrementYPos(0.25 * elapsed);
@@ -286,27 +322,32 @@ int main(int argc, char *argv[]){
 		//ball.setYPos(0.15);
 		//ball.setYPos(0.25);
 		//ball.moveMatrix(0.0 , ball.getYPos() * elapsed, 0.0);
-		processBallMovement(&ball, elapsed);
+		
 		//leftPaddle, Player 1, controlled by "W" and "S" keys
 		leftPaddle.setMatrices(&program);
 		leftPaddle.setOrthoProjection();
+		leftPaddle.setWidthAndHeight(vertices);
 		leftPaddle.render(&program, vertices, texCoords);
 		leftPaddle.identityMatrix();
-		leftPaddle.setXPos(-1.67);
+		leftPaddle.setXPos(-1.67); //left paddle has advantage???
 		leftPaddle.moveMatrix(leftPaddle.getXPos(), 0.0, 0.0);
 		leftPaddle.moveMatrix(0.0, leftPaddle.getYPos(), 0.0);
 		leftPaddle.scaling(0.2, 0.4, 1.0);
+
 		//rightPaddle, Player 2, controlled by UP and DOWN arrow keys. Don't use arrows on numpad, won't work
 		rightPaddle.setMatrices(&program);
 		rightPaddle.setOrthoProjection();
+		rightPaddle.setWidthAndHeight(vertices);
 		rightPaddle.render(&program, vertices, texCoords);
 		rightPaddle.identityMatrix();
-		rightPaddle.setXPos(1.77);
+		rightPaddle.setXPos(1.76); //Note, right paddle is slightly farther away from center than left paddle, possible due to window size
 		rightPaddle.moveMatrix(rightPaddle.getXPos() , 0.0, 0.0);
 		rightPaddle.moveMatrix(0.0, rightPaddle.getYPos(), 0.0);
 		rightPaddle.scaling(0.2, 0.4, 1.0);
 
 		processInput(&leftPaddle, &rightPaddle, elapsed);
+		processBallMovement(&ball, elapsed);
+		collisionDetection(&ball, &leftPaddle, &rightPaddle, elapsed);
 		
 		
 		//ball.identityMatrix();
