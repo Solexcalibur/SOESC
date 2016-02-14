@@ -32,34 +32,25 @@ using namespace std;
 
 SDL_Window* displayWindow;
 
+//Global variables
 float redFilter = 0.5f;
 float blueFilter = 0.5f;
 float greenFilter = 0.0f;
-float vertices[] = { -0.5, -0.5,
+float vertices_paddle [] = { -0.5, -0.5,
 0.05, -0.5,
 0.05, 0.5,
 -0.5, -0.5,
 0.05, 0.5,
 -0.5, 0.5 };
-float texCoords[] = { 0.0, 1.0,
-1.0, 1.0,
-1.0, 0.0,
-0.0, 1.0,
-1.0, 0.0,
-0.0, 0.0 };
-float vertices2[] = { -0.04, -0.04,
+
+float vertices_ball[] = { -0.04, -0.04,
 0.04, -0.04,
 0.04, 0.04,
 -0.04, -0.04,
 0.04, 0.04,
 -0.04, 0.04 };
 
-float texCoords2[] = { 0.0, 1.0,
-1.0, 1.0,
-1.0, 0.0,
-0.0, 1.0,
-1.0, 0.0,
-0.0, 0.0 };
+
 
 
 
@@ -86,18 +77,16 @@ public:
 	}
 
 	float HDirection, VDirection, width, height;
-	void render(ShaderProgram* program, float vertices[], float texCoords[]) {
-		glUseProgram(program->programID);
+	void render(ShaderProgram* program, float vertices[]) {
+	
 
 		glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 		glEnableVertexAttribArray(program->positionAttribute);
 
-		glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-		glEnableVertexAttribArray(program->texCoordAttribute);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(program->positionAttribute);
-		glDisableVertexAttribArray(program->texCoordAttribute);
+		
 
 
 	}
@@ -145,7 +134,7 @@ public:
 
 	void setWidthAndHeight(float vertices[]){
 		if (vertices[0] != vertices[2]){
-			//width = abs()
+		
 			width = abs(vertices[0] - vertices[2]);
 		}
 		else
@@ -153,7 +142,7 @@ public:
 			width = abs(vertices[0] - vertices[4]);
 		}
 		if (vertices[1] != vertices[3]){
-			//width = abs()
+			
 			height = abs(vertices[1] - vertices[3]);
 		}
 		else
@@ -271,12 +260,12 @@ void scoreBoard(Element* leftPaddle, Element* rightPaddle, Element* ball){
 		if (leftPaddle->getScore() > rightPaddle->getScore()){
 			redFilter = 0.875f;
 			blueFilter = 0.125f;
-			//greenFilter = 0.2;
+			
 		}
 		else {
 			redFilter = 0.125f;
 			blueFilter = 0.875f;
-			//greenFilter = 0.2;
+			
 
 		}
 	}
@@ -373,6 +362,19 @@ int main(int argc, char *argv[]){
 	Element leftPaddle(modelMatrix, projectionMatrix, viewMatrix);//Player1
 	Element rightPaddle(modelMatrix, projectionMatrix, viewMatrix);//Player2
 	
+	ball.setOrthoProjection();
+	ball.setWidthAndHeight(vertices_ball);
+
+	
+	leftPaddle.setOrthoProjection();
+	leftPaddle.setWidthAndHeight(vertices_paddle);
+	
+
+	
+	rightPaddle.setOrthoProjection();
+	rightPaddle.setWidthAndHeight(vertices_paddle);
+
+	glUseProgram(program.programID);
 	SDL_Event event;
 	bool done = false;
 	float lastFrameTicks = 0.0f;
@@ -388,26 +390,23 @@ int main(int argc, char *argv[]){
 		
 		//ball
 		ball.setMatrices(&program);
-		ball.setOrthoProjection();
-		ball.setWidthAndHeight(vertices2);
-		ball.render(&program, vertices2, texCoords);
-		
+		ball.render(&program, vertices_ball);
+
 		//leftPaddle, Player 1, controlled by "W" and "S" keys
 		leftPaddle.setMatrices(&program);
-		leftPaddle.setOrthoProjection();
-		leftPaddle.setWidthAndHeight(vertices);
-		leftPaddle.render(&program, vertices, texCoords);
+		leftPaddle.render(&program, vertices_paddle);
 		leftPaddle.identityMatrix();
 		leftPaddle.setXPos(-1.67); //left paddle has advantage???
 		leftPaddle.moveMatrix(leftPaddle.getXPos(), 0.0, 0.0);
 		leftPaddle.moveMatrix(0.0, leftPaddle.getYPos(), 0.0);
 		leftPaddle.scaling(0.2, 0.4, 1.0);
 
+
 		//rightPaddle, Player 2, controlled by UP and DOWN arrow keys. Don't use arrows on numpad, won't work
+
+		
 		rightPaddle.setMatrices(&program);
-		rightPaddle.setOrthoProjection();
-		rightPaddle.setWidthAndHeight(vertices);
-		rightPaddle.render(&program, vertices, texCoords);
+		rightPaddle.render(&program, vertices_paddle);
 		rightPaddle.identityMatrix();
 		rightPaddle.setXPos(1.76); //Note, right paddle is slightly farther away from center than left paddle, possible due to window size
 		rightPaddle.moveMatrix(rightPaddle.getXPos() , 0.0, 0.0);
