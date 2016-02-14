@@ -1,3 +1,15 @@
+/*CS3113 HW2: Pong
+//By: Stefan N. Cherubin
+//Filename: HW2 SCherubin
+//Simple game of Pong.
+Player1 is leftPaddle (aka RedTeam) Player1 is controlled by W and S keys
+Player2 is rightPaddle (aka BlueTeam) Player2 is controlled by UP and DOWN arrow keys (DO NOT USE ARROW KEYS ON NUMPAD)
+Game is Best of 7 rounds. (first one to 4 wins)
+The screen starts out as purple. A purple screen means that both players have the same score.
+The screen will slowly transition to a more red blue color depending on who is leading.
+Once a player reaches 4, the ball will disappear and the game is over.
+It's more fun not knowing who has Match Point! :)
+//*/
 #ifdef _WINDOWS
 #include <GL/glew.h>
 #endif
@@ -8,8 +20,10 @@
 #include "ShaderProgram.h"
 #include "Entity.h"
 #include <math.h>
+#include <vector>
+using namespace std;
 
-
+ 
 #ifdef _WINDOWS
 #define RESOURCE_FOLDER ""
 #else
@@ -18,7 +32,9 @@
 
 SDL_Window* displayWindow;
 
-
+float redFilter = 0.5f;
+float blueFilter = 0.5f;
+float greenFilter = 0.0f;
 float vertices[] = { -0.5, -0.5,
 0.05, -0.5,
 0.05, 0.5,
@@ -173,8 +189,8 @@ bool processEvents(SDL_Event* events){
 //KNOWN ISSUE: BALL MAY FAIL TO CHANGE EITHER X OR Y DIRECTION DEPENDING ON WHETHER IT HITS VERTICAL OR HORIZONTAL BARRIERS
 void processBallMovement(Element* ball, float elapsed){
 	
-	ball->incrementYPos(0.95f * ball->VDirection * elapsed);
-	ball->incrementXPos(0.95f * ball->HDirection * elapsed);
+	ball->incrementYPos(1.75f * ball->VDirection * elapsed);
+	ball->incrementXPos(1.75f * ball->HDirection * elapsed);
 	ball->identityMatrix();
 	float y = ball->getYPos();
 	ball->moveMatrix(ball->getXPos(),  ball->getYPos(), 0.0);
@@ -211,6 +227,87 @@ void collisionDetection(Element* ball, Element* leftPaddle, Element* rightPaddle
 		&& ((ball->getYPos() - ball->height * 0.5) < (rightPaddle->getYPos() + rightPaddle->height * 0.5))){
 		ball->HDirection *= -1;
 	}
+	//Ball moves past left paddle
+	if ((ball->getXPos() + ball->width) < leftPaddle->getXPos()){
+		ball->setXPos(0.0);
+		ball->setYPos(0.0);
+		ball->HDirection *= -1;
+		rightPaddle->updateScore();
+	}
+	//Ball moves past right paddle
+	if ((ball->getXPos() + ball->width) > rightPaddle->getXPos()){
+		ball->setXPos(0.0);
+		ball->setYPos(0.0);
+		ball->HDirection *= -1;
+		leftPaddle->updateScore();
+		//SDL_GL_SwapWindow(displayWindow);
+	}
+
+}
+//Keeps track of score.
+void scoreBoard(Element* leftPaddle, Element* rightPaddle, Element* ball){
+	if (leftPaddle->getScore() == rightPaddle->getScore()){
+		//glClearColor(redFilter, 0.0f, blueFilter, 1.0f);
+		redFilter = 0.5f;
+		blueFilter = 0.5f;
+	}
+	if (abs(leftPaddle->getScore() - rightPaddle->getScore()) == 1){
+		if (leftPaddle->getScore() > rightPaddle->getScore()){
+			redFilter = 0.625f;
+			blueFilter = 0.375f;
+		}
+		else {
+			redFilter = 0.375f;
+			blueFilter = 0.625f;
+		}
+	}
+	if (abs(leftPaddle->getScore() - rightPaddle->getScore()) == 2){
+		if (leftPaddle->getScore() > rightPaddle->getScore()){
+			redFilter = 0.75f;
+			blueFilter = 0.25f;
+		}
+		else {
+			redFilter = 0.25f;
+			blueFilter = 0.75f;
+		}
+	}
+	if (abs(leftPaddle->getScore() - rightPaddle->getScore()) == 3){
+		if (leftPaddle->getScore() > rightPaddle->getScore()){
+			redFilter = 0.875f;
+			blueFilter = 0.125f;
+			//greenFilter = 0.2;
+		}
+		else {
+			redFilter = 0.125f;
+			blueFilter = 0.875f;
+			//greenFilter = 0.2;
+
+		}
+	}
+	
+	if (leftPaddle->getScore() == 4 || rightPaddle->getScore() == 4){
+		//ball->moveMatrix(0.0, 0.0, 0.0);
+		ball->identityMatrix();
+		ball->scaling(0.0, 0.0, 0.0);
+		if (leftPaddle->getScore() == 4){
+			///PLAYER 1 WINS
+			redFilter = 1.0f;
+			blueFilter = 0.0f;
+			//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT);
+			//glClear(GL_COLOR_BUFFER_BIT);
+		}
+		else {
+			//PLAYER 2 WINS
+			redFilter = 0.0f;
+			blueFilter = 1.0f;
+			//glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT);
+			//glClear(GL_COLOR_BUFFER_BIT);
+			//SDL_GL_SwapWindow(displayWindow);
+		}
+	}
+	
 }
 
 void processInput(Element* element, Element* element2, float elapsed){
@@ -267,6 +364,43 @@ void processInput(Element* element, Element* element2, float elapsed){
 			//float units_x = (pixel_x / x_resolution) * ortho_width ) - ortho_width / 2.0;
 }
 
+void DrawText(ShaderProgram *program, int fontTexture, string text, float size, float spacing) {
+	float texture_size = 1.0 / 16.0f;
+	vector<float> vertexData;
+	vector<float> texCoordData;
+
+	for (int i = 0; i < text.size(); i++) {
+		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
+		float texture_y = (float)(((int)text[i]) / 16) / 16.0f;
+		vertexData.insert(vertexData.end(), {
+			((size + spacing) * i) + (-0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (-0.5f * size), -0.5f * size,
+			((size + spacing) * i) + (0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (0.5f * size), -0.5f * size,
+			((size + spacing) * i) + (0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (-0.5f * size), -0.5f * size,
+		});
+		texCoordData.insert(texCoordData.end(), {
+			texture_x, texture_y,
+			texture_x, texture_y + texture_size,
+			texture_x + texture_size, texture_y,
+			texture_x + texture_size, texture_y + texture_size,
+			texture_x + texture_size, texture_y,
+			texture_x, texture_y + texture_size,
+		});
+	}
+	glUseProgram(program->programID);
+
+	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
+	glEnableVertexAttribArray(program->positionAttribute);
+	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
+	glEnableVertexAttribArray(program->texCoordAttribute);
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	glDrawArrays(GL_TRIANGLES, 0, text.size() * 6);
+
+	glDisableVertexAttribArray(program->positionAttribute);
+	glDisableVertexAttribArray(program->texCoordAttribute);
+}
 int main(int argc, char *argv[]){
 	//cout << "nope" << endl;
 	SDL_Init(SDL_INIT_VIDEO);
@@ -308,7 +442,7 @@ int main(int argc, char *argv[]){
 		}
 		
 
-		glClearColor(0.5f, 0.0f, 0.8f, 1.0f);
+		glClearColor(redFilter, greenFilter, blueFilter, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		//ball
@@ -344,12 +478,15 @@ int main(int argc, char *argv[]){
 		rightPaddle.moveMatrix(rightPaddle.getXPos() , 0.0, 0.0);
 		rightPaddle.moveMatrix(0.0, rightPaddle.getYPos(), 0.0);
 		rightPaddle.scaling(0.2, 0.4, 1.0);
-
+		//Processing movement
 		processInput(&leftPaddle, &rightPaddle, elapsed);
 		processBallMovement(&ball, elapsed);
+		//Collision Detection
 		collisionDetection(&ball, &leftPaddle, &rightPaddle, elapsed);
+		//Scoring
+		scoreBoard(&leftPaddle, &rightPaddle, &ball);
 		
-		
+		//DrawText(&program, 2, "?", 2, 1);
 		//ball.identityMatrix();
 		//ball.scaling(0.1, 0.5, 1.0);
 		//modelMatrix2.identity();
