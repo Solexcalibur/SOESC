@@ -18,7 +18,6 @@ It's more fun not knowing who has Match Point! :)
 #include <SDL_image.h>
 #include "Matrix.h"
 #include "ShaderProgram.h"
-#include "Entity.h"
 #include <math.h>
 #include <vector>
 using namespace std;
@@ -51,20 +50,13 @@ float vertices_ball[] = { -0.04, -0.04,
 -0.04, 0.04 };
 
 
-
-
-
 class Element{
 
 	float xPos, yPos;
 
-	bool victory = false;
-
 	int score = 0;
 
 	Matrix model, projection, view;
-
-
 
 
 public:
@@ -87,8 +79,6 @@ public:
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(program->positionAttribute);
 		
-
-
 	}
 
 	void setMatrices(ShaderProgram* program){
@@ -151,12 +141,6 @@ public:
 		}
 		
 	}
-
-	bool victoryCondition(){
-		victory = true;
-		return victory;
-	}
-
 	void updateScore(){
 		score += 1;
 	}
@@ -183,7 +167,7 @@ void processBallMovement(Element* ball, float elapsed){
 	ball->incrementYPos(1.75f * ball->VDirection * elapsed);
 	ball->incrementXPos(1.75f * ball->HDirection * elapsed);
 	ball->identityMatrix();
-	float y = ball->getYPos();
+	//float y = ball->getYPos();
 	ball->moveMatrix(ball->getXPos(),  ball->getYPos(), 0.0);
     
 	
