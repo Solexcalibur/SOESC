@@ -175,24 +175,43 @@ void processBallMovement(Element* ball, float elapsed){
 }
 
 void collisionDetection(Element* ball, Element* leftPaddle, Element* rightPaddle, float elapsed){
-	//Top Barrier Collision
+
+	//Left paddle hits top border
+	if (leftPaddle->getYPos() > 0.79){
+		leftPaddle->setYPos(0.78);
+	}
+	//Left paddle hits bottom border
+	if (leftPaddle->getYPos() < -0.79){
+		leftPaddle->setYPos(-0.78);
+	}
+	//Right paddle hits top border
+	if (rightPaddle->getYPos() > 0.79){
+		rightPaddle->setYPos(0.78);
+	}
+	//Right paddle hits bottom border
+	if (rightPaddle->getYPos() < -0.79){
+		rightPaddle->setYPos(-0.78);
+	}
+
+	//Top Barrier Collision with ball
 	if (ball->getYPos() > 0.79){
 		ball->VDirection *= -1;
 		
 	}
-	//Bottom Barrier Collision
+	//Bottom Barrier Collision with ball
 	if (ball->getYPos() < -0.79){
-		ball->VDirection *= -1;
-		
+		ball->VDirection *= -1;	
 	}
 	
-	//Left Paddle Collision
-	if (((ball->getXPos() - ball->width * 0.5) < leftPaddle->getXPos()) && ((ball->getYPos() + ball->height * 0.5) > (leftPaddle->getYPos() - leftPaddle->height * 0.5))
+	//Left Paddle Collision with ball
+	if (((ball->getXPos() - ball->width * 0.5) < leftPaddle->getXPos()) && 
+		((ball->getYPos() + ball->height * 0.5) > (leftPaddle->getYPos() - leftPaddle->height * 0.5))
 		&& ((ball->getYPos() - ball->height * 0.5) < (leftPaddle->getYPos() + leftPaddle->height * 0.5))){
 		ball->HDirection *= -1;
 	}
-	//Right Paddle Collision 
-	if (((ball->getXPos() + ball->width * 0.5) > rightPaddle->getXPos() - rightPaddle->width * 0.2) && ((ball->getYPos() + ball->height * 0.5) > (rightPaddle->getYPos() - rightPaddle->height * 0.5))
+	//Right Paddle Collision with ball
+	if (((ball->getXPos() + ball->width * 0.5) > rightPaddle->getXPos() - rightPaddle->width * 0.2) && 
+		((ball->getYPos() + ball->height * 0.5) > (rightPaddle->getYPos() - rightPaddle->height * 0.5))
 		&& ((ball->getYPos() - ball->height * 0.5) < (rightPaddle->getYPos() + rightPaddle->height * 0.5))){
 		ball->HDirection *= -1;
 	}
@@ -215,6 +234,8 @@ void collisionDetection(Element* ball, Element* leftPaddle, Element* rightPaddle
 
 //Keeps track of score. Equal score will result in purple background.
 //Screen changes colors to indicate who is leading.
+//More blue = rightPaddle (player 2) is in the lead
+//More red = leftPaddle (player 1) is in the lead
 void scoreBoard(Element* leftPaddle, Element* rightPaddle, Element* ball){
 	if (leftPaddle->getScore() == rightPaddle->getScore()){
 		redFilter = 0.5f;
@@ -249,8 +270,6 @@ void scoreBoard(Element* leftPaddle, Element* rightPaddle, Element* ball){
 		else {
 			redFilter = 0.125f;
 			blueFilter = 0.875f;
-			
-
 		}
 	}
 	
@@ -272,44 +291,28 @@ void scoreBoard(Element* leftPaddle, Element* rightPaddle, Element* ball){
 	
 }
 
-//Processes User Input and Updates screen
+//Processes User Input
 void processInput(Element* element, Element* element2, float elapsed){
 
 	        const Uint8 *keys = SDL_GetKeyboardState(nullptr);
 			const Uint8 *keys2 = SDL_GetKeyboardState(nullptr);
-			float yPos = element->getYPos();
-			float yPos2 = element2->getYPos();
 	
-			if (keys[SDL_SCANCODE_W]){ 
+			if (keys[SDL_SCANCODE_W]){  //Player 1 Input
 				element->incrementYPos(elapsed * 2.0f);
 			}
-			if (keys[SDL_SCANCODE_S]){
+			if (keys[SDL_SCANCODE_S]){ //Player 1 Input
 				
 				element->incrementYPos(elapsed * -2.0f);
 			}
-			if (keys2[SDL_SCANCODE_UP]){
+			if (keys2[SDL_SCANCODE_UP]){ //Player 2 Input
 				
 				element2->incrementYPos(elapsed * 2.0f);
 			}
-			if (keys2[SDL_SCANCODE_DOWN]){
-				
+			if (keys2[SDL_SCANCODE_DOWN]){ //Player 2 Input
+
 				element2->incrementYPos(elapsed * -2.0f);
 			}
-			if (yPos > 0.79){
-				element->setYPos(0.78);
-			}
-			if (yPos < -0.79){
-				element->setYPos(-0.78);
-			}
-			if (yPos2 > 0.79){
-				element2->setYPos(0.78);
-			}
-			if (yPos2 < -0.79){
-				element2->setYPos(-0.78);
-			}
-
-
-			
+	
 }
 
 //Creates view window
