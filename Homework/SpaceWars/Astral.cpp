@@ -4,6 +4,8 @@
 #include "Astral.h"
 #include <vector>
 #include "SpriteSheet.h"
+#include <SDL.h>
+#include <SDL_image.h>
 
 
 AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix) {
@@ -39,7 +41,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 
 
 }
-void AstralEntity::DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing){
+void AstralEntity::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing){
 	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;
 	for (int i = 0; i < text.size(); i++) {
 		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
@@ -57,15 +59,15 @@ void AstralEntity::DrawText(ShaderProgram *program, int fontTexture, std::string
 		texture_y, texture_x + texture_size, texture_y + texture_size, texture_x + texture_size,
 		texture_y, texture_x, texture_y + texture_size, });
 	}
-	glUseProgram(program->programID);
-	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
-	glEnableVertexAttribArray(program->positionAttribute);
-	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
-	glEnableVertexAttribArray(program->texCoordAttribute);
+	glUseProgram(program.programID);
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
+	glEnableVertexAttribArray(program.positionAttribute);
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
+	glEnableVertexAttribArray(program.texCoordAttribute);
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	glDrawArrays(GL_TRIANGLES, 0, text.size() * 6);
-	glDisableVertexAttribArray(program->positionAttribute);
-	glDisableVertexAttribArray(program->texCoordAttribute);
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
 
 }
 
@@ -74,8 +76,8 @@ bool AstralEntity::lifeChecker(){
 
 }
 
-void AstralEntity::setMatrices(ShaderProgram* program){
-	program->setModelMatrix(model); program->setProjectionMatrix(projection); program->setViewMatrix(view);
+void AstralEntity::setMatrices(ShaderProgram program){
+	program.setModelMatrix(model); program.setProjectionMatrix(projection); program.setViewMatrix(view);
 }
 
 void AstralEntity::setOrthoProjection(){
@@ -131,16 +133,7 @@ void AstralEntity::incrementXPos(float value){
 			XPos += value;
 		}
 
-void AstralEntity::renderWithNoTexture(ShaderProgram* program, float vertices[]){
-
-		    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-			glEnableVertexAttribArray(program->positionAttribute);
-	
-	
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			glDisableVertexAttribArray(program->positionAttribute);
-}
-void AstralEntity::shoot(ShaderProgram* program, Projectile ammo[], float elapsed){
+void AstralEntity::shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed){
 	
 	//bullet.identityMatrix();
 	//bullet.renderWithNoTexture(program, vertices_ball);
@@ -148,8 +141,12 @@ void AstralEntity::shoot(ShaderProgram* program, Projectile ammo[], float elapse
 	//bullet.incrementYPos(0.75 * elapsed);
 	//bullet.moveMatrix(0.0, bullet.YPos, 0.0);
 	//ammo[ammoIndex].renderWithNoTexture(program);
-	ammo[0].incrementYPos(8.5 * elapsed);
-	ammo[1].incrementYPos(-9.5 * elapsed);
+	//ammo[0].setMatrices(program);
+	ammo[0].setMatrices(program);
+	spriteSheets[1].Draw(program);
+	ammo[0].incrementYPos(6.5 * elapsed);
+	//ammo[1].setMatrices(program);
+	//ammo[1].incrementYPos(-5.75 * elapsed);
 	//ammo[0].scaleMatrix(20.0, 1.0, 1.0);
 	ammoIndex++;
 	if (ammoIndex > maxshots - 1){
@@ -160,6 +157,26 @@ void AstralEntity::shoot(ShaderProgram* program, Projectile ammo[], float elapse
 	ammo[ammoIndex]->identityMatrix();
 	ammo[ammoIndex]->incrementYPos(2.0 * elapsed);
 	ammo[ammoIndex]->moveMatrix(0.0, ammo[ammoIndex]->YPos, 0.0);*/
+
+
+}
+
+GLuint AstralEntity::LoadTexture(const char* image_path) {
+
+	SDL_Surface *surface = IMG_Load(image_path);
+
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, surface->pixels); //USE GL_RGB/A FOR WINDOWS, GL_BGR/A FOR MAC (.PNG files use RGBA, .JPG uses RGB)
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//MUST USE THIS
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//MUST USE THIS
+
+	SDL_FreeSurface(surface);
+	return textureID;
 
 
 }

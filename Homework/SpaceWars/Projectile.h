@@ -16,13 +16,13 @@ public:
 	Matrix model, projection, view;
 	GLuint texID;
 
-	void setMatrices(ShaderProgram* program);
+	void setMatrices(ShaderProgram program);
 	void setOrthoProjection();
 	void moveMatrix(float x, float y, float z);
 	void identityMatrix();
 	void incrementXPos(float value);
 	void incrementYPos(float value);
-	void renderWithNoTexture(ShaderProgram* program, float vertices[]);
+	void renderWithNoTexture(ShaderProgram program, float vertices[]);
 	void BlendSprite(GLuint& texture);
 	void setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture);
 	void scaleMatrix(float x, float y, float z);

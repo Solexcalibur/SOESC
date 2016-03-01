@@ -14,19 +14,20 @@ public:
 	AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix);
 	AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix, SpriteSheet& spritez);
 	void setWidthAndHeight(float width, float height);
-	void DrawUsingSpriteSheet(ShaderProgram *program, int index, int spriteCountX, int spriteCountY);
+	void DrawUsingSpriteSheet(ShaderProgram& program, int index, int spriteCountX, int spriteCountY);
 	bool lifeChecker();
-	void setMatrices(ShaderProgram* program);
+	void setMatrices(ShaderProgram program);
 	void setOrthoProjection();
 	void moveMatrix(float x, float y, float z);
-	void DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing);
+	void DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing);
 	void identityMatrix();
 	void BlendSprite(GLuint& texture);
 	void setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture);
 	void incrementXPos(float value);
 	void incrementYPos(float value);
-	void renderWithNoTexture(ShaderProgram* program, float vertices[]);
-	void shoot(ShaderProgram* program, Projectile ammo[],  float elapsed);
+	//void renderWithNoTexture(ShaderProgram*program, float vertices[]);
+	void shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets,  float elapsed);
+	GLuint LoadTexture(const char* image_path);
 	
 
 

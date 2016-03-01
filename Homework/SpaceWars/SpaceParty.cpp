@@ -11,6 +11,25 @@
 #include <math.h>
 using namespace std;
 
+GLuint SpacialArea::LoadTexture(const char* image_path) {
+
+	SDL_Surface *surface = IMG_Load(image_path);
+
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, surface->pixels); //USE GL_RGB/A FOR WINDOWS, GL_BGR/A FOR MAC (.PNG files use RGBA, .JPG uses RGB)
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//MUST USE THIS
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//MUST USE THIS
+
+	SDL_FreeSurface(surface);
+	return textureID;
+
+
+}
 
 SpacialArea::SpacialArea(){
 	//score = 0;
@@ -23,9 +42,7 @@ SpacialArea::SpacialArea(){
 
 
 }
-SpacialArea::~SpacialArea(){
-	SDL_Quit();
-}
+
 
 void SpacialArea::setup(){
 	SDL_Init(SDL_INIT_VIDEO);
@@ -62,7 +79,7 @@ void SpacialArea::windowSwapping(){
 	SDL_GL_SwapWindow(displayWindow);
 }
 
-void SpacialArea::DrawText(ShaderProgram *program, int fontTexture, std::string text, float size, float spacing){
+void SpacialArea::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing){
 	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;
 	for (int i = 0; i < text.size(); i++) {
 		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
@@ -80,37 +97,19 @@ void SpacialArea::DrawText(ShaderProgram *program, int fontTexture, std::string 
 		texture_y, texture_x + texture_size, texture_y + texture_size, texture_x + texture_size,
 		texture_y, texture_x, texture_y + texture_size, });
 	}
-	glUseProgram(program->programID);
-	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
-	glEnableVertexAttribArray(program->positionAttribute);
-	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
-	glEnableVertexAttribArray(program->texCoordAttribute);
+	glUseProgram(program.programID);
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
+	glEnableVertexAttribArray(program.positionAttribute);
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
+	glEnableVertexAttribArray(program.texCoordAttribute);
 	glBindTexture(GL_TEXTURE_2D, fontTexture);
 	glDrawArrays(GL_TRIANGLES, 0, text.size() * 6);
-	glDisableVertexAttribArray(program->positionAttribute);
-	glDisableVertexAttribArray(program->texCoordAttribute);
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
 
 }
 
-GLuint SpacialArea::LoadTexture(const char* image_path){
 
-	SDL_Surface *surface = IMG_Load(image_path);
-
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, surface->pixels); //USE GL_RGB/A FOR WINDOWS, GL_BGR/A FOR MAC (.PNG files use RGBA, .JPG uses RGB)
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//MUST USE THIS
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//MUST USE THIS
-
-	SDL_FreeSurface(surface);
-	return textureID;
-
-
-}
 
 void SpacialArea::blendSprite(GLuint& texture){
 	glEnable(GL_TEXTURE_2D);
@@ -125,46 +124,55 @@ void SpacialArea::blendSprite(GLuint& texture){
 }
 
 
-void SpacialArea::TitleScreen(ShaderProgram* program){
-	GLuint fontTex = LoadTexture("font2.png");
-	DrawText(program, fontTex, "Astral Horizon", 0.25, 0);
-	blendSprite(fontTex);
+void SpacialArea::TitleScreen(ShaderProgram& program){
+	//GLuint fontTex = wordTexture;
+	//wordTexture = LoadTexture(fontSheetPath);
+	DrawText(program, wordTexture, "Astral Horizon! You are outnumbered, think you can win?", 0.075, 0);
+	//DrawText(program, fontTex, "2 v 1", 0.25, 0);
+	//DrawText(program, fontTex, "Can you win?", 0.25, 0);
+	
+
+	blendSprite(wordTexture);
 
 }
 
-void SpacialArea::scoreBoard(ShaderProgram* program){
-	GLuint fontTex = LoadTexture("font2.png");
+void SpacialArea::scoreBoard(ShaderProgram& program){
+	//GLuint fontTex = wordTexture;
+
 	int score = 0;
-	DrawText(program, fontTex,"SCORE:"+ to_string(score), 0.1, 0);
-	blendSprite(fontTex);
+	DrawText(program, wordTexture,"SCORE:"+ to_string(score), 0.1, 0);
+	blendSprite(wordTexture);
 
 }
 
-void SpacialArea::gameOverScreen(ShaderProgram* program){
-	GLuint fontTex = LoadTexture("font2.png");
-	DrawText(program, fontTex, "GAME OVER", 0.05, 0);
-	blendSprite(fontTex);
+void SpacialArea::gameOverScreen(ShaderProgram& program){
+	//GLuint fontTex = wordTexture;
+	//glClearColor(1.0, 0.5, 0.0, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//r_filter = 1.0;
+	DrawText(program, wordTexture, "GAME OVER! DARE TO PLAY AGAIN?", 0.1, 0);
+	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
+	blendSprite(wordTexture);
 
 }
 
-void SpacialArea::screenSelector(ShaderProgram* program){
+void SpacialArea::screenSelector(ShaderProgram& program){
+	
 	switch (state){
 			case STATE_TITLE:
-					TitleScreen(program);
-					break;
+				TitleScreen(program);
+				break;
 			case STATE_GAME_LEVEL:
 				scoreBoard(program);
 				break;
 			case STATE_GAME_OVER:
 				gameOverScreen(program);
 				break;
-		
-		
 			}
 }
 
-void SpacialArea::titleEvents(SDL_Event event){
-
+void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program){
+	
 	if (keys[SDL_SCANCODE_W]){
 		state = 1;
 	}
@@ -173,7 +181,7 @@ void SpacialArea::titleEvents(SDL_Event event){
 	}
 
 
-void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram* program, vector<AstralEntity>& objects,
+void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<AstralEntity>& objects,
 	Projectile ammo[], vector<SpriteSheet>& spriteSheets, float elapsed){
 	float vertices_paddle[] = { -0.5, -0.5,
 		0.05, -0.5,
@@ -197,16 +205,18 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram* program, vector<A
 
 	
 	objects[1].setMatrices(program);
-	spriteSheets[0].Draw(*program);
+	spriteSheets[0].Draw(program);
 	objects[2].setMatrices(program);
-	spriteSheets[2].Draw(*program);
+	spriteSheets[2].Draw(program);
 
 	objects[2].incrementXPos(2.0 * objects[2].HDirection * elapsed);
 	ammo[1].XPos = objects[2].XPos;
 	//ammo[1].YPos = objects[2].YPos;
 	if (objects[2].XPos > 2.0){
 		objects[2].HDirection *= -1;
-		objects[2].incrementYPos(-0.25);
+		//objects[2].incrementYPos(-0.25);
+		//objects[2].shoot(program, ammo, elapsed);
+
 	}
 	if (objects[2].XPos < -2.0){
 		objects[2].HDirection *= -1;
@@ -243,16 +253,25 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram* program, vector<A
 		//ammo[1].incrementXPos(2.0 * elapsed);
 	}
 	
-	if (keys[SDL_SCANCODE_SPACE] && keys[SDL_KEYUP]){
-		ammo[0].setMatrices(program);
-		//sheetx.Draw(*program);
-		spriteSheets[1].Draw(*program);
-		ammo[1].setMatrices(program);
-		spriteSheets[3].Draw(*program);
-		objects[1].shoot(program, ammo, elapsed);
-		//ammo[0].scaleMatrix(10.0, 1.0, 1.0);
-		//ammo[0].scaleMatrix(0.0, 0.0, 0.0);
-	}
+	
+	//ammo[0].YPos = objects[1].YPos;
+	//ammo[1].YPos = objects[2].YPos;
+		if (keys[SDL_SCANCODE_SPACE] ){
+			
+				//ammo[0].setMatrices(program);
+
+
+				//ammo[1].setMatrices(program);
+
+				//spriteSheets[3].Draw(*program);
+				objects[1].shoot(program, ammo, spriteSheets, elapsed);
+			
+			//ammo[0].scaleMatrix(10.0, 1.0, 1.0);
+			//ammo[0].scaleMatrix(0.0, 0.0, 0.0);
+		}
+	
+
+
 	
 
 	/*if (ammo.YPos > 1.0){
@@ -280,11 +299,11 @@ void SpacialArea::endGameEvents(SDL_Event event){
 
 }
 
-void SpacialArea::updateThings(ShaderProgram* program, vector<AstralEntity>& objects,
+void SpacialArea::updateThings(ShaderProgram& program, vector<AstralEntity>& objects,
 	Projectile ammo[], SDL_Event event, vector<SpriteSheet>& spriteSheets, float elasped){
 	switch (state){
 	case STATE_TITLE:
-		titleEvents(event);
+		titleEvents(event, program);
 		break;
 	case STATE_GAME_LEVEL:
 		inGameEvents(event, program, objects, ammo, spriteSheets, elasped);

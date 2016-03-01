@@ -7,11 +7,15 @@
 #include "Matrix.h"
 #include "ShaderProgram.h"
 #include "SpriteSheet.h"
+#include "Projectile.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 #include <vector>
 #include <math.h>
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 using namespace std;
 
 #ifdef _WINDOWS
@@ -21,27 +25,27 @@ using namespace std;
 #endif
 #define FIXED_TIMESTEP 0.0166666f 
 #define MAX_TIMESTEPS 6
-#define MAX_SHOTS 10
+#define MAX_SHOTS 4
 
-float vertices_paddle [] = { -0.5, -0.5,
-0.05, -0.5,
-0.05, 0.5,
--0.5, -0.5,
-0.05, 0.5,
--0.5, 0.5 };
-
-float vertices_ball[] = { -0.04, -0.04,
-0.04, -0.04,
-0.04, 0.04,
--0.04, -0.04,
-0.04, 0.04,
--0.04, 0.04 };
-float texCoords[] = { 0.0, 1.0,
-1.0, 1.0,
-1.0, 0.0,
-0.0, 1.0,
-1.0, 0.0,
-0.0, 0.0 };
+//float vertices_paddle [] = { -0.5, -0.5,
+//0.05, -0.5,
+//0.05, 0.5,
+//-0.5, -0.5,
+//0.05, 0.5,
+//-0.5, 0.5 };
+//
+//float vertices_ball[] = { -0.04, -0.04,
+//0.04, -0.04,
+//0.04, 0.04,
+//-0.04, -0.04,
+//0.04, 0.04,
+//-0.04, 0.04 };
+//float texCoords[] = { 0.0, 1.0,
+//1.0, 1.0,
+//1.0, 0.0,
+//0.0, 1.0,
+//1.0, 0.0,
+//0.0, 0.0 };
 
 
 
@@ -50,11 +54,18 @@ int main(int argc, char *argv[]){
 	environment.setup();
 	
 	ShaderProgram program(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
-	ShaderProgram program2(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+	//ShaderProgram program2(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
 	Matrix model, projection, view;
+	vector<AstralEntity> objects;
+	AstralEntity text(model, projection, view);
+	AstralEntity text2(model, projection, view);
+	AstralEntity player(model, projection, view);
+	AstralEntity enemy(model, projection, view);
 
-	GLuint words = environment.LoadTexture("font2.png");
-	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
+	GLuint words = text.LoadTexture("font2.png");
+	GLuint sprites = player.LoadTexture("SpaceStuff.png");
+	environment.wordTexture = words;
+	//environment.wordTexture = words;
 	vector<SpriteSheet> spriteSheets;
 	//<SubTexture name="playerShip1_red.png" x="224" y="832" width="99" height="75"/>
 	SpriteSheet something(sprites, 224.0 / 1024.0, 832.0 / 1024.0, 99.0 / 1024.0, 75.0 / 1024.0, 0.4);
@@ -75,10 +86,7 @@ int main(int argc, char *argv[]){
 	//by default, index 0 wll be space ship
 	//index 1 to n will be enemies
 	//press space to draw index
-	vector<AstralEntity> objects;
-	AstralEntity text(model, projection, view);
-	AstralEntity player(model, projection, view);
-	AstralEntity enemy(model, projection, view);
+	
 	objects.push_back(text);
 	objects.push_back(player);
 	objects.push_back(enemy);
@@ -87,7 +95,7 @@ int main(int argc, char *argv[]){
 
 
 	//vector<Projectile*> ammo;
-	for (int i = 0; i < 10; i++){
+	for (int i = 0; i < 4; i++){
 		//ammo.push_back(new Projectile(model, projection, view));
 		//ammo[i]->setOrthoProjection();
 		ammos[i].setOrthoProjection();
@@ -106,16 +114,21 @@ int main(int argc, char *argv[]){
 	//player.setOrthoProjection();
 	//enemy.setOrthoProjection();
 	//ammos[0].texID = sprites;
-	for (int i = 1; i < objects.size(); i++){
+	/*for (int i = 1; i < objects.size(); i++){
 		objects[i].setOrthoProjection();
-	}
+	}*/
 	
+	objects[0].setOrthoProjection();
+	objects[1].setOrthoProjection();
+	objects[2].setOrthoProjection();
+	//objects[3].setOrthoProjection();
 	//ammo[0]->setOrthoProjection();
 	//bullet.setOrthoProjection();
 
 	SDL_Event event;
 	bool done = false;
 	float lastFrameTicks = 0.0;
+	
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
 		float fixedElapsed = elapsed;
@@ -127,14 +140,21 @@ int main(int argc, char *argv[]){
 		{
 			fixedElapsed -= FIXED_TIMESTEP;
 			//environment.updateThings(&program, &program2, player, ammos, event, something, FIXED_TIMESTEP);
+			//environment.updateThings(program, objects, ammos, event, spriteSheets, FIXED_TIMESTEP);
 		}
 		//Update(FIXED_TIMESTEP); }
 		while (SDL_PollEvent(&event)) {
-			done = environment.windowCloseChecker(event);
+			
+			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+				done = true;
+
+			}
 		}
+		//environment.screenSelector(program);
 		environment.clearScreen();
-		environment.screenSelector(&program);
-		environment.updateThings(&program, objects, ammos, event, spriteSheets, fixedElapsed);
+		//environment.screenSelector();
+		environment.screenSelector(program);
+	    environment.updateThings(program, objects, ammos, event, spriteSheets, fixedElapsed);
 		
 
 		//player.identityMatrix();
@@ -150,11 +170,15 @@ int main(int argc, char *argv[]){
 
 
 
-		text.setMatrices(&program);
-		//text.DrawText(&program, words, "SCORE:" + to_string(text.score), 0.25, 0.0);
+		text.setMatrices(program);
+		//text.DrawText(program, words, "SCORE:" + to_string(text.score), 0.25, 0.0);
 		text.identityMatrix();
 		text.moveMatrix(-2.5, 1.6, 0.0);
-		environment.blendSprite(words);
+		//text2.setMatrices(&program);
+		//text.DrawText(&program, words, "SCORE:" + to_string(text.score), 0.25, 0.0);
+		//text2.identityMatrix();
+		//text2.moveMatrix(-2.5, 1.4, 0.0);
+		environment.blendSprite(environment.wordTexture);
 
 		//for (int ammoIndex = 0; ammoIndex < 10; ammoIndex++){
 
@@ -170,29 +194,20 @@ int main(int argc, char *argv[]){
 
 		//ammos[0].scaleMatrix(1.0, 1.0, 1.0);
 		//ammos[0].texID = something2.textureID;
-		ammoIndex++;
+		//ammoIndex++;
 		if (ammoIndex > MAX_SHOTS - 1){
 			ammoIndex = 0;
 
 		}
-		//ammo[ammoIndex]->setMatrices(&program2);
-		/*ammo[0]->setMatrices(&program2);
-		ammo[0]->renderWithNoTexture(&program2);
-	    ammo[0]->identityMatrix();
-		ammo[0]->XPos = player.XPos;
-		ammo[0]->YPos = -1.0;
-		ammo[0]->moveMatrix(0.0, ammo[ammoIndex]->YPos, 0.0);
-		ammoIndex++;*/
-		/*bullet.identityMatrix();
-		bullet.XPos = player.XPos;
-		bullet.moveMatrix(player.XPos, -1.0, 0.0);
-		bullet.moveMatrix(0.0, bullet.YPos, 0.0);*/
+		
 
 
 		environment.windowSwapping();
 
 
 	}
+	_CrtDumpMemoryLeaks();
 	SDL_Quit();
 	return 0;
+
 }

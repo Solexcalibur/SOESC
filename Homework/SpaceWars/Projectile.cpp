@@ -8,28 +8,28 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 	model = modelMatrix;
 	projection = projectionMatrix;
 	view = viewMatrix;
-	float vertices[] = { -0.04, -0.04,
+	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
 		-0.04, -0.04,
 		0.04, 0.04,
-		-0.04, 0.04 };
+		-0.04, 0.04 };*/
 
 }
 Projectile::Projectile(){
-	float vertices[] = { -0.04, -0.04,
+	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
 		-0.04, -0.04,
 		0.04, 0.04,
-		-0.04, 0.04 };
+		-0.04, 0.04 };*/
 
 
 
 }
 
-void Projectile::setMatrices(ShaderProgram* program){
-	program->setModelMatrix(model); program->setProjectionMatrix(projection); program->setViewMatrix(view);
+void Projectile::setMatrices(ShaderProgram program){
+	program.setModelMatrix(model); program.setProjectionMatrix(projection); program.setViewMatrix(view);
 }
 
 void Projectile::setOrthoProjection(){
@@ -45,14 +45,14 @@ void Projectile::moveMatrix(float x_value, float y_value, float z_value){
 	model.Translate(x_value, y_value, z_value);
 }
 
-void Projectile::renderWithNoTexture(ShaderProgram* program, float vertices[]){
+void Projectile::renderWithNoTexture(ShaderProgram program, float vertices[]){
 
-	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-	glEnableVertexAttribArray(program->positionAttribute);
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(program.positionAttribute);
 
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDisableVertexAttribArray(program->positionAttribute);
+	glDisableVertexAttribArray(program.positionAttribute);
 }
 
 void Projectile::incrementYPos(float value){
