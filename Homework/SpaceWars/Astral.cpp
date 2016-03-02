@@ -8,6 +8,18 @@
 #include <SDL_image.h>
 
 
+AstralEntity::AstralEntity()
+{
+	XPos = 0.0;
+	YPos = 0.0;
+	HDirection = 1.0;
+	VDirection = 1.0;
+	health = 100.0;
+	score = 0;
+	ammoIndex = 0;
+	maxshots = 10;
+}
+
 AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix) {
 	XPos = 0.0;
 	YPos = 0.0;
@@ -142,13 +154,36 @@ void AstralEntity::shoot(ShaderProgram& program, Projectile ammo[], std::vector<
 	//bullet.moveMatrix(0.0, bullet.YPos, 0.0);
 	//ammo[ammoIndex].renderWithNoTexture(program);
 	//ammo[0].setMatrices(program);
-	ammo[0].setMatrices(program);
-	spriteSheets[1].Draw(program);
-	ammo[0].incrementYPos(6.5 * elapsed);
-	//ammo[1].setMatrices(program);
-	//ammo[1].incrementYPos(-5.75 * elapsed);
+	/*ammo[0].setMatrices(program);
+	spriteSheets[1].Draw(program);*/
+	//ammo[0].YPos = -1.5;
+	int ammoIndex = 0;
+	
+	ammo[ammoIndex].setMatrices(program);
+	ammo[ammoIndex].identityMatrix();
+	ammo[ammoIndex].moveMatrix(ammo[ammoIndex].XPos, ammo[ammoIndex].YPos, 0.0);
+	
+	spriteSheets[1].Draw(program); 
+	ammo[ammoIndex].incrementYPos(6.5 * elapsed);
+	
+	if (ammo[ammoIndex].YPos > 2.0){
+		ammoIndex++;
+	}
+	
+	
+	/*for (int i = 1; i < 3; i++){
+		ammo[i].setMatrices(program);
+		ammo[i].incrementYPos(-5.75 * elapsed);
+		spriteSheets[3].Draw(program); 
+	}*/
+	/*ammo[1].setMatrices(program);
+	ammo[1].incrementYPos(-5.75 * elapsed);
+	spriteSheets[3].Draw(program);
+	ammo[2].setMatrices(program);
+	ammo[2].incrementYPos(-5.75 * elapsed);
+	spriteSheets[3].Draw(program);*/
 	//ammo[0].scaleMatrix(20.0, 1.0, 1.0);
-	ammoIndex++;
+	
 	if (ammoIndex > maxshots - 1){
 		ammoIndex = 0;
 
@@ -180,3 +215,5 @@ GLuint AstralEntity::LoadTexture(const char* image_path) {
 
 
 }
+
+

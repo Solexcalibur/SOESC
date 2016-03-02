@@ -8,6 +8,7 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 	model = modelMatrix;
 	projection = projectionMatrix;
 	view = viewMatrix;
+	YPos = -1.5;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
@@ -17,6 +18,7 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 
 }
 Projectile::Projectile(){
+	YPos = -1.5;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,

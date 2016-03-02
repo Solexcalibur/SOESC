@@ -39,7 +39,11 @@ SpacialArea::SpacialArea(){
 	r_filter = 0.5;
 	g_filter = 0.0;
 	b_filter = 0.5;
-
+	player[0].YPos = -1.5;
+	player[0].XPos = 0.0;
+	shotIndex = 0;
+	shots[shotIndex].YPos = -1.5;
+	//player = new AstralEntity();
 
 }
 
@@ -58,13 +62,20 @@ void SpacialArea::setup(){
 	glViewport(0, 0, x_resolution, y_resolution);//<- INNER BOUND
 }
 
-bool SpacialArea::windowCloseChecker(SDL_Event event){
+bool SpacialArea::windowCloseChecker(SDL_Event event, vector<AstralEntity>& objects, Projectile ammo[], vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped){
 	bool done = false;
 	
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
 			done = true;
 
 		}
+		//else if (event.type == SDL_KEYDOWN){
+		else if (event.key.keysym.scancode == SDL_SCANCODE_SPACE){
+		objects[0].shoot(program, ammo, spriteSheets, elasped);
+
+		}
+
+		//}
 	
 
 	return done;
@@ -183,44 +194,133 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program){
 
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<AstralEntity>& objects,
 	Projectile ammo[], vector<SpriteSheet>& spriteSheets, float elapsed){
-	float vertices_paddle[] = { -0.5, -0.5,
-		0.05, -0.5,
-		0.05, 0.5,
-		-0.5, -0.5,
-		0.05, 0.5,
-		-0.5, 0.5 };
 
-	float vertices_ball[] = { -0.04, -0.04,
-		0.04, -0.04,
-		0.04, 0.04,
-		-0.04, -0.04,
-		0.04, 0.04,
-		-0.04, 0.04 };
-	float texCoords[] = { 0.0, 1.0,
-		1.0, 1.0,
-		1.0, 0.0,
-		0.0, 1.0,
-		1.0, 0.0,
-		0.0, 0.0 };
 
 	
-	objects[1].setMatrices(program);
+
+	
+	int ammoIndex = 0;
+	//int maxshots = 10;
+	
+	if (shotIndex > maxshots - 1) {
+		shotIndex = 0;
+
+	}
+	
+	//objects[0].setMatrices(program);
+	player[0].setMatrices(program);
+	player[0].setOrthoProjection();
+	player[0].identityMatrix();
+	player[0].moveMatrix(player[0].XPos, player[0].YPos, 0.0);
 	spriteSheets[0].Draw(program);
+
+
+	objects[1].setMatrices(program);
+	spriteSheets[2].Draw(program);
+
+
 	objects[2].setMatrices(program);
 	spriteSheets[2].Draw(program);
 
-	objects[2].incrementXPos(2.0 * objects[2].HDirection * elapsed);
-	ammo[1].XPos = objects[2].XPos;
-	//ammo[1].YPos = objects[2].YPos;
-	if (objects[2].XPos > 2.0){
-		objects[2].HDirection *= -1;
-		//objects[2].incrementYPos(-0.25);
-		//objects[2].shoot(program, ammo, elapsed);
+	//for (int i = 1; i < 3; i++){
+	//	objects[i].setMatrices(program);
+	//	//objects[i].YPos = 1.5;
+	//	spriteSheets[2].Draw(program);
+	//}
+	shots[shotIndex].setOrthoProjection();
+	shots[shotIndex].setMatrices(program);
+	shots[shotIndex].identityMatrix();
+	shots[shotIndex].XPos = player[0].XPos;
+	shots[shotIndex].incrementYPos(6.0 * elapsed);
+	spriteSheets[1].Draw(program);
+
+
+	
+	//objects[0].YPos = -1.5;
+	//shots[0].moveMatrix(0.0, shots[0].YPos, 0.0);
+	objects[1].incrementXPos(2.0 * objects[1].HDirection * elapsed);
+	objects[2].incrementXPos(-2.0 * objects[2].HDirection * elapsed);
+	//shoot(program, objects[0], spriteSheets[1], elapsed);
+	//ammo[1].XPos = objects[1].XPos;
+	//ammo[2].XPos = objects[2].XPos;
+	
+	
+	shots[shotIndex].moveMatrix(shots[shotIndex].XPos, shots[shotIndex].YPos, 0.0);
+	while (SDL_PollEvent(&events)) {
+		
+		if (events.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+			done = true;
+
+		}
+		else if (events.type == SDL_KEYDOWN) {
+			if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+				//player[0].shoot(program, ammo, spriteSheets, elapsed);
+				//shoot(elapsed);
+				//shotIndex++;
+				//shots[0].incrementYPos(4.0 * elapsed);
+				//shots[0].incrementYPos(4.0 * elapsed);
+				//shots[0].moveMatrix(0.0, shots[0].YPos, 0.0);
+				//DrawText(program, wordTexture, "Astral Horizon! You are outnumbered, think you can win?", 0.075, 0);
+
+			}
+			//shots[0].incrementYPos(4.0 * elapsed);
+
+		}
+		
 
 	}
-	if (objects[2].XPos < -2.0){
-		objects[2].HDirection *= -1;
+
+	if (keys[SDL_SCANCODE_SPACE]) {
+		shoot(elapsed);
 	}
+	//shotIndex++;
+	//ammoIndex++;
+	//shots[0].incrementYPos(4.0 * elapsed);
+	//shots[0].incrementYPos(4.0 * elapsed);
+	/*if (keys[SDL_SCANCODE_SPACE]) {
+		shots[0].incrementYPos(elapsed);
+
+	}*/
+
+
+	
+	for (int i = 1; i < 3; i++){
+		if (objects[i].XPos > 2.0){
+			objects[i].XPos = 2.0;
+			objects[i].HDirection *= -1;
+			objects[i].incrementYPos(-0.05);
+		}
+		if (objects[i].XPos < -2.0){
+			objects[i].XPos = -2.0;
+			objects[i].HDirection *= -1;
+			objects[i].incrementYPos(-0.05);
+		}
+		//if (objects[i].YPos == -1.5){
+		//	//state = 2;
+		//	objects[i].YPos = 1.5;
+		//}
+
+	}
+
+
+
+	//ammo[1].YPos = objects[2].YPos;
+	//if (objects[1].XPos > 2.0){
+	//	objects[1].HDirection *= -1;
+	//	//objects[2].incrementYPos(-0.25);
+	//	//objects[2].shoot(program, ammo, elapsed);
+
+	//}
+	//if (objects[1].XPos < -2.0){
+	//	objects[1].HDirection *= -1;
+	//}
+	//if (objects[2].XPos > 2.0){
+	//	objects[2].HDirection *= -1;
+	//objects[2].incrementYPos(-0.25);
+	//objects[2].shoot(program, ammo, elapsed);
+
+
+
 
 	//for (int i = 0; i < 10; i++){
 
@@ -229,7 +329,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 	//	//ammo[i].setOrthoProjection();
 	//	ammo[i].setupAndRender(*program, vertices_ball, texCoords, ammo[i].texID);
 	//}
-	
+
 	//ammo[0].renderWithNoTexture(program, vertices_ball);
 	//ammo[i].setOrthoProjection();
 	//ammo[0].setupAndRender(*program, vertices_paddle, texCoords, sheetx.textureID);
@@ -238,57 +338,135 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 	if (keys[SDL_SCANCODE_A]){
 		state = 2;
 		//player.XPos = 0.0;
-		objects[1].XPos = 0.0;
+		objects[0].XPos = 0.0;
 	}
 	if (keys[SDL_SCANCODE_LEFT]){
 		//player.incrementXPos(-2.0 * elapsed);
-		objects[1].incrementXPos(-2.0 * elapsed);
+		player[0].incrementXPos(-2.0 * elapsed);
 		ammo[0].incrementXPos(-2.0 * elapsed);
 		//ammo[1].incrementXPos(-2.0 * elapsed);
 	}
 	if (keys[SDL_SCANCODE_RIGHT]){
 		//player.incrementXPos(2.0 * elapsed);
-		objects[1].incrementXPos(2.0 * elapsed);
+		player[0].incrementXPos(2.0 * elapsed);
 		ammo[0].incrementXPos(2.0 * elapsed);
 		//ammo[1].incrementXPos(2.0 * elapsed);
 	}
-	
-	
+
+
 	//ammo[0].YPos = objects[1].YPos;
 	//ammo[1].YPos = objects[2].YPos;
-		if (keys[SDL_SCANCODE_SPACE] ){
-			
-				//ammo[0].setMatrices(program);
-
-
-				//ammo[1].setMatrices(program);
-
-				//spriteSheets[3].Draw(*program);
-				objects[1].shoot(program, ammo, spriteSheets, elapsed);
-			
-			//ammo[0].scaleMatrix(10.0, 1.0, 1.0);
-			//ammo[0].scaleMatrix(0.0, 0.0, 0.0);
+	/*else if (event.type == SDL_KEYDOWN){
+		if (event.key.keysym.scancode == SDL_SCANCODE_SPACE){
+		objects[0].shoot(program, ammo, spriteSheets, elapsed);
 		}
-	
+		}*/
 
 
+	//ammo[0].YPos = -1.5;
+	//if (keys[SDL_SCANCODE_SPACE]){
+		
+//while (SDL_PollEvent(&event)) {
+
+		
+  		
+		//}
+	//}	//ammo[0].YPos = -1.5;
 	
+
+	//spriteSheets[1].Draw(program);
+	//ammo[0].YPos = -1.5;
+
+	//		//if (!keys[SDL_SCANCODE_SPACE]){
+	//		//ammo[0].setMatrices(program);
+	//		//ammo[0].identityMatrix();
+	//ammo[0].incrementYPos(2.5 * elapsed);
+//objects[0].shoot(program, ammo, spriteSheets, elapsed);
+	//ammo[0].incrementYPos(2.5 * elapsed);
+
+
+	/*if (event.key.keysym.scancode == SDL_SCANCODE_SPACE){
+		objects[0].shoot(program, ammo, spriteSheets, elapsed);
+
+	}*/
+	/*if (event.type == SDL_KEYDOWN){
+	
+		
+		objects[0].shoot(program, ammo, spriteSheets, elapsed);
+
+	}*/
+	//objects[0].shoot(program, ammo, spriteSheets, elapsed);
+	
+	/*if (keys[SDL_SCANCODE_SPACE]){
+		objects[0].shoot(program, ammo, spriteSheets, elapsed);
+	}*/
+	//if (keys[SDL_SCANCODE_SPACE]){
+	//	
+	//	if (keys[SDL_KEYUP]){
+	//		ammo[0].setMatrices(program);
+	//		
+	//		spriteSheets[1].Draw(program);
+	//		//ammo[0].YPos = -1.5;
+
+	//		//if (!keys[SDL_SCANCODE_SPACE]){
+	//		//ammo[0].setMatrices(program);
+	//		//ammo[0].identityMatrix();
+	//		ammo[0].incrementYPos(2.5 * elapsed);
+
+	//	}
+	//}
+	//ammo[0].setMatrices(program);
+
+	//spriteSheets[1].Draw(program);
+	//ammo[0].YPos = -1.5;
+
+	//if (!keys[SDL_SCANCODE_SPACE]){
+	//ammo[0].setMatrices(program);
+	//ammo[0].identityMatrix();
+	//ammo[0].incrementYPos(2.5 * elapsed);
+	//}
+	// if (keys[SDL_KEYUP]){
+		//if (keys[SDL_SCANCODE_SPACE]){
+			//ammo[0].YPos = -1.5;
+			
+			//spriteSheets[1].Draw(program);
+			//ammo[1].YPos = 1.5;
+			//ammo[2].YPos = 1.5;
+		//}
+		//}
+	//}
+	
+
+	 if (ammo[0].YPos == objects[2].XPos){
+		 ammo[0].YPos = -1.5;
+	 }
+
+
 
 	/*if (ammo.YPos > 1.0){
 		bullet.YPos = 0.0;
+		}*/
+	//for (int i = 0; i < 10; i++){
+	/*if (ammo[0].YPos > 3.0){
+		ammo[0].YPos = -1.5;
 	}*/
-	for (int i = 0; i < 10; i++){
-		if (ammo[0].YPos > 2.0){
-			ammo[0].YPos = -1.5;
-		}
-	}
-	if (ammo[1].YPos < -2.0){
-		ammo[1].YPos = objects[2].YPos + 1.0;
-		
-		//ammo[1].incrementYPos(-9.5 * elapsed);
-		//objects[2].shoot(program, ammo, elapsed);
-	}
+	 
+	 //shoot(program, objects[0], spriteSheets[1], elapsed);
 	
+	/* if (keys[SDL_SCANCODE_SPACE]){
+		 objects[0].shoot(program, ammo, spriteSheets, elapsed);
+	 }*/
+
+	/*if (ammo[1].YPos < -2.0){
+		ammo[1].YPos = objects[1].YPos + 0.5;
+
+	}
+	if (ammo[2].YPos < -2.0){
+		ammo[2].YPos = objects[2].YPos + 0.5;
+
+	}*/
+	 
+
 }
 
 void SpacialArea::endGameEvents(SDL_Event event){
@@ -318,3 +496,19 @@ void SpacialArea::updateThings(ShaderProgram& program, vector<AstralEntity>& obj
 
 }
 
+void SpacialArea::shoot(float elapsed) {
+	//shots[0].setMatrices(program);
+	////shots[0].YPos = -1.5;
+	//sprite.Draw(program);
+	//shots[0].incrementYPos(7.5 * elapsed);
+	if (shots[shotIndex].YPos > 2.0){
+	shots[shotIndex].YPos = -1.5;
+	}
+	shotIndex++;
+	
+	if (shotIndex > maxshots - 1) {
+		shotIndex = 0;
+
+	}
+	
+}

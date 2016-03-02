@@ -25,27 +25,27 @@ using namespace std;
 #endif
 #define FIXED_TIMESTEP 0.0166666f 
 #define MAX_TIMESTEPS 6
-#define MAX_SHOTS 4
+#define MAX_SHOTS 10
 
-//float vertices_paddle [] = { -0.5, -0.5,
-//0.05, -0.5,
-//0.05, 0.5,
-//-0.5, -0.5,
-//0.05, 0.5,
-//-0.5, 0.5 };
-//
-//float vertices_ball[] = { -0.04, -0.04,
-//0.04, -0.04,
-//0.04, 0.04,
-//-0.04, -0.04,
-//0.04, 0.04,
-//-0.04, 0.04 };
-//float texCoords[] = { 0.0, 1.0,
-//1.0, 1.0,
-//1.0, 0.0,
-//0.0, 1.0,
-//1.0, 0.0,
-//0.0, 0.0 };
+float vertices_paddle [] = { -0.5, -0.5,
+0.05, -0.5,
+0.05, 0.5,
+-0.5, -0.5,
+0.05, 0.5,
+-0.5, 0.5 };
+
+float vertices_ball[] = { -0.04, -0.04,
+0.04, -0.04,
+0.04, 0.04,
+-0.04, -0.04,
+0.04, 0.04,
+-0.04, 0.04 };
+float texCoords[] = { 0.0, 1.0,
+1.0, 1.0,
+1.0, 0.0,
+0.0, 1.0,
+1.0, 0.0,
+0.0, 0.0 };
 
 
 
@@ -57,13 +57,17 @@ int main(int argc, char *argv[]){
 	//ShaderProgram program2(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
 	Matrix model, projection, view;
 	vector<AstralEntity> objects;
+	vector<AstralEntity> ships;
 	AstralEntity text(model, projection, view);
 	AstralEntity text2(model, projection, view);
 	AstralEntity player(model, projection, view);
 	AstralEntity enemy(model, projection, view);
+	AstralEntity enemy2(model, projection, view);
+
+
 
 	GLuint words = text.LoadTexture("font2.png");
-	GLuint sprites = player.LoadTexture("SpaceStuff.png");
+	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
 	environment.wordTexture = words;
 	//environment.wordTexture = words;
 	vector<SpriteSheet> spriteSheets;
@@ -88,19 +92,29 @@ int main(int argc, char *argv[]){
 	//press space to draw index
 	
 	objects.push_back(text);
-	objects.push_back(player);
-	objects.push_back(enemy);
+	ships.push_back(player);
+
+	/*for (int i = 1; i < 3; i++){
+		ships.push_back(AstralEntity(model, projection, view));
+	}*/
+	ships.push_back(enemy);
+	ships.push_back(enemy2);
+	//objects.push_back(player);
+	//ships.push_back()
+	//objects.push_back(enemy);
+	//objects.push_back(enemy2);
 
 	Projectile ammos[MAX_SHOTS];
 
-
+	//ammos[0].setMatrices(program);
+	//spriteSheets[1].Draw(program);
 	//vector<Projectile*> ammo;
 	for (int i = 0; i < 4; i++){
 		//ammo.push_back(new Projectile(model, projection, view));
 		//ammo[i]->setOrthoProjection();
 		ammos[i].setOrthoProjection();
 		ammos[i].XPos = player.XPos;
-		ammos[0].YPos = -1.5;
+		//ammos[i].YPos = -1.5;
 
 	}
 	//ammos[1].XPos = objects[2].XPos;
@@ -119,20 +133,24 @@ int main(int argc, char *argv[]){
 	}*/
 	
 	objects[0].setOrthoProjection();
-	objects[1].setOrthoProjection();
+	ships[0].setOrthoProjection();
+	ships[1].setOrthoProjection();
+	ships[2].setOrthoProjection();
+	/*objects[1].setOrthoProjection();
 	objects[2].setOrthoProjection();
-	//objects[3].setOrthoProjection();
+	objects[3].setOrthoProjection();*/
 	//ammo[0]->setOrthoProjection();
 	//bullet.setOrthoProjection();
-
+	//ships[1].YPos = 0.0;
+	//ships[2].YPos = 0.0;
 	SDL_Event event;
 	bool done = false;
 	float lastFrameTicks = 0.0;
-	
+	ships[0].YPos = -1.5;
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
 		float fixedElapsed = elapsed;
-		float fixedTimeStep = 0.0166666f;
+		//float fixedTimeStep = 0.0166666f;
 		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) 
 		{ fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS; } 
 
@@ -140,34 +158,46 @@ int main(int argc, char *argv[]){
 		{
 			fixedElapsed -= FIXED_TIMESTEP;
 			//environment.updateThings(&program, &program2, player, ammos, event, something, FIXED_TIMESTEP);
-			//environment.updateThings(program, objects, ammos, event, spriteSheets, FIXED_TIMESTEP);
+			environment.updateThings(program, objects, ammos, event, spriteSheets, FIXED_TIMESTEP);
 		}
 		//Update(FIXED_TIMESTEP); }
 		while (SDL_PollEvent(&event)) {
 			
-			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+			//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
+			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 				done = true;
-
 			}
+			
+			
 		}
 		//environment.screenSelector(program);
 		environment.clearScreen();
+
 		//environment.screenSelector();
 		environment.screenSelector(program);
-	    environment.updateThings(program, objects, ammos, event, spriteSheets, fixedElapsed);
+		//ammos[0].incrementYPos(2.5 * elapsed);
+		environment.updateThings(program, ships, ammos, event, spriteSheets, elapsed);
+		environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
 		
-
+		
+		
 		//player.identityMatrix();
-		objects[1].identityMatrix();
-		objects[1].moveMatrix(objects[1].XPos, -1.5, 0.0);
+		ships[0].identityMatrix();
+		//ships[0].setupAndRender(program, vertices_paddle, texCoords, ships[0].texID);
+		ships[0].moveMatrix(ships[0].XPos, ships[0].YPos, 0.0);
 		//player.moveMatrix(player.XPos, -1.5, 0.0);
 
 		//enemy.identityMatrix();
-		objects[2].identityMatrix();
-		objects[2].moveMatrix(objects[2].XPos, 1.5, 0.0);
-		objects[2].moveMatrix(0.0, objects[2].YPos, 0.0);
+		//ships[1].setMatrices(program);
+		ships[1].identityMatrix();
+		ships[1].moveMatrix(ships[1].XPos, 1.5, 0.0);
+		ships[1].moveMatrix(0.0, ships[1].YPos, 0.0);
+		//ships[2].setMatrices(program);
+		ships[2].identityMatrix();
+		ships[2].moveMatrix(ships[2].XPos, 1.5, 0.0);
+		ships[2].moveMatrix(0.0, ships[2].YPos, 0.0);
 		//enemy.moveMatrix(0.0, 1.5, 0.0);
-
+		
 
 
 		text.setMatrices(program);
@@ -185,20 +215,26 @@ int main(int argc, char *argv[]){
 			//ammos[ammoIndex].setMatrices(&program2);
 			//ammo[i].setOrthoProjection();
 		///}
-		ammos[0].identityMatrix();
+		
 		//ammos[ammoIndex].renderWithNoTexture(&program);
-		ammos[0].moveMatrix(ammos[0].XPos, ammos[0].YPos, 0.0);
-		ammos[1].identityMatrix();
-		//ammos[ammoIndex].renderWithNoTexture(&program);
-		ammos[1].moveMatrix(ammos[1].XPos, ammos[1].YPos, 0.0);
+		//ammos[0].identityMatrix();
+		//ammos[0].moveMatrix(ammos[0].XPos, ammos[0].YPos, 0.0);
+		//
+		////ammos[ammoIndex].renderWithNoTexture(&program);
+		//ammos[1].moveMatrix(ammos[1].XPos, ammos[1].YPos, 0.0);
+		//ammos[2].identityMatrix();
+		////ammos[ammoIndex].renderWithNoTexture(&program);
+		//ammos[2].moveMatrix(ammos[2].XPos, ammos[2].YPos, 0.0);
 
 		//ammos[0].scaleMatrix(1.0, 1.0, 1.0);
 		//ammos[0].texID = something2.textureID;
-		//ammoIndex++;
+		/*ammos[ammoIndex].identityMatrix();
+		ammos[ammoIndex].moveMatrix(ammos[ammoIndex].XPos, ammos[ammoIndex].YPos, 0.0);*/
+	/*	ammoIndex++;
 		if (ammoIndex > MAX_SHOTS - 1){
 			ammoIndex = 0;
 
-		}
+		}*/
 		
 
 

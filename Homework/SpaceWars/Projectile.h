@@ -11,7 +11,7 @@ public:
 	Projectile();
 
 
-	float XPos, YPos, velocity, flightTime;
+	float XPos, YPos, velocity, flightTime, width, height;
 	float vertices[12];
 	Matrix model, projection, view;
 	GLuint texID;
