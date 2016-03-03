@@ -18,6 +18,9 @@ AstralEntity::AstralEntity()
 	score = 0;
 	ammoIndex = 0;
 	maxshots = 10;
+	alive = true;
+	//width = 1.0;
+	//height = 1.0;
 }
 
 AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix) {
@@ -32,6 +35,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 	score = 0;
 	ammoIndex = 0;
 	maxshots = 10;
+	alive = true;
 	//sprite = spritez;
 
 
@@ -84,7 +88,7 @@ void AstralEntity::DrawText(ShaderProgram& program, int fontTexture, std::string
 }
 
 bool AstralEntity::lifeChecker(){
-	return health > 0.0;
+	return alive;
 
 }
 

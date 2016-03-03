@@ -69,6 +69,7 @@ int main(int argc, char *argv[]){
 	GLuint words = text.LoadTexture("font2.png");
 	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
 	environment.wordTexture = words;
+	environment.spriteSheetTexture = sprites;
 	//environment.wordTexture = words;
 	vector<SpriteSheet> spriteSheets;
 	//<SubTexture name="playerShip1_red.png" x="224" y="832" width="99" height="75"/>

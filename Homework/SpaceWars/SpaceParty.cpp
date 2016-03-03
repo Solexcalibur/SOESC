@@ -32,18 +32,65 @@ GLuint SpacialArea::LoadTexture(const char* image_path) {
 }
 
 SpacialArea::SpacialArea(){
-	//score = 0;
+	score = 0;
 	state = 0;
 	keys = SDL_GetKeyboardState(nullptr);
-	wordTexture = LoadTexture(fontSheetPath);
+	//wordTexture = LoadTexture(fontSheetPath);
+	//spriteSheetTexture = LoadTexture(spritepath);
 	r_filter = 0.5;
 	g_filter = 0.0;
 	b_filter = 0.5;
 	player[0].YPos = -1.5;
 	player[0].XPos = 0.0;
+
+	player[1].YPos = 1.5;
+	player[1].XPos = 0.0;
+
+	player[2].YPos = 1.5;
+	player[2].XPos = 0.0;
+
+	player[3].YPos = 1.0;
+	player[3].XPos = 0.0;
+
+	player[4].YPos = 1.0;
+	player[4].XPos = 0.0;
+	//sprites[0].textureID = spriteSheetTexture;
+	sprites[0].u = 224.0 / 1024.0;
+	sprites[0].v = 832.0 / 1024.0;
+	sprites[0].width = 99.0 / 1024.0;
+	sprites[0].height = 75.0 / 1024.0;
+	sprites[0].size = 0.4;
+	//sprites[1].textureID = spriteSheetTexture;
+	sprites[1].u = 858.0 / 1024.0;
+	sprites[1].v = 230.0 / 1024.0;
+	sprites[1].width = 9.0 / 1024.0;
+	sprites[1].height = 54.0 / 1024.0;
+	sprites[1].size = 0.4;
+	//sprites[2].textureID = spriteSheetTexture;
+	sprites[2].u = 423.0 / 1024.0;
+	sprites[2].v = 728.0 / 1024.0;
+	sprites[2].width = 93.0 / 1024.0;
+	player[1].width = sprites[2].width;
+	player[3].width = sprites[2].width;
+	sprites[2].height = 84.0 / 1024.0;
+	player[1].height = sprites[2].height;
+	player[3].height = sprites[2].height;
+	sprites[2].size = 0.4;
+	sprites[3].u = 423.0 / 1024.0;
+	sprites[3].v = 728.0 / 1024.0;
+	sprites[3].width = 93.0 / 1024.0;
+	player[2].width = sprites[3].width;
+	player[4].width = sprites[3].width;
+	sprites[3].height = 84.0 / 1024.0;
+	player[2].height = sprites[2].height;
+	player[4].height = sprites[2].height;
+	sprites[3].size = 0.4;
 	shotIndex = 0;
 	shots[shotIndex].YPos = -1.5;
+	shots[shotIndex].width = sprites[1].width;
+	shots[shotIndex].height = sprites[1].height;
 	//player = new AstralEntity();
+	numEnemies = 4;
 
 }
 
@@ -70,10 +117,10 @@ bool SpacialArea::windowCloseChecker(SDL_Event event, vector<AstralEntity>& obje
 
 		}
 		//else if (event.type == SDL_KEYDOWN){
-		else if (event.key.keysym.scancode == SDL_SCANCODE_SPACE){
-		objects[0].shoot(program, ammo, spriteSheets, elasped);
+		/*else if (event.key.keysym.scancode == sdl_scancode_space){
+		objects[0].shoot(program, ammo, spritesheets, elasped);
 
-		}
+		}*/
 
 		//}
 	
@@ -89,6 +136,8 @@ void SpacialArea::clearScreen(){
 void SpacialArea::windowSwapping(){
 	SDL_GL_SwapWindow(displayWindow);
 }
+
+
 
 void SpacialArea::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing){
 	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;
@@ -150,7 +199,7 @@ void SpacialArea::TitleScreen(ShaderProgram& program){
 void SpacialArea::scoreBoard(ShaderProgram& program){
 	//GLuint fontTex = wordTexture;
 
-	int score = 0;
+	//int score = 0;
 	DrawText(program, wordTexture,"SCORE:"+ to_string(score), 0.1, 0);
 	blendSprite(wordTexture);
 
@@ -184,8 +233,22 @@ void SpacialArea::screenSelector(ShaderProgram& program){
 
 void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program){
 	
-	if (keys[SDL_SCANCODE_W]){
-		state = 1;
+	while (SDL_PollEvent(&events)) {
+
+		if (events.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+			done = true;
+
+		}
+		else if (events.type == SDL_KEYDOWN) {
+			if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+				
+				state = 1;
+			}
+			//shots[0].incrementYPos(4.0 * elapsed);
+
+		}
+
+
 	}
 	
 		
@@ -208,43 +271,78 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 	}
 	
 	//objects[0].setMatrices(program);
+	sprites[0].textureID = spriteSheetTexture;
 	player[0].setMatrices(program);
 	player[0].setOrthoProjection();
 	player[0].identityMatrix();
 	player[0].moveMatrix(player[0].XPos, player[0].YPos, 0.0);
-	spriteSheets[0].Draw(program);
+	//spriteSheets[0].Draw(program);
+	sprites[0].Draw(program);
+
+	//sprites[2].textureID = spriteSheetTexture;
+	//player[1].setMatrices(program);
+	//player[1].setOrthoProjection();
+	//player[1].identityMatrix();
+	//player[1].moveMatrix(player[1].XPos, player[1].YPos, 0.0);
+	////spriteSheets[2].Draw(program);
+	//sprites[2].Draw(program);
+
+	for (int indx = 1; indx < 5; indx++) {
+		if (player[indx].alive) {
+			sprites[2].textureID = spriteSheetTexture;
+			player[indx].setMatrices(program);
+			player[indx].setOrthoProjection();
+			player[indx].identityMatrix();
+			player[indx].moveMatrix(player[indx].XPos, player[indx].YPos, 0.0);
+			//spriteSheets[2].Draw(program);
+			sprites[2].Draw(program);
+		}
+	}
 
 
-	objects[1].setMatrices(program);
-	spriteSheets[2].Draw(program);
+	//sprites[3].textureID = spriteSheetTexture;
+	//player[3].setMatrices(program);
+	//player[3].setOrthoProjection();
+	//player[3].identityMatrix();
+	//player[3].moveMatrix(player[3].XPos, player[3].YPos, 0.0);
+	////spriteSheets[2].Draw(program);
+	//sprites[3].Draw(program);
 
 
-	objects[2].setMatrices(program);
-	spriteSheets[2].Draw(program);
-
+	//sprites[3].textureID = spriteSheetTexture;
+	//player[4].setMatrices(program);
+	//player[4].setOrthoProjection();
+	//player[4].identityMatrix();
+	//player[4].moveMatrix(player[4].XPos, player[4].YPos, 0.0);
+	////spriteSheets[2].Draw(program);
+	//sprites[3].Draw(program);
 	//for (int i = 1; i < 3; i++){
 	//	objects[i].setMatrices(program);
 	//	//objects[i].YPos = 1.5;
 	//	spriteSheets[2].Draw(program);
 	//}
+	sprites[1].textureID = spriteSheetTexture;
 	shots[shotIndex].setOrthoProjection();
 	shots[shotIndex].setMatrices(program);
 	shots[shotIndex].identityMatrix();
 	shots[shotIndex].XPos = player[0].XPos;
 	shots[shotIndex].incrementYPos(6.0 * elapsed);
-	spriteSheets[1].Draw(program);
+	//spriteSheets[1].Draw(program);
+	sprites[1].Draw(program);
 
 
 	
 	//objects[0].YPos = -1.5;
 	//shots[0].moveMatrix(0.0, shots[0].YPos, 0.0);
-	objects[1].incrementXPos(2.0 * objects[1].HDirection * elapsed);
-	objects[2].incrementXPos(-2.0 * objects[2].HDirection * elapsed);
+	//objects[1].incrementXPos(2.0 * objects[1].HDirection * elapsed);
+	//objects[2].incrementXPos(-2.0 * objects[2].HDirection * elapsed);
 	//shoot(program, objects[0], spriteSheets[1], elapsed);
 	//ammo[1].XPos = objects[1].XPos;
 	//ammo[2].XPos = objects[2].XPos;
-	
-	
+	player[1].incrementXPos(2.0 * player[1].HDirection * elapsed);
+	player[2].incrementXPos(-2.0 * player[2].HDirection * elapsed);
+	player[3].incrementXPos(1.75 * player[3].HDirection * elapsed);
+	player[4].incrementXPos(-2.25 * player[4].HDirection * elapsed);
 	shots[shotIndex].moveMatrix(shots[shotIndex].XPos, shots[shotIndex].YPos, 0.0);
 	while (SDL_PollEvent(&events)) {
 		
@@ -284,16 +382,16 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 
 
 	
-	for (int i = 1; i < 3; i++){
-		if (objects[i].XPos > 2.0){
-			objects[i].XPos = 2.0;
-			objects[i].HDirection *= -1;
-			objects[i].incrementYPos(-0.05);
+	for (int i = 1; i < 5; i++){
+		if (player[i].XPos > 2.0){
+			player[i].XPos = 2.0;
+			player[i].HDirection *= -1;
+			player[i].incrementYPos(-0.05);
 		}
-		if (objects[i].XPos < -2.0){
-			objects[i].XPos = -2.0;
-			objects[i].HDirection *= -1;
-			objects[i].incrementYPos(-0.05);
+		if (player[i].XPos < -2.0){
+			player[i].XPos = -2.0;
+			player[i].HDirection *= -1;
+			player[i].incrementYPos(-0.05);
 		}
 		//if (objects[i].YPos == -1.5){
 		//	//state = 2;
@@ -301,6 +399,29 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 		//}
 
 	}
+	for (int i = 1; i < 5; i++) {
+		if (shots[shotIndex].YPos < player[i].YPos + player[i].height * 0.5
+			&& shots[shotIndex].YPos > player[i].YPos - player[i].height * 0.5
+			&& shots[shotIndex].XPos < player[i].XPos + player[i].width * 0.5
+			&& shots[shotIndex].XPos > player[i].XPos - player[i].width * 0.5) {
+			score += 10;
+			player[i].alive = false;
+			//numEnemies--;
+		}
+		if (player[i].YPos <= player[0].YPos + player[0].height * 0.5
+			&& player[i].YPos > player[0].YPos - player[0].height * 0.5) {
+			state = 2;
+		}
+		
+	}
+
+
+	/*if (shots[shotIndex].YPos < player[1].YPos + player[1].height * 0.75
+		&& shots[shotIndex].YPos > player[1].YPos - player[1].height * 0.75
+		&& shots[shotIndex].XPos < player[1].XPos + player[1].width * 0.75
+		&& shots[shotIndex].XPos > player[1].XPos - player[1].width * 0.75) {
+		score += 10;
+	}*/
 
 
 
@@ -350,6 +471,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 		//player.incrementXPos(2.0 * elapsed);
 		player[0].incrementXPos(2.0 * elapsed);
 		ammo[0].incrementXPos(2.0 * elapsed);
+		//score += 100;
 		//ammo[1].incrementXPos(2.0 * elapsed);
 	}
 
@@ -437,10 +559,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 	//}
 	
 
-	 if (ammo[0].YPos == objects[2].XPos){
+	 /*if (ammo[0].YPos == objects[2].XPos){
 		 ammo[0].YPos = -1.5;
-	 }
-
+	 }*/
+	//if (shots[shotIndex].)
 
 
 	/*if (ammo.YPos > 1.0){
@@ -471,8 +593,22 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 
 void SpacialArea::endGameEvents(SDL_Event event){
 	 
-	if (keys[SDL_SCANCODE_D]){
-		state = 0;
+	while (SDL_PollEvent(&events)) {
+
+		if (events.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+			done = true;
+
+		}
+		else if (events.type == SDL_KEYDOWN) {
+			if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+
+				state = 1;
+			}
+			//shots[0].incrementYPos(4.0 * elapsed);
+
+		}
+
+
 	}
 
 }

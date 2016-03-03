@@ -34,19 +34,23 @@
 		void setup();
 		void clearScreen();
 		void windowSwapping();
+		void sweep(int index);
 
 		GLuint wordTexture, spriteSheetTexture;
 	private:
 		SDL_Window* displayWindow;
-		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER };
-		int state, numEnemies, shotIndex, maxshots;
+		
+		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY };
+		int state, numEnemies, shotIndex, maxshots, score, index;
 		const Uint8* keys;
 		const char* fontSheetPath = "font2.png";
+		const char* spritepath = "SpaceStuff.png";
 		bool done = false;
 		SDL_Event events;
 		//Projectile* shots = new Projectile[4];
-		AstralEntity player[1];
+		AstralEntity player[5];
 		Projectile shots[10];
+		SpriteSheet sprites[4];
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];
