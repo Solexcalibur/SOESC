@@ -19,6 +19,7 @@
 		void TitleScreen(ShaderProgram& program);
 		void scoreBoard(ShaderProgram& program);
 		void gameOverScreen(ShaderProgram& program);
+		void VictoryScreen(ShaderProgram & program);
 		void DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing);
 		GLuint LoadTexture(const char* image_path);
 		void blendSprite(GLuint& texture);
@@ -56,6 +57,7 @@
 		SpriteSheet sprites[4];
 		std::vector<AstralEntity> player;
 		std::vector<Projectile> shots;
+		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];

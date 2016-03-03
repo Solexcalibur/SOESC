@@ -1,21 +1,29 @@
+/*
+HW3: Space Invaders
+Done by Stefan Cherubin
+March 2nd, 2016
+Be sure to include the headerfiles and corresponding source files listed below! (marked with double slash)
+
+The bulk of the functions are in SpaceParty.cpp
+
+
+*/
 #ifdef _WINDOWS
 #include <GL/glew.h>
 #endif
 
-#include "Astral.h"
-#include "SpaceParty.h"
+#include "Astral.h"//
+#include "SpaceParty.h"//
 #include "Matrix.h"
 #include "ShaderProgram.h"
-#include "SpriteSheet.h"
-#include "Projectile.h"
+#include "SpriteSheet.h"//
+#include "Projectile.h"//
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 #include <vector>
 #include <math.h>
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
+
 using namespace std;
 
 #ifdef _WINDOWS
@@ -27,25 +35,6 @@ using namespace std;
 #define MAX_TIMESTEPS 6
 #define MAX_SHOTS 10
 
-float vertices_paddle [] = { -0.5, -0.5,
-0.05, -0.5,
-0.05, 0.5,
--0.5, -0.5,
-0.05, 0.5,
--0.5, 0.5 };
-
-float vertices_ball[] = { -0.04, -0.04,
-0.04, -0.04,
-0.04, 0.04,
--0.04, -0.04,
-0.04, 0.04,
--0.04, 0.04 };
-float texCoords[] = { 0.0, 1.0,
-1.0, 1.0,
-1.0, 0.0,
-0.0, 1.0,
-1.0, 0.0,
-0.0, 0.0 };
 
 
 
@@ -57,7 +46,6 @@ int main(int argc, char *argv[]){
 	//ShaderProgram program2(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
 	Matrix model, projection, view;
 	vector<AstralEntity> objects;
-	vector<AstralEntity> ships;
 	AstralEntity text(model, projection, view);
 	/*AstralEntity text2(model, projection, view);
 	AstralEntity player(model, projection, view);
@@ -79,7 +67,7 @@ int main(int argc, char *argv[]){
 	
 	//<SubTexture name="laserBlue01.png" x="856" y="421" width="9" height="54"/>
 	
-
+	//<SubTexture name="laserBlue10.png" x="740" y="724" width="37" height="37"/>
 
 	
 	//make vector of spritesheets
@@ -96,18 +84,16 @@ int main(int argc, char *argv[]){
 	Projectile ammos[MAX_SHOTS];
 
 	
-	int ammoIndex = 0;
+	//int ammoIndex = 0;
 	
 	text.setOrthoProjection();
 
 	SDL_Event event;
 	bool done = false;
 	float lastFrameTicks = 0.0;
-	//ships[0].YPos = -1.5;
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
 		float fixedElapsed = elapsed;
-		//float fixedTimeStep = 0.0166666f;
 		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) 
 		{ fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS; } 
 
@@ -127,12 +113,12 @@ int main(int argc, char *argv[]){
 			
 			
 		}
-		//environment.screenSelector(program);
+		
 		environment.clearScreen();
 
-		//environment.screenSelector();
+		
 		environment.screenSelector(program);
-		//ammos[0].incrementYPos(2.5 * elapsed);
+		
 		environment.updateThings(program, event, elapsed);
 		environment.windowCloseChecker(event);
 		
@@ -142,7 +128,6 @@ int main(int argc, char *argv[]){
 
 
 		text.setMatrices(program);
-		//text.DrawText(program, words, "SCORE:" + to_string(text.score), 0.25, 0.0);
 		text.identityMatrix();
 		text.moveMatrix(-2.5, 1.6, 0.0);
 		
@@ -153,7 +138,7 @@ int main(int argc, char *argv[]){
 
 
 	}
-	_CrtDumpMemoryLeaks();
+	
 	SDL_Quit();
 	return 0;
 
