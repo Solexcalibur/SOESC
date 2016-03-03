@@ -31,6 +31,7 @@
 			std::vector<SpriteSheet>& spriteSheets, float elasped);
 		void endGameEvents(SDL_Event event);
 		void shoot(float elapsed);
+		bool shouldRemoveBullet(Projectile & bullet);
 		void setup();
 		void clearScreen();
 		void windowSwapping();
@@ -48,9 +49,12 @@
 		bool done = false;
 		SDL_Event events;
 		//Projectile* shots = new Projectile[4];
-		AstralEntity player[5];
-		Projectile shots[10];
+		//AstralEntity player[5];
+		//Projectile shots[10];
 		SpriteSheet sprites[4];
+		std::vector<AstralEntity> player;
+		std::vector<Projectile> shots;
+		//std::vector<AstralEntity> player[5];
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];

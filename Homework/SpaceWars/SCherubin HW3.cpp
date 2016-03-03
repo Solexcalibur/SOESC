@@ -59,10 +59,10 @@ int main(int argc, char *argv[]){
 	vector<AstralEntity> objects;
 	vector<AstralEntity> ships;
 	AstralEntity text(model, projection, view);
-	AstralEntity text2(model, projection, view);
+	/*AstralEntity text2(model, projection, view);
 	AstralEntity player(model, projection, view);
 	AstralEntity enemy(model, projection, view);
-	AstralEntity enemy2(model, projection, view);
+	AstralEntity enemy2(model, projection, view);*/
 
 
 
@@ -93,13 +93,13 @@ int main(int argc, char *argv[]){
 	//press space to draw index
 	
 	objects.push_back(text);
-	ships.push_back(player);
+	//ships.push_back(player);
 
 	/*for (int i = 1; i < 3; i++){
 		ships.push_back(AstralEntity(model, projection, view));
 	}*/
-	ships.push_back(enemy);
-	ships.push_back(enemy2);
+	/*ships.push_back(enemy);*/
+	//ships.push_back(enemy2);
 	//objects.push_back(player);
 	//ships.push_back()
 	//objects.push_back(enemy);
@@ -110,14 +110,14 @@ int main(int argc, char *argv[]){
 	//ammos[0].setMatrices(program);
 	//spriteSheets[1].Draw(program);
 	//vector<Projectile*> ammo;
-	for (int i = 0; i < 4; i++){
+	//for (int i = 0; i < 4; i++){
 		//ammo.push_back(new Projectile(model, projection, view));
 		//ammo[i]->setOrthoProjection();
-		ammos[i].setOrthoProjection();
-		ammos[i].XPos = player.XPos;
+		//ammos[i].setOrthoProjection();
+		//ammos[i].XPos = player.XPos;
 		//ammos[i].YPos = -1.5;
 
-	}
+	//}
 	//ammos[1].XPos = objects[2].XPos;
 	//ammos[1].YPos = objects[2].YPos;
 	int ammoIndex = 0;
@@ -133,10 +133,10 @@ int main(int argc, char *argv[]){
 		objects[i].setOrthoProjection();
 	}*/
 	
-	objects[0].setOrthoProjection();
+	/*objects[0].setOrthoProjection();
 	ships[0].setOrthoProjection();
 	ships[1].setOrthoProjection();
-	ships[2].setOrthoProjection();
+	ships[2].setOrthoProjection();*/
 	/*objects[1].setOrthoProjection();
 	objects[2].setOrthoProjection();
 	objects[3].setOrthoProjection();*/
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]){
 	SDL_Event event;
 	bool done = false;
 	float lastFrameTicks = 0.0;
-	ships[0].YPos = -1.5;
+	//ships[0].YPos = -1.5;
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
 		float fixedElapsed = elapsed;
@@ -183,20 +183,20 @@ int main(int argc, char *argv[]){
 		
 		
 		//player.identityMatrix();
-		ships[0].identityMatrix();
-		//ships[0].setupAndRender(program, vertices_paddle, texCoords, ships[0].texID);
-		ships[0].moveMatrix(ships[0].XPos, ships[0].YPos, 0.0);
-		//player.moveMatrix(player.XPos, -1.5, 0.0);
+		//ships[0].identityMatrix();
+		////ships[0].setupAndRender(program, vertices_paddle, texCoords, ships[0].texID);
+		//ships[0].moveMatrix(ships[0].XPos, ships[0].YPos, 0.0);
+		////player.moveMatrix(player.XPos, -1.5, 0.0);
 
-		//enemy.identityMatrix();
-		//ships[1].setMatrices(program);
-		ships[1].identityMatrix();
-		ships[1].moveMatrix(ships[1].XPos, 1.5, 0.0);
-		ships[1].moveMatrix(0.0, ships[1].YPos, 0.0);
-		//ships[2].setMatrices(program);
-		ships[2].identityMatrix();
-		ships[2].moveMatrix(ships[2].XPos, 1.5, 0.0);
-		ships[2].moveMatrix(0.0, ships[2].YPos, 0.0);
+		////enemy.identityMatrix();
+		////ships[1].setMatrices(program);
+		//ships[1].identityMatrix();
+		//ships[1].moveMatrix(ships[1].XPos, 1.5, 0.0);
+		//ships[1].moveMatrix(0.0, ships[1].YPos, 0.0);
+		////ships[2].setMatrices(program);
+		//ships[2].identityMatrix();
+		//ships[2].moveMatrix(ships[2].XPos, 1.5, 0.0);
+		//ships[2].moveMatrix(0.0, ships[2].YPos, 0.0);
 		//enemy.moveMatrix(0.0, 1.5, 0.0);
 		
 
@@ -209,7 +209,7 @@ int main(int argc, char *argv[]){
 		//text.DrawText(&program, words, "SCORE:" + to_string(text.score), 0.25, 0.0);
 		//text2.identityMatrix();
 		//text2.moveMatrix(-2.5, 1.4, 0.0);
-		environment.blendSprite(environment.wordTexture);
+		//environment.blendSprite(environment.wordTexture);
 
 		//for (int ammoIndex = 0; ammoIndex < 10; ammoIndex++){
 

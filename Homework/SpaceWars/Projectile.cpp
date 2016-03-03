@@ -9,6 +9,7 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 	projection = projectionMatrix;
 	view = viewMatrix;
 	YPos = -1.5;
+	remove = false;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
@@ -19,6 +20,7 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 }
 Projectile::Projectile(){
 	YPos = -1.5;
+	remove = false;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
@@ -98,3 +100,4 @@ void Projectile::setupAndRender(ShaderProgram& program, float vertices[], float 
 void Projectile::scaleMatrix(float x_value, float y_value, float z_value){
 	model.Scale(x_value, y_value, z_value);
 }
+

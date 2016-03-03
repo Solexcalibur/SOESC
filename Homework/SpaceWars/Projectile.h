@@ -15,6 +15,7 @@ public:
 	float vertices[12];
 	Matrix model, projection, view;
 	GLuint texID;
+	bool remove;
 
 	void setMatrices(ShaderProgram program);
 	void setOrthoProjection();
@@ -26,6 +27,8 @@ public:
 	void BlendSprite(GLuint& texture);
 	void setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture);
 	void scaleMatrix(float x, float y, float z);
+	//void removeBullet();
+	bool shouldRemoveBullet(Projectile& bulle);
 
 
 
