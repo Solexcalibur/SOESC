@@ -116,7 +116,7 @@ void SpacialArea::setup(){
 	glViewport(0, 0, x_resolution, y_resolution);//<- INNER BOUND
 }
 
-bool SpacialArea::windowCloseChecker(SDL_Event event, vector<AstralEntity>& objects, Projectile ammo[], vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped){
+bool SpacialArea::windowCloseChecker(SDL_Event event){
 	bool done = false;
 	
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
@@ -250,8 +250,7 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program){
 	}
 
 
-void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<AstralEntity>& objects,
-	Projectile ammo[], vector<SpriteSheet>& spriteSheets, float elapsed){
+void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed){
 
 
 	
@@ -354,7 +353,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 		//}
 
 	}
-	shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
+	//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
 	for (int i = 1; i < 5; i++) {
 		if (shots[shotIndex].YPos < player[i].YPos + player[i].height * 0.5
 			&& shots[shotIndex].YPos > player[i].YPos - player[i].height * 0.5
@@ -380,18 +379,19 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, vector<A
 	if (keys[SDL_SCANCODE_A]){
 		state = 2;
 		//player.XPos = 0.0;
-		objects[0].XPos = 0.0;
+		//objects[0].XPos = 0.0;
+		player[0].XPos = 0.0;
 	}
 	if (keys[SDL_SCANCODE_LEFT]){
 		//player.incrementXPos(-2.0 * elapsed);
 		player[0].incrementXPos(-2.0 * elapsed);
-		ammo[0].incrementXPos(-2.0 * elapsed);
+		shots[shotIndex].incrementXPos(-2.0 * elapsed);
 		//ammo[1].incrementXPos(-2.0 * elapsed);
 	}
 	if (keys[SDL_SCANCODE_RIGHT]){
 		//player.incrementXPos(2.0 * elapsed);
 		player[0].incrementXPos(2.0 * elapsed);
-		ammo[0].incrementXPos(2.0 * elapsed);
+		shots[shotIndex].incrementXPos(2.0 * elapsed);
 		//score += 100;
 		//ammo[1].incrementXPos(2.0 * elapsed);
 	}
@@ -423,14 +423,13 @@ void SpacialArea::endGameEvents(SDL_Event event){
 
 }
 
-void SpacialArea::updateThings(ShaderProgram& program, vector<AstralEntity>& objects,
-	Projectile ammo[], SDL_Event event, vector<SpriteSheet>& spriteSheets, float elasped){
+void SpacialArea::updateThings(ShaderProgram& program, SDL_Event event, float elasped){
 	switch (state){
 	case STATE_TITLE:
 		titleEvents(event, program);
 		break;
 	case STATE_GAME_LEVEL:
-		inGameEvents(event, program, objects, ammo, spriteSheets, elasped);
+		inGameEvents(event, program, elasped);
 		break;
 	case STATE_GAME_OVER:
 		endGameEvents(event);

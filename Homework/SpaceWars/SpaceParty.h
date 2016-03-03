@@ -22,17 +22,19 @@
 		void DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing);
 		GLuint LoadTexture(const char* image_path);
 		void blendSprite(GLuint& texture);
-		bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
+		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
 		void screenSelector(ShaderProgram& program);
-		void updateThings(ShaderProgram& program, std::vector<AstralEntity>& objects, Projectile ammo[],
-			SDL_Event event, std::vector<SpriteSheet>& spriteSheets, float elasped);
+		//void updateThings(ShaderProgram& program, std::vector<AstralEntity>& objects, Projectile ammo[],
+		//	SDL_Event event, std::vector<SpriteSheet>& spriteSheets, float elasped);
 		void titleEvents(SDL_Event event, ShaderProgram& program);
-		void inGameEvents(SDL_Event event, ShaderProgram& program, std::vector<AstralEntity>& objects,  Projectile ammo[],
-			std::vector<SpriteSheet>& spriteSheets, float elasped);
+		void inGameEvents(SDL_Event event, ShaderProgram& program, float elasped);
 		void endGameEvents(SDL_Event event);
+		void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
+		//void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
 		void shoot(float elapsed);
 		bool shouldRemoveBullet(Projectile & bullet);
 		void setup();
+		bool windowCloseChecker(SDL_Event event);
 		void clearScreen();
 		void windowSwapping();
 		void sweep(int index);
