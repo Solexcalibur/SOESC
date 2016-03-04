@@ -7,6 +7,8 @@
 #include "SpriteSheet.h"
 #include <vector>
 #include <SDL.h>
+#include <SDL_mixer.h>
+#include <SDL_audio.h>
 
 
 	class SpacialArea {
@@ -41,6 +43,7 @@
 		void sweep(int index);
 
 		GLuint wordTexture, spriteSheetTexture;
+		Mix_Chunk *scored;
 	private:
 		SDL_Window* displayWindow;
 		
@@ -57,6 +60,7 @@
 		SpriteSheet sprites[4];
 		std::vector<AstralEntity> player;
 		std::vector<Projectile> shots;
+		
 		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];
 		//AstralEntity player;

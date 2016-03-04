@@ -23,6 +23,8 @@ The bulk of the functions are in SpaceParty.cpp
 #include <SDL_image.h>
 #include <vector>
 #include <math.h>
+#include <SDL_mixer.h>
+#include <SDL_audio.h>
 
 using namespace std;
 
@@ -33,7 +35,7 @@ using namespace std;
 #endif
 #define FIXED_TIMESTEP 0.0166666f 
 #define MAX_TIMESTEPS 6
-#define MAX_SHOTS 10
+//#define MAX_SHOTS 10
 
 
 
@@ -53,7 +55,15 @@ int main(int argc, char *argv[]){
 	AstralEntity enemy2(model, projection, view);*/
 
 
-
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	Mix_Music *mysteriousSound;
+	mysteriousSound = Mix_LoadMUS("ASDF.mp3");
+	//
+	Mix_Chunk *scores;
+	scores = Mix_LoadWAV("Score.ogg");
+	environment.scored = scores;
+	
+	
 	GLuint words = text.LoadTexture("font2.png");
 	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
 	environment.wordTexture = words;
@@ -81,19 +91,30 @@ int main(int argc, char *argv[]){
 
 	
 
-	Projectile ammos[MAX_SHOTS];
+	//Projectile ammos[MAX_SHOTS];
 
 	
 	//int ammoIndex = 0;
 	
 	text.setOrthoProjection();
 
-	SDL_Event event;
+	
+	Mix_PlayMusic(mysteriousSound, -1);
 	bool done = false;
 	float lastFrameTicks = 0.0;
+	SDL_Event event;
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
 		float fixedElapsed = elapsed;
+		while (SDL_PollEvent(&event)) {
+
+			//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
+			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+				done = true;
+			}
+
+
+		}
 		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) 
 		{ fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS; } 
 
@@ -104,15 +125,7 @@ int main(int argc, char *argv[]){
 			environment.updateThings(program, event, FIXED_TIMESTEP);
 		}
 		//Update(FIXED_TIMESTEP); }
-		while (SDL_PollEvent(&event)) {
-			
-			//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
-			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-				done = true;
-			}
-			
-			
-		}
+		
 		
 		environment.clearScreen();
 
@@ -138,7 +151,8 @@ int main(int argc, char *argv[]){
 
 
 	}
-	
+	Mix_FreeMusic(mysteriousSound);
+	Mix_FreeChunk(environment.scored);
 	SDL_Quit();
 	return 0;
 

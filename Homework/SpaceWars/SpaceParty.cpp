@@ -10,6 +10,8 @@
 #include <vector>
 #include <math.h>
 #include <algorithm>
+#include <SDL_mixer.h>
+#include <SDL_audio.h>
 using namespace std;
 
 GLuint SpacialArea::LoadTexture(const char* image_path) {
@@ -98,17 +100,18 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	shots[shotIndex].height = sprites[1].height;
 	//player = new AstralEntity();
 	numEnemies = player.size() - 1;
-
+	
 }
 
 
 void SpacialArea::setup() {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	int x_resolution = 800;
 	int y_resolution = 600;
 	displayWindow = SDL_CreateWindow("Astral Horizon", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
+	//scored = Mix_LoadWAV("Score.ogg");
 
 #ifdef _WINDOWS
 	glewInit();
@@ -263,7 +266,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 
 
 
-
+	
 
 	int ammoIndex = 0;
 	//int maxshots = 10;
@@ -373,6 +376,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 			player[i].alive = false;
 			shots[shotIndex].remove = true;
 			numEnemies -= 1;
+			Mix_PlayChannel(-1, scored, 0);
 			//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
 
 			//numEnemies--;
@@ -445,6 +449,9 @@ void SpacialArea::updateThings(ShaderProgram& program, SDL_Event event, float el
 		inGameEvents(event, program, elasped);
 		break;
 	case STATE_GAME_OVER:
+		endGameEvents(event);
+		break;
+	case STATE_VICTORY:
 		endGameEvents(event);
 		break;
 
