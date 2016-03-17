@@ -1,0 +1,364 @@
+#include "Platform.h"
+#include "ShaderProgram.h"
+#include "Matrix.h"
+#include "SDL.h"
+#include "SDL_opengl.h"
+#include "SpriteSheet.h"
+#include <SDL_image.h>
+#include <vector>
+#include <math.h>
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <sstream>
+using namespace std;
+
+
+Platform::Platform()
+{
+	keys = SDL_GetKeyboardState(nullptr);
+	mapHeight = LEVEL_HEIGHT;
+	mapWidth = LEVEL_WIDTH;
+	//cellmap = new bool[mapWidth][mapHeight];
+}
+
+void Platform::initalizeCell() {
+	float prob = 0.4f;
+	for (int x = 0; x < mapWidth; x++) {
+		for (int y = 0; y < mapHeight; y++) {
+			if (rand() % 1 < prob) {
+				cellmap[x][y] = true;
+			}
+
+		}
+
+	}
+
+}
+//unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
+//{
+//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,6,6,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//    { 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 }, 
+//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,18,18,18,18,18,18,18,18,5,5,5,4,4,4,5,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,7 },
+//	{ 7,33,34,34,34,34,34,36,34,12,12,12,12,12,12,12,34,34,34,34,33,34,34,34,34,34,34,34,34,34,33,7 },
+//	{ 7,34,34,33,34,33,34,34,34,101,101,101,101,101,101,101,34,34,33,34,34,34,34,33,34,33,34,33,36,34,33,7 },
+//	{ 7,36,34,36,34,36,34,33,34,34,34,36,34,34,36,34,34,33,34,34,36,34,33,34,34,34,34,33,34,34,34,7 },
+//	{ 7,7,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,7 },
+//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,7 },
+//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,106,106,106,106,106,106,106,90,90,90,90,7 },
+//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+//	{ 7,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,7 },
+//	{ 7,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,109,109,109,109,109,109,7 },
+//	{ 7,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,124,124,124,124,124,124,124,124,109,7 },
+//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 }
+//
+//};
+
+bool Platform::readEntityData(std::ifstream &stream) {
+	string line;
+	string type;
+	while (getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "type") {
+			type = value;
+		}
+		else if (key == "location") {
+			istringstream lineStream(value);
+			string xPosition, yPosition;
+			getline(lineStream, xPosition, ',');
+			getline(lineStream, yPosition, ',');
+			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
+			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
+			//placeEntity(type, placeX, placeY);
+		}
+	}
+	return true;
+}
+
+bool Platform::readLayerData(std::ifstream &stream) {
+	string line;
+	while (getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "data") {
+			for (int y = 0; y < LEVEL_HEIGHT; y++) {
+				getline(stream, line);
+				istringstream lineStream(line);
+				string tile;
+				for (int x = 0; x < LEVEL_WIDTH; x++) {
+					getline(lineStream, tile, ',');
+					unsigned char val = (unsigned char)atoi(tile.c_str());
+					if (val > 0) {
+						// be careful, the tiles in this format are indexed from 1 not 0
+						levelData[y][x] = val - 1;
+					}
+					else {
+						levelData[y][x] = 0;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+void Platform::readFile(const char* levelFile) {
+	ifstream infile(levelFile);
+	string line;
+	while (getline(infile, line)) {
+		if (line == "[header]") {
+			if (!readHeader(infile)) {
+				return;
+			}
+		}
+		else if (line == "[layer]") {
+			readLayerData(infile);
+		}
+		else if (line == "[ObjectsLayer]") {
+			readEntityData(infile);
+		}
+	}
+
+
+
+
+}
+
+
+bool Platform::readHeader(std::ifstream &stream) {
+	string line;
+	mapWidth = -1;
+	mapHeight = -1;
+	while
+		(getline(stream, line)) {
+		if (line == "") { break; }
+		istringstream sStream(line);
+		string key, value;
+		getline(sStream, key, '=');
+		getline(sStream, value);
+		if (key == "width") {
+			mapWidth = atoi(value.c_str());
+		}
+		else if (key == "height") {
+			mapHeight = atoi(value.c_str());
+		}
+	}
+	if
+		(mapWidth == -1 || mapHeight == -1) {
+		return false;
+	}
+	else { // allocate our map data
+		levelData = new unsigned char*[mapHeight];
+		for (int i = 0; i < mapHeight; ++i) {
+			levelData[i] = new unsigned char[mapWidth];
+		}
+		return true;
+	}
+}
+
+
+
+
+//void Platform::BuildLevel() {
+//	memcpy(level, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
+//	
+//
+//}
+
+void Platform::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {
+	blendSprite(texture);//Blend first? Why?
+	glUseProgram(program.programID);
+
+
+
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(program.positionAttribute);
+
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(program.texCoordAttribute);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
+
+
+}
+void Platform::renderUpdate(ShaderProgram& program, GLuint texture) {
+	std::vector<float> vertexData;
+	std::vector<float> texCoordData;
+	for (int y = 0; y < LEVEL_HEIGHT; y++) {
+		for (int x = 0; x < LEVEL_WIDTH; x++) {
+			if (levelData[y][x] != 0) {
+			
+				float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+				float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+
+				float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+				float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+
+				vertexData.insert(vertexData.end(), {
+					TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+
+					TILE_SIZE * x, -TILE_SIZE * y,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
+					
+				});
+				/*TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+
+					TILE_SIZE * x, -TILE_SIZE * y,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y*/
+				texCoordData.insert(texCoordData.end(), {
+					u, v,
+					u, v + (spriteHeight),
+					u + spriteWidth, v + (spriteHeight),
+
+					u, v,
+					u + spriteWidth, v + (spriteHeight),
+					u + spriteWidth, v
+				});
+
+
+
+				setupAndRender(program, &vertexData[x * y], &texCoordData[x * y], texture);
+			}
+			
+		}
+		//setupAndRender(program, &vertexData[y], &texCoordData[y], texture);
+	}
+	
+	
+}
+
+void Platform::worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY)
+{
+	*gridX = (int)(worldX / TILE_SIZE);
+	*gridY = (int)(-worldY / TILE_SIZE);
+}
+
+void Platform::setup()
+{
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	int x_resolution = 1000;
+	int y_resolution = 800;
+	displayWindow = SDL_CreateWindow("Oceanic Floor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
+	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
+	SDL_GL_MakeCurrent(displayWindow, context);
+	//scored = Mix_LoadWAV("Score.ogg");
+
+#ifdef _WINDOWS
+	glewInit();
+#endif
+	glViewport(0, 0, x_resolution, y_resolution);//<- INNER BOUND
+}
+
+void Platform::clearScreen()
+{
+	glClearColor(0.0, 0.4, 0.2, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Platform::windowSwapping()
+{
+	SDL_GL_SwapWindow(displayWindow);
+}
+
+void Platform::DrawText(ShaderProgram & program, int fontTexture, std::string text, float size, float spacing)
+{
+	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;
+	for (int i = 0; i < text.size(); i++) {
+		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
+		float texture_y = (float)(((int)text[i]) / 16) / 16.0f;
+		vertexData.insert(vertexData.end(),
+		{ ((size + spacing) * i) + (-0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (-0.5f * size), -0.5f * size,
+			((size + spacing) * i) + (0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (0.5f * size), -0.5f * size,
+			((size + spacing) * i) + (0.5f * size), 0.5f * size,
+			((size + spacing) * i) + (-0.5f * size), -0.5f * size, });
+
+		texCoordData.insert(texCoordData.end(),
+		{ texture_x, texture_y, texture_x, texture_y + texture_size, texture_x + texture_size,
+			texture_y, texture_x + texture_size, texture_y + texture_size, texture_x + texture_size,
+			texture_y, texture_x, texture_y + texture_size, });
+	}
+	glUseProgram(program.programID);
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
+	glEnableVertexAttribArray(program.positionAttribute);
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData.data());
+	glEnableVertexAttribArray(program.texCoordAttribute);
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	glDrawArrays(GL_TRIANGLES, 0, text.size() * 6);
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
+}
+
+GLuint Platform::LoadTexture(const char * image_path)
+{
+	SDL_Surface *surface = IMG_Load(image_path);
+
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, surface->pixels); //USE GL_RGB/A FOR WINDOWS, GL_BGR/A FOR MAC (.PNG files use RGBA, .JPG uses RGB)
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//MUST USE THIS
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//MUST USE THIS
+
+	SDL_FreeSurface(surface);
+	return textureID;
+
+}
+
+void Platform::blendSprite(GLuint& texture)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture); //Disabling this will result in the most recent image loaded to take over everything
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisable(GL_TEXTURE_2D);
+}
+
+GLuint Platform::LocateTexture()
+{
+	return texturez;
+}
+void Platform::setOrthoProjection() {
+	proj.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
+	view.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
+}
