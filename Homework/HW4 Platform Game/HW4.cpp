@@ -81,6 +81,7 @@ p1_walk11 = 292 98 72 97*/
 	float lastFrameTicks = 0.0;
 	SDL_Event event;
 	int animationIndex = 0;
+	int scaleXFactor = 1;
 	for (int i = 0; i < 29; i++) {
 		entites.push_back(AstralEntity());
 		//entites[i].setOrthoProjection();
@@ -134,11 +135,13 @@ p1_walk11 = 292 98 72 97*/
 					entites[28].identityMatrix();
 					entites[28].moveMatrix(entites[28].XPos, 0.0, 0.0);
 					view.identity();
-					view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+					view.Translate(-1 * entites[28].XPos, 0.0, 0.0);
+					entites[28].model.Scale(scaleXFactor, 1.0, 1.0);
 					if (keys[SDL_SCANCODE_D]) {
 						//entites[28].HDirection *= -1;
 						entites[28].incrementXPos(0.75 * entites[28].velocity * entites[28].HDirection * elapsed);
 						//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+						scaleXFactor = 1;
 						if (animationElapsed > 1.0 / fps) {
 							animationIndex++;
 							animationElapsed = 0.0f;
@@ -147,10 +150,13 @@ p1_walk11 = 292 98 72 97*/
 							}
 						}
 					}
-					if (keys[SDL_SCANCODE_A]) {
+					else if (keys[SDL_SCANCODE_A]) {
 						//entites[28].HDirection *= -1;
 						entites[28].incrementXPos(-1 * 0.75 * entites[28].velocity * entites[28].HDirection * elapsed);
 						//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+						//entites[28].model.Scale(-1.0, 1.0, 1.0);
+						//entites[28].model.Scale(-1 * scaleXFactor, 1.0, 1.0);
+						scaleXFactor = -1;
 						if (animationElapsed > 1.0 / fps) {
 							animationIndex++;
 							animationElapsed = 0.0f;
@@ -158,6 +164,9 @@ p1_walk11 = 292 98 72 97*/
 								animationIndex = 0;
 							}
 						}
+					}
+					else {
+						animationIndex = 0;
 					}
 					playerAnimation[animationIndex].Draw(program);
 					//view.Translate(0.25* elapsed, 0.0, 0.0);
