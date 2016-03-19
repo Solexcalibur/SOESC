@@ -8,6 +8,7 @@
 
 SpriteSheet::SpriteSheet()
 {
+	active = true;
 }
 
 SpriteSheet::SpriteSheet(unsigned int texID, float u_var, float v_var, float width_var, float height_var, float
@@ -18,6 +19,7 @@ SpriteSheet::SpriteSheet(unsigned int texID, float u_var, float v_var, float wid
 	width = width_var;
 	height = height_var;
 	size = size_var;
+	active = true;
 	//program = shade;
 
 }
@@ -56,24 +58,26 @@ void SpriteSheet::setupAndRender(ShaderProgram& program, float vertices[], float
 
 void SpriteSheet::Draw(ShaderProgram& program) {
 	//glBindTexture(GL_TEXTURE_2D, textureID);
-	GLfloat texCoords[] = {
-		u, v + height,
-		u + width, v,
-		u, v,
-		u + width, v,
-		u, v + height,
-		u + width, v + height
-	};
-	float aspect = width / height;
-	float vertices[] = {
-		-0.5f * size * aspect, -0.5f * size,
-		0.5f * size * aspect, 0.5f * size,
-		-0.5f * size * aspect, 0.5f * size,
-		0.5f * size * aspect, 0.5f * size,
-		-0.5f * size * aspect, -0.5f * size,
-		0.5f * size * aspect, -0.5f * size };
-	// draw our arrays
-	setupAndRender(program, vertices, texCoords, textureID);
+	if (active) {
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, -0.5f * size };
+		// draw our arrays
+		setupAndRender(program, vertices, texCoords, textureID);
+	}
 }
 
 

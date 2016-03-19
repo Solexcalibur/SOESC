@@ -19,21 +19,86 @@ Platform::Platform()
 	keys = SDL_GetKeyboardState(nullptr);
 	mapHeight = LEVEL_HEIGHT;
 	mapWidth = LEVEL_WIDTH;
+	count = 0;
 	//cellmap = new bool[mapWidth][mapHeight];
 }
 
 void Platform::initalizeCell() {
-	float prob = 0.4f;
+	float prob = 45.0f;
+	//float r = rand() % 100;
+	//float s = rand() % 100;
 	for (int x = 0; x < mapWidth; x++) {
 		for (int y = 0; y < mapHeight; y++) {
-			if (rand() % 1 < prob) {
-				cellmap[x][y] = true;
+			if (rand() % 100 > prob) {
+				//cellmap[x][y] = true;
+				sprites[x][y].active = false;
 			}
 
 		}
 
 	}
+	
+}
+int Platform::countAliveNeighbours(int x, int y) {
+	int count = 0;
+	for (int i = -1; i<2; i++) {
+		for (int j = -1; j<2; j++) {
+			int neighbour_x = x + i;
+			int neighbour_y = y + j;
+			//If we're looking at the middle point
+			if (i == 0 && j == 0) {
+				//Do nothing, we don't want to add ourselves in!
+			}
+			//In case the index we're looking at it off the edge of the map
+			else if (neighbour_x < 0 || neighbour_y < 0 || neighbour_x >= LEVEL_WIDTH || neighbour_y >= LEVEL_HEIGHT) {
+				count = count + 1;
+			}
+			//Otherwise, a normal check of the neighbour
+			else if (sprites[neighbour_x][neighbour_y].active) {
+				count = count + 1;
+			}
+		}
+	}
+	return count;
+}
 
+void Platform::doSimulationStep(ShaderProgram& program, GLuint& texture) {
+	//boolean[][] newMap = new boolean[width][height];
+	//Loop over each row and column of the map
+	int deathLimit = 5;
+	int birthLimit = 4;
+	for (int x = 0; x< LEVEL_WIDTH; x++) {
+		for (int y = 0; y<LEVEL_HEIGHT; y++) {
+			int nbs = countAliveNeighbours(x, y);
+			//The new value is based on our simulation rules
+			//First, if a cell is alive but has too few neighbours, kill it.
+			if (sprites[x][y].active) {
+				if (nbs < deathLimit) {
+					sprites[x][y].active = false;
+				}
+				else {
+					sprites[x][y].active = true;
+				}
+			} //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
+			else {
+				if (nbs > birthLimit) {
+					sprites[x][y].active = true;
+				}
+				else {
+					sprites[x][y].active = false;
+				}
+			}
+		}
+	}
+	//return newMap;
+	for (int i = 0; i < LEVEL_WIDTH; i++) {
+		for (int j = 0; j < LEVEL_HEIGHT; j++) {
+			sprites[i][j] = SpriteSheet(texture, 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2);
+			sprites[i][j].Draw(program);
+			//sprites[i][j].XPos = rand() % 3;
+			//sprites[i][j].YPos = rand() % 3;
+		}
+	}
 }
 //unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
 //{

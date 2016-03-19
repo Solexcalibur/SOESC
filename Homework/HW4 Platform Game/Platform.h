@@ -19,6 +19,10 @@ public:
 
 	void initalizeCell();
 
+	int countAliveNeighbours(int x, int y);
+
+	void doSimulationStep(ShaderProgram& program, GLuint& texture);
+
 	bool readEntityData(std::ifstream & stream);
 
 	bool readLayerData(std::ifstream & stream);
@@ -48,10 +52,11 @@ private:
 	const Uint8* keys;
 	bool done = false;
 	SDL_Event events;
-	SpriteSheet sprites[10];
+	SpriteSheet sprites[LEVEL_WIDTH][LEVEL_HEIGHT];
 	int mapHeight, mapWidth;
 	bool cellmap[LEVEL_WIDTH][LEVEL_HEIGHT];
 	Matrix proj, view;
+	int count;
 
 
 

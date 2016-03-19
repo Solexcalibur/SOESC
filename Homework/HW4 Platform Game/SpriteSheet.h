@@ -22,7 +22,8 @@ public:
 	float v;
 	float width;
 	float height;
-	float YPos;
+	float XPos,YPos;
+	bool active;
 	//ShaderProgram program;
 
 };

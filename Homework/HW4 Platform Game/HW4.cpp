@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 	GLuint tiles = game.LoadTexture("MetalSheet.png");
 	game.texturez = tiles;
 	GLuint playerModel = game.LoadTexture("p1_spritesheet.png");
-	//	<SubTexture name="metalHalf.png" x="0" y="280" width="70" height="70"/>
+	//<SubTexture name="metalHalf.png" x="0" y="280" width="70" height="70"/>
 	//<SubTexture name="playerShip1_red.png" x="224" y="832" width="99" height="75"/>
 	//SpriteSheet metal(tiles, 0.0f/256.0f, 280.0f/128.0f, 16.0f/256.0f, 16.0f/182.0f, 0.2);
 	//SpriteSheet metal2(tiles, 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2);
@@ -84,9 +84,13 @@ p1_walk11 = 292 98 72 97*/
 	int scaleXFactor = 1;
 	for (int i = 0; i < 29; i++) {
 		entites.push_back(AstralEntity());
-		//entites[i].setOrthoProjection();
+		//entites[i].XPos = rand() % 3;
+		//entites[i].YPos = rand() % 3;
+		entites[i].XPos = rand() % 6;
+		entites[i].YPos = rand() % 4;
+		entites[i].setOrthoProjection();
 	}
-	view.setOrthoProjection(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
+	//view.setOrthoProjection(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
 	const Uint8* keys = SDL_GetKeyboardState(nullptr);
 	float animationElapsed = 0.0f;
 	float fps = 30.0;
@@ -118,19 +122,24 @@ p1_walk11 = 292 98 72 97*/
 					//something.moveMatrix(-2.7, 2.7, 0.0);
 					//something.moveMatrix(0.0, -0.25 * elapsed, 0.0);
 					//metal.Draw(program);
+					//game.initalizeCell();
+					
 					program.setViewMatrix(view);
 					for (int i = 0; i < 28; i++) {
 						entites[i].setMatrices(program);
 						metaltiles[i].Draw(program);
 					}
+					game.doSimulationStep(program, tiles);
 					entites[0].identityMatrix();
 					entites[0].XPos = -2.8;
 					entites[0].moveMatrix(entites[0].XPos, 0.0, 0.0);
 					for (int i = 1; i < 28; i++) {
-						entites[i].XPos = entites[i - 1].XPos + metaltiles[i].width + 0.07;
+						//entites[i].XPos = entites[i - 1].XPos + metaltiles[i].width + 0.07;
+						
 						entites[i].identityMatrix();
-						entites[i].moveMatrix(entites[i].XPos, 0.0, 0.0);
+						entites[i].moveMatrix(entites[i].XPos, entites[i].YPos, 0.0);
 					}
+					//game.doSimulationStep(program, tiles);
 					entites[28].setMatrices(program);
 					entites[28].identityMatrix();
 					entites[28].moveMatrix(entites[28].XPos, 0.0, 0.0);
