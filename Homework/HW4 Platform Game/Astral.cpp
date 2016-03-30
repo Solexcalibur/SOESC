@@ -98,7 +98,7 @@ bool AstralEntity::lifeChecker(){
 void AstralEntity::setMatrices(ShaderProgram& program){
 	program.setModelMatrix(model); 
 	program.setProjectionMatrix(projection); 
-	//program.setViewMatrix(view);
+	program.setViewMatrix(view);
 }
 
 void AstralEntity::setOrthoProjection(){
@@ -109,7 +109,7 @@ void AstralEntity::setOrthoProjection(){
 void AstralEntity::identityMatrix(){
 
 	model.identity();
-	view.identity();
+	//view.identity();
 }
 
 void AstralEntity::moveMatrix(float x_value, float y_value, float z_value){

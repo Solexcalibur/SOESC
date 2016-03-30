@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "SDL_opengl.h"
 #include "SpriteSheet.h"
+#include "Astral.h"
 #include <SDL_image.h>
 #include <vector>
 #include <math.h>
@@ -13,6 +14,7 @@
 #include <sstream>
 using namespace std;
 
+//static ShaderProgram* program0;
 
 Platform::Platform()
 {
@@ -20,6 +22,8 @@ Platform::Platform()
 	mapHeight = LEVEL_HEIGHT;
 	mapWidth = LEVEL_WIDTH;
 	count = 0;
+	//program0 = program;
+	//AstralEntity player;
 	//cellmap = new bool[mapWidth][mapHeight];
 }
 
@@ -91,53 +95,53 @@ void Platform::doSimulationStep(ShaderProgram& program, GLuint& texture) {
 		}
 	}
 	//return newMap;
-	for (int i = 0; i < LEVEL_WIDTH; i++) {
-		for (int j = 0; j < LEVEL_HEIGHT; j++) {
-			sprites[i][j] = SpriteSheet(texture, 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2);
-			sprites[i][j].Draw(program);
-			//sprites[i][j].XPos = rand() % 3;
-			//sprites[i][j].YPos = rand() % 3;
-		}
-	}
+	
 }
-//unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
-//{
-//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,6,6,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//    { 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 }, 
-//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-//	{ 7,18,18,18,18,18,18,18,18,5,5,5,4,4,4,5,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,7 },
-//	{ 7,33,34,34,34,34,34,36,34,12,12,12,12,12,12,12,34,34,34,34,33,34,34,34,34,34,34,34,34,34,33,7 },
-//	{ 7,34,34,33,34,33,34,34,34,101,101,101,101,101,101,101,34,34,33,34,34,34,34,33,34,33,34,33,36,34,33,7 },
-//	{ 7,36,34,36,34,36,34,33,34,34,34,36,34,34,36,34,34,33,34,34,36,34,33,34,34,34,34,33,34,34,34,7 },
-//	{ 7,7,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,7 },
-//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,7 },
-//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,106,106,106,106,106,106,106,90,90,90,90,7 },
-//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
-//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
-//	{ 7,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,7 },
-//	{ 7,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,109,109,109,109,109,109,7 },
-//	{ 7,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,124,124,124,124,124,124,124,124,109,7 },
-//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
-//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
-//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 }
-//
-//};
+unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
+{
+	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,6,6,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+    { 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 }, 
+	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+	{ 7,18,18,18,18,18,18,18,18,5,5,5,4,4,4,5,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,7 },
+	{ 7,33,34,34,34,34,34,36,34,12,12,12,12,12,12,12,34,34,34,34,33,34,34,34,34,34,34,34,34,34,33,7 },
+	{ 7,34,34,33,34,33,34,34,34,101,101,101,101,101,101,101,34,34,33,34,34,34,34,33,34,33,34,33,36,34,33,7 },
+	{ 7,36,34,36,34,36,34,33,34,34,34,36,34,34,36,34,34,33,34,34,36,34,33,34,34,34,34,33,34,34,34,7 },
+	{ 7,7,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,7 },
+	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,7 },
+	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,106,106,106,106,106,106,106,90,90,90,90,7 },
+	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+	{ 7,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,7 },
+	{ 7,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,109,109,109,109,109,109,7 },
+	{ 7,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,124,124,124,124,124,124,124,124,109,7 },
+	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 }
 
-bool Platform::readEntityData(std::ifstream &stream) {
+};
+void Platform::placeEntity(std::string type, float x, float y) {
+	if (type == "Start") {
+		player.XPos = x;
+		player.YPos = y;
+	}
+	//player.setMatrices(*program0);
+	
+}
+bool Platform::readEntityData(std::ifstream &stream, ShaderProgram& program) {
 	string line;
 	string type;
 	while (getline(stream, line)) {
@@ -156,11 +160,15 @@ bool Platform::readEntityData(std::ifstream &stream) {
 			getline(lineStream, yPosition, ',');
 			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE;
 			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
-			//placeEntity(type, placeX, placeY);
+			//AstralEntity player;
+			//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texturez);
+			placeEntity(type, placeX, placeY);
 		}
 	}
 	return true;
 }
+
+
 
 bool Platform::readLayerData(std::ifstream &stream) {
 	string line;
@@ -191,27 +199,7 @@ bool Platform::readLayerData(std::ifstream &stream) {
 	}
 	return true;
 }
-void Platform::readFile(const char* levelFile) {
-	ifstream infile(levelFile);
-	string line;
-	while (getline(infile, line)) {
-		if (line == "[header]") {
-			if (!readHeader(infile)) {
-				return;
-			}
-		}
-		else if (line == "[layer]") {
-			readLayerData(infile);
-		}
-		else if (line == "[ObjectsLayer]") {
-			readEntityData(infile);
-		}
-	}
 
-
-
-
-}
 
 
 bool Platform::readHeader(std::ifstream &stream) {
@@ -248,12 +236,16 @@ bool Platform::readHeader(std::ifstream &stream) {
 
 
 
-//void Platform::BuildLevel() {
-//	memcpy(level, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
-//	
-//
-//}
+void Platform::BuildLevel() {
+	memcpy(level, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
+	
 
+}
+void Platform::worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY)
+{
+	*gridX = (int)(worldX / TILE_SIZE);
+	*gridY = (int)(-worldY / TILE_SIZE);
+}
 void Platform::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {
 	blendSprite(texture);//Blend first? Why?
 	glUseProgram(program.programID);
@@ -266,21 +258,32 @@ void Platform::setupAndRender(ShaderProgram& program, float vertices[], float te
 	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 	glEnableVertexAttribArray(program.texCoordAttribute);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawArrays(GL_TRIANGLES, 0, LEVEL_HEIGHT * LEVEL_WIDTH * 6);
 	glDisableVertexAttribArray(program.positionAttribute);
 	glDisableVertexAttribArray(program.texCoordAttribute);
 
 
 }
-void Platform::renderUpdate(ShaderProgram& program, GLuint texture) {
-	std::vector<float> vertexData;
-	std::vector<float> texCoordData;
+void Platform::identityMatrix() {
+
+	model.identity();
+	view.identity();
+}
+void Platform::setMatrices(ShaderProgram& program) {
+	program.setModelMatrix(model);
+	program.setProjectionMatrix(proj);
+	program.setViewMatrix(view);
+}
+void Platform::renderUpdate(ShaderProgram& program, GLuint& texture) {
+	
+	
+
 	for (int y = 0; y < LEVEL_HEIGHT; y++) {
 		for (int x = 0; x < LEVEL_WIDTH; x++) {
 			if (levelData[y][x] != 0) {
 			
-				float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
-				float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+				float u = (float)(((int)levelData[y][x] ) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+				float v = (float)(((int)levelData[y][x] ) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
 
 				float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
 				float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
@@ -295,13 +298,6 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint texture) {
 					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
 					
 				});
-				/*TILE_SIZE * x, -TILE_SIZE * y,
-					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
-					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
-
-					TILE_SIZE * x, -TILE_SIZE * y,
-					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
-					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y*/
 				texCoordData.insert(texCoordData.end(), {
 					u, v,
 					u, v + (spriteHeight),
@@ -314,31 +310,31 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint texture) {
 
 
 
-				setupAndRender(program, &vertexData[x * y], &texCoordData[x * y], texture);
+				
 			}
 			
 		}
-		//setupAndRender(program, &vertexData[y], &texCoordData[y], texture);
+		
 	}
 	
+	setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
+	//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
+	worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
 	
 }
 
-void Platform::worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY)
-{
-	*gridX = (int)(worldX / TILE_SIZE);
-	*gridY = (int)(-worldY / TILE_SIZE);
-}
+
 
 void Platform::setup()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	int x_resolution = 1000;
+	int x_resolution = 1024;
 	int y_resolution = 800;
 	displayWindow = SDL_CreateWindow("Oceanic Floor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 	//scored = Mix_LoadWAV("Score.ogg");
+	
 
 #ifdef _WINDOWS
 	glewInit();
@@ -348,7 +344,7 @@ void Platform::setup()
 
 void Platform::clearScreen()
 {
-	glClearColor(0.0, 0.4, 0.2, 1.0f);
+	glClearColor(0.0, 0.25, 1.0, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -425,5 +421,30 @@ GLuint Platform::LocateTexture()
 }
 void Platform::setOrthoProjection() {
 	proj.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
-	view.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
+	//view.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
+}
+void Platform::moveViewMatrix(float x_value, float y_value, float z_value) {
+	view.Translate(x_value, y_value, z_value);
+}
+
+void Platform::readFile(const char* levelFile, ShaderProgram& program) {
+	ifstream infile(levelFile);
+	string line;
+	while (getline(infile, line)) {
+		if (line == "[header]") {
+			if (!readHeader(infile)) {
+				return;
+			}
+		}
+		else if (line == "[layer]") {
+			readLayerData(infile);
+		}
+		else if (line == "[People]") {
+			readEntityData(infile, program);
+		}
+	}
+
+
+
+
 }

@@ -4,7 +4,6 @@
 #include "Matrix.h"
 #include "Projectile.h"
 #include "SpriteSheet.h"
-#include "Platform.h"
 #include <vector>
 
 
@@ -31,11 +30,6 @@ public:
 	//void renderWithNoTexture(ShaderProgram*program, float vertices[]);
 	void shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed);
 	GLuint LoadTexture(const char* image_path);
-	
-
-
-
-
 	
 	Matrix model, projection, view;
 	GLuint texID;
