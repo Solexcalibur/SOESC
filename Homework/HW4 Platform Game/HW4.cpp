@@ -135,8 +135,13 @@ p1_walk11 = 292 98 72 97*/
 					//
 					game.setMatrices(program);
 					game.identityMatrix();
-					game.moveViewMatrix(-4.0, 4.0, 0.0);
-					game.renderUpdate(program, tiles);
+					//game.moveViewMatrix(-4.0, 4.0, 0.0);
+					//if (entites[28].XPos > 2.7 ) {
+					//game.moveViewMatrix(-0.75 * (entites[28].XPos), 0.0, 0.0);
+					//}
+					//Make XPos,YPos in flatform class
+					//
+					game.renderUpdate(program, tiles, entites[28], playerAnimation, fixedElapsed);
 					//program.setViewMatrix(view);
 					//view.identity();
 					//view.Translate(-3.0, 3.0, 0.0);
@@ -155,63 +160,73 @@ p1_walk11 = 292 98 72 97*/
 					//	entites[i].moveMatrix(entites[i].XPos, entites[i].YPos, 0.0);
 					//}
 					////game.doSimulationStep(program, tiles);
-					entites[28].setMatrices(program);
+					//entites[28].setMatrices(program);
 					
-					entites[28].identityMatrix();
+					//entites[28].identityMatrix();
 					//
+
 					
-					entites[28].moveMatrix(entites[28].XPos, entites[28].YPos, 0.0);
+					
+					/*else if (entites[28].XPos > -2.7 || entites[28].XPos < 2.7) {
+						game.moveViewMatrix(0.0, 0.0, 0.0);
+					}*/
+					//entites[28].moveMatrix(entites[28].XPos, entites[28].YPos, 0.0);
+					//game.worldToTileCoordinates(entites[28].XPos, entites[28].YPos);
+					//entites[28].incrementYPos(-fixedElapsed);
 					//view.identity();
 					//view.Translate(-1 * entites[28].XPos, -1 * entites[28].YPos, 0.0);
-					//game.moveViewMatrix(-1 * entites[28].XPos, -1 * entites[28].YPos, 0.0);
-					entites[28].model.Scale(2 * scaleXFactor, 2.0, 1.0);
-					if (keys[SDL_SCANCODE_D]) {
-						//entites[28].HDirection *= -1;
-						entites[28].incrementXPos(0.75 * entites[28].velocity * entites[28].HDirection * elapsed);
-						//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
-						scaleXFactor = 1;
-						if (animationElapsed > 1.0 / fps) {
-							animationIndex++;
-							animationElapsed = 0.0f;
-							if (animationIndex == playerAnimation.size() - 1) {
-								animationIndex = 0;
-							}
-						}
-					}
-					else if (keys[SDL_SCANCODE_A]) {
-						//entites[28].HDirection *= -1;
-						entites[28].incrementXPos(-1 * 0.75 * entites[28].velocity * entites[28].HDirection * elapsed);
-						//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
-						//entites[28].model.Scale(-1.0, 1.0, 1.0);
-						//entites[28].model.Scale(-1 * scaleXFactor, 1.0, 1.0);
-						scaleXFactor = -1;
-						if (animationElapsed > 1.0 / fps) {
-							animationIndex++;
-							animationElapsed = 0.0f;
-							if (animationIndex == playerAnimation.size() - 1) {
-								animationIndex = 0;
-							}
-						}
-					}
-					//else if (keys[SDL_SCANCODE_W]) {
-					//	entites[28].incrementYPos(0.75 * entites[28].velocity * entites[28].VDirection * elapsed);
-					//	//if (entites[28].YPos < 0.0) {
-					//		entites[28].VDirection = 1;
-					//		//entites[28].YPos = 0.0;
-					//		
-					//	//}
-					//}
-					//else if ( keys[SDL_SCANCODE_S]) {
-					//	
-					//	entites[28].VDirection = -1;
-					//	//entites[28].YPos = 0.9;
-					//	entites[28].incrementYPos(0.75 * entites[28].velocity * entites[28].VDirection * elapsed);
-					//}
-					else {
-						animationIndex = 0;
-					}
+					//SOLID TILE INDEXES: 5, 6, 20, 100
+					//if (entities[28].YPos - (0.5 * entity[28].height) < -TILE_SIZE * (*gridY))
+					//entites[28].model.Scale(2 * scaleXFactor, 2.0, 1.0);
+
 					
-					playerAnimation[animationIndex].Draw(program);
+					//if (keys[SDL_SCANCODE_D]) {
+					//	//entites[28].HDirection *= -1;
+					//	entites[28].incrementXPos(0.75 * entites[28].velocity * entites[28].HDirection * fixedElapsed);
+					//	//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+					//	scaleXFactor = 1;
+					//	if (animationElapsed > 1.0 / fps) {
+					//		animationIndex++;
+					//		animationElapsed = 0.0f;
+					//		if (animationIndex == playerAnimation.size() - 1) {
+					//			animationIndex = 0;
+					//		}
+					//	}
+					//}
+					//else if (keys[SDL_SCANCODE_A]) {
+					//	//entites[28].HDirection *= -1;
+					//	entites[28].incrementXPos(-1 * 0.75 * entites[28].velocity * entites[28].HDirection * fixedElapsed);
+					//	//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+					//	//entites[28].model.Scale(-1.0, 1.0, 1.0);
+					//	//entites[28].model.Scale(-1 * scaleXFactor, 1.0, 1.0);
+					//	scaleXFactor = -1;
+					//	if (animationElapsed > 1.0 / fps) {
+					//		animationIndex++;
+					//		animationElapsed = 0.0f;
+					//		if (animationIndex == playerAnimation.size() - 1) {
+					//			animationIndex = 0;
+					//		}
+					//	}
+					//}
+					////else if (keys[SDL_SCANCODE_W]) {
+					////	entites[28].incrementYPos(0.75 * entites[28].velocity * entites[28].VDirection * elapsed);
+					////	//if (entites[28].YPos < 0.0) {
+					////		entites[28].VDirection = 1;
+					////		//entites[28].YPos = 0.0;
+					////		
+					////	//}
+					////}
+					////else if ( keys[SDL_SCANCODE_S]) {
+					////	
+					////	entites[28].VDirection = -1;
+					////	//entites[28].YPos = 0.9;
+					////	entites[28].incrementYPos(0.75 * entites[28].velocity * entites[28].VDirection * elapsed);
+					////}
+					//else {
+					//	animationIndex = 0;
+					//}
+					//
+					//playerAnimation[animationIndex].Draw(program);
 
 					//view.Translate(0.25* elapsed, 0.0, 0.0);
 					//entites[28].model.Rotate(-3.14 / 2);

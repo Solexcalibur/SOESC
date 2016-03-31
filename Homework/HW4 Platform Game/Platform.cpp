@@ -22,6 +22,16 @@ Platform::Platform()
 	mapHeight = LEVEL_HEIGHT;
 	mapWidth = LEVEL_WIDTH;
 	count = 0;
+	scaleFactor = 1;
+	animationElapsed = 0.0f;
+	fps = 30.0;
+	animationIndex = 0;
+	viewX = -4.0;
+	viewY = 4.0;
+	gridX = 0;
+	gridY = 0;
+	tileLength = TILE_SIZE * LEVEL_HEIGHT;
+	tileHeight = tileLength;
 	//program0 = program;
 	//AstralEntity player;
 	//cellmap = new bool[mapWidth][mapHeight];
@@ -226,8 +236,10 @@ bool Platform::readHeader(std::ifstream &stream) {
 	}
 	else { // allocate our map data
 		levelData = new unsigned char*[mapHeight];
+		solid = new bool*[mapHeight];
 		for (int i = 0; i < mapHeight; ++i) {
 			levelData[i] = new unsigned char[mapWidth];
+			solid[i] = new bool[mapWidth];
 		}
 		return true;
 	}
@@ -241,10 +253,10 @@ void Platform::BuildLevel() {
 	
 
 }
-void Platform::worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY)
+void Platform::worldToTileCoordinates(float worldX, float worldY)
 {
-	*gridX = (int)(worldX / TILE_SIZE);
-	*gridY = (int)(-worldY / TILE_SIZE);
+	gridX = (int)(worldX / TILE_SIZE);
+	gridY = (int)(-worldY / TILE_SIZE);
 }
 void Platform::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {
 	blendSprite(texture);//Blend first? Why?
@@ -274,8 +286,9 @@ void Platform::setMatrices(ShaderProgram& program) {
 	program.setProjectionMatrix(proj);
 	program.setViewMatrix(view);
 }
-void Platform::renderUpdate(ShaderProgram& program, GLuint& texture) {
-	
+void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntity& player, std::vector<SpriteSheet>& animations, float fixedElapsed) {
+	player.width = 66.0 / 508.0;
+	player.height = 92.0 / 288.0;
 	
 
 	for (int y = 0; y < LEVEL_HEIGHT; y++) {
@@ -285,8 +298,8 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture) {
 				float u = (float)(((int)levelData[y][x] ) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
 				float v = (float)(((int)levelData[y][x] ) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
 
-				float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
-				float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+				spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+				spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
 
 				vertexData.insert(vertexData.end(), {
 					TILE_SIZE * x, -TILE_SIZE * y,
@@ -310,17 +323,105 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture) {
 
 
 
+				if (levelData[y][x] == '\x6') {
+					solid[y][x] = true;
+				}
+				else {
+					solid[y][x] = false;
+				}
 				
+				/*if (player.XPos < -2.6) {
+					player.XPos = -2.59999999999;
+				}
+				if (player.XPos > 2.5) {
+					player.XPos = 2.49999999999;
+				}*/
 			}
+			
 			
 		}
 		
 	}
-	
+	//bool x = solid[20][20];
 	setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
 	//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
-	worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
+	//worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
+	player.setMatrices(program);
+	player.identityMatrix();
+	player.moveMatrix(player.XPos, player.YPos, 0.0);
+	worldToTileCoordinates(player.XPos, player.YPos);
+	//player.XPos = gridX;
+	//player.YPos = gridY;
+	//view.identity();
+	view.Translate(viewX, viewY, 0.0);
+	if ((-2.5 < player.XPos < 2.5) && (-4.0 < viewX < 4.0)) {
+		view.Translate(-1 * (player.XPos + 2.5), -1 * (player.YPos + 0.75), 0.0);
+		//incrementviewXPos(-1 * fixedElapsed);
+		
+		//view.identity();
+	}
+	player.model.Scale(2 * scaleFactor, 2.0, 1.0);
+	animationElapsed += fixedElapsed;
 	
+	if (keys[SDL_SCANCODE_D]) {
+		//entites[28].HDirection *= -1;
+		player.HDirection = 1;
+		player.incrementXPos(0.75 * player.velocity * player.HDirection * fixedElapsed);
+		//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+		//incrementviewXPos(-0.25 * (player.XPos + 2.5));
+		//incrementviewXPos(-1 * fixedElapsed);
+		scaleFactor = 1;
+		if (animationElapsed > 1.0 / fps) {
+			animationIndex++;
+			animationElapsed = 0.0f;
+			if (animationIndex == animations.size() - 1) {
+				animationIndex = 0;
+			}
+		}
+	}
+	else if (keys[SDL_SCANCODE_A]) {
+		//entites[28].HDirection *= -1;
+		player.HDirection = -1;
+		player.incrementXPos(0.75 * player.velocity * player.HDirection * fixedElapsed);
+		//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
+		//entites[28].model.Scale(-1.0, 1.0, 1.0);
+		//entites[28].model.Scale(-1 * scaleXFactor, 1.0, 1.0);
+		//incrementviewXPos(1 * fixedElapsed);
+		scaleFactor = -1;
+		if (animationElapsed > 1.0 / fps) {
+			animationIndex++;
+			animationElapsed = 0.0f;
+			if (animationIndex == animations.size() - 1) {
+				animationIndex = 0;
+			}
+		}
+	}
+	else if (keys[SDL_SCANCODE_S]) {
+		player.VDirection = -1;
+		player.incrementYPos(0.75 * player.velocity * player.VDirection * fixedElapsed);
+	}
+	else if (keys[SDL_SCANCODE_W]) {
+		player.VDirection = 1;
+		player.incrementYPos(0.75 * player.velocity * player.VDirection * fixedElapsed);
+	}
+
+	else {
+		animationIndex = 0;
+	}
+
+	animations[animationIndex].Draw(program);
+
+	/*for (int y = 0; y < LEVEL_HEIGHT; y++) {
+		for (int x = 0; x < LEVEL_WIDTH; x++) {
+			if ((player.XPos ) - (0.5 * player.width) < (TILE_SIZE * tileLength) + TILE_SIZE) {
+				if (solid[y][x]) {
+					player.XPos = -2.4;
+				}
+			}
+		}
+	}*/
+	
+
 }
 
 
@@ -447,4 +548,10 @@ void Platform::readFile(const char* levelFile, ShaderProgram& program) {
 
 
 
+}
+void Platform::incrementviewYPos(float value) {
+	viewY += value;
+}
+void Platform::incrementviewXPos(float value) {
+	viewX += value;
 }
