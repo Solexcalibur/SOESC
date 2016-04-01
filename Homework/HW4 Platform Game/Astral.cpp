@@ -20,11 +20,6 @@ AstralEntity::AstralEntity()
 	maxshots = 10;
 	alive = true;
 	velocity = 1;
-	isStatic = false;
-	collideBottom = false;
-	collideLeft = false;
-	collideRight = false;
-	collideTop = false;
 	//width = 1.0;
 	//height = 1.0;
 }
