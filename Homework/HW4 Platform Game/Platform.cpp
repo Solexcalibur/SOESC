@@ -28,10 +28,10 @@ Platform::Platform()
 	animationIndex = 0;
 	viewX = -4.0;
 	viewY = 4.0;
-	gridX = 0;
-	gridY = 0;
-	tileLength = TILE_SIZE * LEVEL_HEIGHT;
-	tileHeight = tileLength;
+	//gridX = 0;
+	//gridY = 0;
+	tileLength = TILE_SIZE * LEVEL_WIDTH;
+	tileHeight = TILE_SIZE * LEVEL_HEIGHT;
 	//program0 = program;
 	//AstralEntity player;
 	//cellmap = new bool[mapWidth][mapHeight];
@@ -253,10 +253,10 @@ void Platform::BuildLevel() {
 	
 
 }
-void Platform::worldToTileCoordinates(float worldX, float worldY)
+void Platform::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY)
 {
-	gridX = (int)(worldX / TILE_SIZE);
-	gridY = (int)(-worldY / TILE_SIZE);
+	*gridX = (int)(worldX / TILE_SIZE);
+	*gridY = (int)(-worldY / TILE_SIZE);
 }
 void Platform::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {
 	blendSprite(texture);//Blend first? Why?
@@ -349,17 +349,18 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 	player.setMatrices(program);
 	player.identityMatrix();
 	player.moveMatrix(player.XPos, player.YPos, 0.0);
-	worldToTileCoordinates(player.XPos, player.YPos);
+	//worldToTileCoordinates(player.XPos, player.YPos);
 	//player.XPos = gridX;
 	//player.YPos = gridY;
 	//view.identity();
+	//view.setOrthoProjection(0.0, 8.0, 0.0, 8.0, -1.0, 1.0);
 	view.Translate(viewX, viewY, 0.0);
-	if ((-2.5 < player.XPos < 2.5) && (-4.0 < viewX < 4.0)) {
+	//if ((-2.5 < player.XPos < 2.5) && (-4.0 < viewX < 4.0)) {
 		view.Translate(-1 * (player.XPos + 2.5), -1 * (player.YPos + 0.75), 0.0);
 		//incrementviewXPos(-1 * fixedElapsed);
 		
 		//view.identity();
-	}
+	//}
 	player.model.Scale(2 * scaleFactor, 2.0, 1.0);
 	animationElapsed += fixedElapsed;
 	
@@ -421,9 +422,98 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 		}
 	}*/
 	
+	collisionHandler(player);
+}
+float Platform::collisionDetectionX(float x, float y) {
+	int gridX, gridY;
+	worldToTileCoordinates(x, y, &gridX, &gridY);
+	//float penetration;
+	if (0 > gridX > mapWidth - 1) {
+		penetrationX = 0.0;
+	}
+	
+	/*else if (solid[gridY][gridX]) {
+		penetrationX = (gridX + 1) * tileLength - x;
+	}*/
+	else if (x < (TILE_SIZE * tileLength) + TILE_SIZE) {
+		//if (solid[gridY][gridX]) {
+			penetrationX = (gridX + 1) * tileLength - x;
+		//}
+	}
+	else if (x > (TILE_SIZE * tileLength)) {
+		//if (solid[gridY][gridX]) {
+			penetrationX = (gridX + 1) * tileLength - x;
+		//}
+	}
+	else {
+		penetrationX = 0.0;
+	}
 
+
+
+	return penetrationX;
+}
+float Platform::collisionDetectionY(float x, float y) {
+	int gridX, gridY;
+	worldToTileCoordinates(x, y, &gridX, &gridY);
+	//float penetration;
+
+	if (0 > gridY > mapHeight - 1) {
+		penetrationY = 0.0;
+	}
+	
+	/*else if (solid[gridY][gridX]) {
+		penetrationY = -1 * y - gridY * tileHeight;
+	}*/
+	else if (y > -(TILE_SIZE * tileHeight) ){
+	if (solid[gridY][gridX]) {
+			penetrationY = -1 * y - ( gridY * tileHeight);
+	}
+	}
+	else if (y < (-TILE_SIZE * tileHeight) - TILE_SIZE) {
+		if (solid[gridY][gridX]) {
+			penetrationY = -1 * y - (gridY * tileHeight);
+		}
+	}
+	else {
+		penetrationY = 0.0;
+	}
+
+
+	
+	return penetrationY;
 }
 
+void Platform::collisionHandler(AstralEntity& player) {
+	float penetrationXL, penetrationXR, penetrationYT, penetrationYB; //left, right, top, bottom
+
+	penetrationXL = collisionDetectionX(player.XPos - ( 0.5  * player.width), player.YPos);
+	penetrationXR = collisionDetectionX(player.XPos + (0.5  * player.width), player.YPos);
+	penetrationYT = collisionDetectionY(player.XPos, player.YPos + (0.5 * player.height));
+	penetrationYB = collisionDetectionY(player.XPos, player.YPos - (0.5 * player.height));
+
+
+	if (penetrationXL > 0.0) {
+		player.incrementXPos(0.2 * penetrationXL);
+		//player.velocity = 0;
+		player.collideLeft = true;
+	}
+	else if (penetrationXR > 0.0) {
+		player.incrementXPos(0.2 * ( penetrationXR - tileLength));
+		//player.velocity = 0;
+		player.collideRight = true;
+	}
+	else if (penetrationYT > 0.0) {
+		player.incrementYPos(0.2 * (penetrationYT));
+		//player.velocity = 0;
+		player.collideTop = true;
+	}
+	else if (penetrationYB > 0.0) {
+		player.incrementYPos(0.2 * (penetrationYB - tileHeight));
+		//player.velocity = 0;
+		player.collideBottom = true;
+	}
+}
 
 
 void Platform::setup()
@@ -522,7 +612,7 @@ GLuint Platform::LocateTexture()
 }
 void Platform::setOrthoProjection() {
 	proj.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
-	//view.setOrthoProjection(-4.0f, 4.0f, -4.0f, 4.0f, -1.0f, 1.0f);
+	//view.setOrthoProjection(0.0f, 8.0f, 0.0f, 8.0f, -1.0f, 1.0f);
 }
 void Platform::moveViewMatrix(float x_value, float y_value, float z_value) {
 	view.Translate(x_value, y_value, z_value);

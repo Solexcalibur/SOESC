@@ -34,7 +34,7 @@ public:
 	Matrix model, projection, view;
 	GLuint texID;
 	float XPos, YPos, HDirection, VDirection, health, width, height, velocity, spriteIndex;
-	bool alive;
+	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
 	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots;
 	
 
