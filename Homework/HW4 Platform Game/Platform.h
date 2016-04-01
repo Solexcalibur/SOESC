@@ -11,7 +11,7 @@
 
 #define LEVEL_HEIGHT 32
 #define LEVEL_WIDTH 32
-#define TILE_SIZE 0.5f
+#define TILE_SIZE 0.4f
 #define SPRITE_COUNT_X 16
 #define SPRITE_COUNT_Y 8
 
@@ -44,10 +44,16 @@ public:
 	bool readHeader(std::ifstream & stream);
 
 	void BuildLevel();
+	void worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY);
 	void setupAndRender(ShaderProgram & program, float vertices[], float texCoords[], GLuint & texture);
 	void identityMatrix();
 	void setMatrices(ShaderProgram & program);
 	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player, std::vector<SpriteSheet>& animations, float fixedElasped);
+	float collisionDetectionX(float x, float y);
+	float collisionDetectionY(float x, float y);
+	float collisionDetection(float x, float y);
+	float collisionDetection(AstralEntity & player);
+	void collisionHandler(AstralEntity & player);
 	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player, SpriteSheet & animations, float fixedElasped);
 	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player);
 	void renderUpdate(ShaderProgram& program, GLuint& texture);
@@ -79,9 +85,9 @@ private:
 	//bool cellmap[LEVEL_WIDTH][LEVEL_HEIGHT];
 	Matrix proj, view, model;
 	int count, scaleFactor, animationIndex, tileLength, tileHeight;
-	int gridX;
-	int gridY;
-	float animationElapsed, fps, viewX, viewY, spriteWidth, spriteHeight;
+	//int *gridX;
+	//int *gridY;
+	float animationElapsed, fps, viewX, viewY, spriteWidth, spriteHeight, penetrationX, penetrationY;
 	bool **solid;
 	std::vector<float> vertexData;
 	std::vector<float> texCoordData;
