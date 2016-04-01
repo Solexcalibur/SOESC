@@ -28,7 +28,7 @@ public:
 	void incrementXPos(float value);
 	void incrementYPos(float value);
 	//void renderWithNoTexture(ShaderProgram*program, float vertices[]);
-	void shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed);
+	//void shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed);
 	GLuint LoadTexture(const char* image_path);
 	
 	Matrix model, projection, view;

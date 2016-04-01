@@ -70,7 +70,7 @@ public:
 	void readFile(const char * levelFile, ShaderProgram & program);
 	void incrementviewYPos(float value);
 	void incrementviewXPos(float value);
-	GLuint texturez;
+	GLuint texturez, animation;
 	unsigned char** levelData; //16 ROWS, 22 COLUMNS
 
 private:
@@ -80,7 +80,7 @@ private:
 	const Uint8* keys;
 	bool done = false;
 	SDL_Event events;
-	SpriteSheet sprites[LEVEL_WIDTH][LEVEL_HEIGHT];
+	SpriteSheet playerAnimation[7];
 	int mapHeight, mapWidth;
 	//bool cellmap[LEVEL_WIDTH][LEVEL_HEIGHT];
 	Matrix proj, view, model;

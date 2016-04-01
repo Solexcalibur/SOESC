@@ -35,78 +35,58 @@ Platform::Platform()
 	//program0 = program;
 	//AstralEntity player;
 	//cellmap = new bool[mapWidth][mapHeight];
+	//playerAnimation[0].textureID = animations;
+	playerAnimation[0].u = 67.0f / 508.0f;
+	playerAnimation[0].v = 196.0f / 288.0f;
+	playerAnimation[0].width = 66.0f / 508.0f;
+	playerAnimation[0].height = 92.0f / 288.0f;
+	playerAnimation[0].size = 0.2;
+
+	//playerAnimation[1].textureID = animations;
+	playerAnimation[1].u = 67.0f / 508.0f;
+	playerAnimation[1].v = 196.0f / 288.0f;
+	playerAnimation[1].width = 66.0f / 508.0f;
+	playerAnimation[1].height = 97.0f / 288.0f;
+	playerAnimation[1].size = 0.2;
+
+	//playerAnimation[2].textureID = animations;
+	playerAnimation[2].u = 67.0f / 508.0f;
+	playerAnimation[2].v = 196.0f / 288.0f;
+	playerAnimation[2].width = 66.0f / 508.0f;
+	playerAnimation[2].height = 97.0f / 288.0f;
+	playerAnimation[2].size = 0.2;
+
+	//playerAnimation[3].textureID = animations;
+	playerAnimation[3].u = 67.0f / 508.0f;
+	playerAnimation[3].v = 196.0f / 288.0f;
+	playerAnimation[3].width = 66.0f / 508.0f;
+	playerAnimation[3].height = 97.0f / 288.0f;
+	playerAnimation[3].size = 0.2;
+
+	//playerAnimation[4].textureID = animations;
+	playerAnimation[4].u = 67.0f / 508.0f;
+	playerAnimation[4].v = 196.0f / 288.0f;
+	playerAnimation[4].width = 66.0f / 508.0f;
+	playerAnimation[4].height = 97.0f / 288.0f;
+	playerAnimation[4].size = 0.2;
+
+	//playerAnimation[5].textureID = animations;
+	playerAnimation[5].u = 67.0f / 508.0f;
+	playerAnimation[5].v = 196.0f / 288.0f;
+	playerAnimation[5].width = 66.0f / 508.0f;
+	playerAnimation[5].height = 97.0f / 288.0f;
+	playerAnimation[5].size = 0.2;
+
+	//playerAnimation[6].textureID = animations;
+	playerAnimation[6].u = 67.0f / 508.0f;
+	playerAnimation[6].v = 196.0f / 288.0f;
+	playerAnimation[6].width = 66.0f / 508.0f;
+	playerAnimation[6].height = 97.0f / 288.0f;
+	playerAnimation[6].size = 0.2;
+
 }
 
-void Platform::initalizeCell() {
-	float prob = 45.0f;
-	//float r = rand() % 100;
-	//float s = rand() % 100;
-	for (int x = 0; x < mapWidth; x++) {
-		for (int y = 0; y < mapHeight; y++) {
-			if (rand() % 100 > prob) {
-				//cellmap[x][y] = true;
-				sprites[x][y].active = false;
-			}
 
-		}
-
-	}
-	
-}
-int Platform::countAliveNeighbours(int x, int y) {
-	int count = 0;
-	for (int i = -1; i<2; i++) {
-		for (int j = -1; j<2; j++) {
-			int neighbour_x = x + i;
-			int neighbour_y = y + j;
-			//If we're looking at the middle point
-			if (i == 0 && j == 0) {
-				//Do nothing, we don't want to add ourselves in!
-			}
-			//In case the index we're looking at it off the edge of the map
-			else if (neighbour_x < 0 || neighbour_y < 0 || neighbour_x >= LEVEL_WIDTH || neighbour_y >= LEVEL_HEIGHT) {
-				count = count + 1;
-			}
-			//Otherwise, a normal check of the neighbour
-			else if (sprites[neighbour_x][neighbour_y].active) {
-				count = count + 1;
-			}
-		}
-	}
-	return count;
-}
-
-void Platform::doSimulationStep(ShaderProgram& program, GLuint& texture) {
-	//boolean[][] newMap = new boolean[width][height];
-	//Loop over each row and column of the map
-	int deathLimit = 5;
-	int birthLimit = 4;
-	for (int x = 0; x< LEVEL_WIDTH; x++) {
-		for (int y = 0; y<LEVEL_HEIGHT; y++) {
-			int nbs = countAliveNeighbours(x, y);
-			//The new value is based on our simulation rules
-			//First, if a cell is alive but has too few neighbours, kill it.
-			if (sprites[x][y].active) {
-				if (nbs < deathLimit) {
-					sprites[x][y].active = false;
-				}
-				else {
-					sprites[x][y].active = true;
-				}
-			} //Otherwise, if the cell is dead now, check if it has the right number of neighbours to be 'born'
-			else {
-				if (nbs > birthLimit) {
-					sprites[x][y].active = true;
-				}
-				else {
-					sprites[x][y].active = false;
-				}
-			}
-		}
-	}
-	//return newMap;
-	
-}
 unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
 {
 	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
@@ -289,7 +269,9 @@ void Platform::setMatrices(ShaderProgram& program) {
 void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntity& player, std::vector<SpriteSheet>& animations, float fixedElapsed) {
 	player.width = 66.0 / 508.0;
 	player.height = 92.0 / 288.0;
-	
+	/*for (int i = 0; i < 7; i++) {
+		playerAnimation[i].textureID = animation;
+	}*/
 
 	for (int y = 0; y < LEVEL_HEIGHT; y++) {
 		for (int x = 0; x < LEVEL_WIDTH; x++) {

@@ -8,7 +8,7 @@
 
 SpriteSheet::SpriteSheet()
 {
-	active = true;
+	//active = true;
 }
 
 SpriteSheet::SpriteSheet(unsigned int texID, float u_var, float v_var, float width_var, float height_var, float
