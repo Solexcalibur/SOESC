@@ -15,9 +15,9 @@
 #include <vector>
 #include <SDL_mixer.h>
 #include <SDL_audio.h>
-#include <string>
-#include <iostream>
-#include <sstream>
+//#include <string>
+//#include <iostream>
+//#include <sstream>
 
 
 using namespace std;
@@ -113,6 +113,7 @@ p1_walk11 = 292 98 72 97*/
 	game.readFile("some.txt", program);
 	//view.setOrthoProjection(-3.0, 3.0, -2.0, 2.0, -1.0, 1.0);
 	Mix_PlayMusic(mysteriousSound, -1);
+	game.render(program);
 	while (!done) {
 		while (SDL_PollEvent(&event)) {
 						if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
@@ -131,6 +132,7 @@ p1_walk11 = 292 98 72 97*/
 					{
 						fixedElapsed -= FIXED_TIMESTEP;		
 						//game.renderUpdate(program, tiles, entites[28], playerAnimation, FIXED_TIMESTEP);
+						game.Update(FIXED_TIMESTEP, playerAnimation, entites[28], program);
 				}
 
 					game.clearScreen();
@@ -139,7 +141,8 @@ p1_walk11 = 292 98 72 97*/
 					game.setMatrices(program);
 					game.identityMatrix();
 					
-					game.renderUpdate(program, tiles, entites[28], playerAnimation, fixedElapsed);
+					game.Update(fixedElapsed, playerAnimation, entites[28], program);
+					//game.renderUpdate(program, tiles, entites[28], playerAnimation, fixedElapsed);
 					
 					
 

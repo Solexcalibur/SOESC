@@ -21,43 +21,37 @@ class Platform {
 public:
 	Platform();
 
-	void initalizeCell();
-
-	int countAliveNeighbours(int x, int y);
-
-	void doSimulationStep(ShaderProgram& program, GLuint& texture);
-
-	bool readEntityData(std::ifstream & stream);
+	
 
 	void placeEntity(std::string type, float x, float y);
 
 	void placeEntity(std::string type, float x, float y, AstralEntity & plr);
 
-	bool readEntityData(std::ifstream & stream, ShaderProgram & program, AstralEntity & plr);
+	
 
 	bool readEntityData(std::ifstream & stream, ShaderProgram & program);
 
 	bool readLayerData(std::ifstream & stream);
 
-	void readFile(const char * levelFile);
+
 
 	bool readHeader(std::ifstream & stream);
 
-	void BuildLevel();
+	
 	void worldToTileCoordinates(float worldX, float worldY, int * gridX, int * gridY);
 	void setupAndRender(ShaderProgram & program, float vertices[], float texCoords[], GLuint & texture);
 	void identityMatrix();
 	void setMatrices(ShaderProgram & program);
+	void render(ShaderProgram& program);
+	void render(ShaderProgram & program, GLuint & texture);
 	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player, std::vector<SpriteSheet>& animations, float fixedElasped);
+	//void Update(float elapsed, std::vector<SpriteSheet>* animations, AstralEntity * player);
+	void Update(float elapsed, std::vector<SpriteSheet>& animations, AstralEntity& player, ShaderProgram & program);
 	float collisionDetectionX(float x, float y);
 	float collisionDetectionY(float x, float y);
-	float collisionDetection(float x, float y);
-	float collisionDetection(AstralEntity & player);
+	
 	void collisionHandler(AstralEntity & player);
-	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player, SpriteSheet & animations, float fixedElasped);
-	void renderUpdate(ShaderProgram & program, GLuint & texture, AstralEntity & player);
-	void renderUpdate(ShaderProgram& program, GLuint& texture);
-	void worldToTileCoordinates(float worldX, float worldY);
+	
 	void setup();
 	void clearScreen();
 	void windowSwapping();
@@ -75,7 +69,7 @@ public:
 
 private:
 	SDL_Window* displayWindow;
-	unsigned char level[LEVEL_WIDTH][LEVEL_HEIGHT];
+	//unsigned char level[LEVEL_WIDTH][LEVEL_HEIGHT];
 	
 	const Uint8* keys;
 	bool done = false;

@@ -1,17 +1,15 @@
 #include "Platform.h"
-#include "ShaderProgram.h"
-#include "Matrix.h"
-#include "SDL.h"
-#include "SDL_opengl.h"
+//#include "ShaderProgram.h"
+//#include "Matrix.h"
+//#include "SDL.h"
+//#include "SDL_opengl.h"
 #include "SpriteSheet.h"
 #include "Astral.h"
 #include <SDL_image.h>
 #include <vector>
-#include <math.h>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <sstream>
+//#include <math.h>
+//#include <string>
+
 using namespace std;
 
 //static ShaderProgram* program0;
@@ -36,93 +34,93 @@ Platform::Platform()
 	//AstralEntity player;
 	//cellmap = new bool[mapWidth][mapHeight];
 	//playerAnimation[0].textureID = animations;
-	playerAnimation[0].u = 67.0f / 508.0f;
-	playerAnimation[0].v = 196.0f / 288.0f;
-	playerAnimation[0].width = 66.0f / 508.0f;
-	playerAnimation[0].height = 92.0f / 288.0f;
-	playerAnimation[0].size = 0.2;
+	//playerAnimation[0].u = 67.0f / 508.0f;
+	//playerAnimation[0].v = 196.0f / 288.0f;
+	//playerAnimation[0].width = 66.0f / 508.0f;
+	//playerAnimation[0].height = 92.0f / 288.0f;
+	//playerAnimation[0].size = 0.2;
 
-	//playerAnimation[1].textureID = animations;
-	playerAnimation[1].u = 67.0f / 508.0f;
-	playerAnimation[1].v = 196.0f / 288.0f;
-	playerAnimation[1].width = 66.0f / 508.0f;
-	playerAnimation[1].height = 97.0f / 288.0f;
-	playerAnimation[1].size = 0.2;
+	////playerAnimation[1].textureID = animations;
+	//playerAnimation[1].u = 67.0f / 508.0f;
+	//playerAnimation[1].v = 196.0f / 288.0f;
+	//playerAnimation[1].width = 66.0f / 508.0f;
+	//playerAnimation[1].height = 97.0f / 288.0f;
+	//playerAnimation[1].size = 0.2;
 
-	//playerAnimation[2].textureID = animations;
-	playerAnimation[2].u = 67.0f / 508.0f;
-	playerAnimation[2].v = 196.0f / 288.0f;
-	playerAnimation[2].width = 66.0f / 508.0f;
-	playerAnimation[2].height = 97.0f / 288.0f;
-	playerAnimation[2].size = 0.2;
+	////playerAnimation[2].textureID = animations;
+	//playerAnimation[2].u = 67.0f / 508.0f;
+	//playerAnimation[2].v = 196.0f / 288.0f;
+	//playerAnimation[2].width = 66.0f / 508.0f;
+	//playerAnimation[2].height = 97.0f / 288.0f;
+	//playerAnimation[2].size = 0.2;
 
-	//playerAnimation[3].textureID = animations;
-	playerAnimation[3].u = 67.0f / 508.0f;
-	playerAnimation[3].v = 196.0f / 288.0f;
-	playerAnimation[3].width = 66.0f / 508.0f;
-	playerAnimation[3].height = 97.0f / 288.0f;
-	playerAnimation[3].size = 0.2;
+	////playerAnimation[3].textureID = animations;
+	//playerAnimation[3].u = 67.0f / 508.0f;
+	//playerAnimation[3].v = 196.0f / 288.0f;
+	//playerAnimation[3].width = 66.0f / 508.0f;
+	//playerAnimation[3].height = 97.0f / 288.0f;
+	//playerAnimation[3].size = 0.2;
 
-	//playerAnimation[4].textureID = animations;
-	playerAnimation[4].u = 67.0f / 508.0f;
-	playerAnimation[4].v = 196.0f / 288.0f;
-	playerAnimation[4].width = 66.0f / 508.0f;
-	playerAnimation[4].height = 97.0f / 288.0f;
-	playerAnimation[4].size = 0.2;
+	////playerAnimation[4].textureID = animations;
+	//playerAnimation[4].u = 67.0f / 508.0f;
+	//playerAnimation[4].v = 196.0f / 288.0f;
+	//playerAnimation[4].width = 66.0f / 508.0f;
+	//playerAnimation[4].height = 97.0f / 288.0f;
+	//playerAnimation[4].size = 0.2;
 
-	//playerAnimation[5].textureID = animations;
-	playerAnimation[5].u = 67.0f / 508.0f;
-	playerAnimation[5].v = 196.0f / 288.0f;
-	playerAnimation[5].width = 66.0f / 508.0f;
-	playerAnimation[5].height = 97.0f / 288.0f;
-	playerAnimation[5].size = 0.2;
+	////playerAnimation[5].textureID = animations;
+	//playerAnimation[5].u = 67.0f / 508.0f;
+	//playerAnimation[5].v = 196.0f / 288.0f;
+	//playerAnimation[5].width = 66.0f / 508.0f;
+	//playerAnimation[5].height = 97.0f / 288.0f;
+	//playerAnimation[5].size = 0.2;
 
-	//playerAnimation[6].textureID = animations;
-	playerAnimation[6].u = 67.0f / 508.0f;
-	playerAnimation[6].v = 196.0f / 288.0f;
-	playerAnimation[6].width = 66.0f / 508.0f;
-	playerAnimation[6].height = 97.0f / 288.0f;
-	playerAnimation[6].size = 0.2;
+	////playerAnimation[6].textureID = animations;
+	//playerAnimation[6].u = 67.0f / 508.0f;
+	//playerAnimation[6].v = 196.0f / 288.0f;
+	//playerAnimation[6].width = 66.0f / 508.0f;
+	//playerAnimation[6].height = 97.0f / 288.0f;
+	//playerAnimation[6].size = 0.2;
 
 }
 
 
-unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
-{
-	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,6,6,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-    { 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 }, 
-	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
-	{ 7,18,18,18,18,18,18,18,18,5,5,5,4,4,4,5,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,7 },
-	{ 7,33,34,34,34,34,34,36,34,12,12,12,12,12,12,12,34,34,34,34,33,34,34,34,34,34,34,34,34,34,33,7 },
-	{ 7,34,34,33,34,33,34,34,34,101,101,101,101,101,101,101,34,34,33,34,34,34,34,33,34,33,34,33,36,34,33,7 },
-	{ 7,36,34,36,34,36,34,33,34,34,34,36,34,34,36,34,34,33,34,34,36,34,33,34,34,34,34,33,34,34,34,7 },
-	{ 7,7,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,7 },
-	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,7 },
-	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,106,106,106,106,106,106,106,90,90,90,90,7 },
-	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
-	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
-	{ 7,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,7 },
-	{ 7,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,109,109,109,109,109,109,7 },
-	{ 7,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,124,124,124,124,124,124,124,124,109,7 },
-	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
-	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
-	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 }
-
-};
+//unsigned char level1Data[LEVEL_HEIGHT][LEVEL_WIDTH] =
+//{
+//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,97,98,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,6,6,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//    { 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 }, 
+//	{ 7,21,21,21,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,7 },
+//	{ 7,18,18,18,18,18,18,18,18,5,5,5,4,4,4,5,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,7 },
+//	{ 7,33,34,34,34,34,34,36,34,12,12,12,12,12,12,12,34,34,34,34,33,34,34,34,34,34,34,34,34,34,33,7 },
+//	{ 7,34,34,33,34,33,34,34,34,101,101,101,101,101,101,101,34,34,33,34,34,34,34,33,34,33,34,33,36,34,33,7 },
+//	{ 7,36,34,36,34,36,34,33,34,34,34,36,34,34,36,34,34,33,34,34,36,34,33,34,34,34,34,33,34,34,34,7 },
+//	{ 7,7,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,33,7 },
+//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,7 },
+//	{ 7,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,90,106,106,106,106,106,106,106,90,90,90,90,7 },
+//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+//	{ 7,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,106,7 },
+//	{ 7,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,122,7 },
+//	{ 7,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,109,109,109,109,109,109,7 },
+//	{ 7,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,109,124,124,124,124,124,124,124,124,109,7 },
+//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+//	{ 7,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,7,7 },
+//	{ 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7 }
+//
+//};
 void Platform::placeEntity(std::string type, float x, float y) {
 	if (type == "Start") {
 		player.XPos = x;
@@ -228,11 +226,11 @@ bool Platform::readHeader(std::ifstream &stream) {
 
 
 
-void Platform::BuildLevel() {
-	memcpy(level, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
-	
-
-}
+//void Platform::BuildLevel() {
+//	memcpy(level, level1Data, LEVEL_HEIGHT*LEVEL_WIDTH);
+//	
+//
+//}
 void Platform::worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY)
 {
 	*gridX = (int)(worldX / TILE_SIZE);
@@ -266,9 +264,8 @@ void Platform::setMatrices(ShaderProgram& program) {
 	program.setProjectionMatrix(proj);
 	program.setViewMatrix(view);
 }
-void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntity& player, std::vector<SpriteSheet>& animations, float fixedElapsed) {
-	player.width = 66.0 / 508.0;
-	player.height = 92.0 / 288.0;
+void Platform::render(ShaderProgram& program) {
+	
 	/*for (int i = 0; i < 7; i++) {
 		playerAnimation[i].textureID = animation;
 	}*/
@@ -325,9 +322,17 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 		
 	}
 	//bool x = solid[20][20];
-	setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
+	
 	//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
 	//worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
+	
+	
+}
+
+void Platform::Update(float elapsed, vector<SpriteSheet>& animations, AstralEntity& player, ShaderProgram& program) {
+	setupAndRender(program, vertexData.data(), texCoordData.data(), texturez);
+	player.width = 66.0 / 508.0;
+	player.height = 92.0 / 288.0;
 	player.setMatrices(program);
 	player.identityMatrix();
 	player.moveMatrix(player.XPos, player.YPos, 0.0);
@@ -338,18 +343,18 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 	//view.setOrthoProjection(0.0, 8.0, 0.0, 8.0, -1.0, 1.0);
 	view.Translate(viewX, viewY, 0.0);
 	//if ((-2.5 < player.XPos < 2.5) && (-4.0 < viewX < 4.0)) {
-		view.Translate(-1 * (player.XPos + 2.5), -1 * (player.YPos + 0.75), 0.0);
-		//incrementviewXPos(-1 * fixedElapsed);
-		
-		//view.identity();
+	view.Translate(-1 * (player.XPos + 2.5), -1 * (player.YPos + 0.75), 0.0);
+	//incrementviewXPos(-1 * fixedElapsed);
+
+	//view.identity();
 	//}
 	player.model.Scale(2 * scaleFactor, 2.0, 1.0);
-	animationElapsed += fixedElapsed;
-	
+	animationElapsed += elapsed;
+
 	if (keys[SDL_SCANCODE_D]) {
 		//entites[28].HDirection *= -1;
 		player.HDirection = 1;
-		player.incrementXPos(0.75 * player.velocity * player.HDirection * fixedElapsed);
+		player.incrementXPos(0.75 * player.velocity * player.HDirection * elapsed);
 		//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
 		//incrementviewXPos(-0.25 * (player.XPos + 2.5));
 		//incrementviewXPos(-1 * fixedElapsed);
@@ -365,7 +370,7 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 	else if (keys[SDL_SCANCODE_A]) {
 		//entites[28].HDirection *= -1;
 		player.HDirection = -1;
-		player.incrementXPos(0.75 * player.velocity * player.HDirection * fixedElapsed);
+		player.incrementXPos(0.75 * player.velocity * player.HDirection * elapsed);
 		//view.Translate(-1 * entites[28].XPos * 0.25, 0.0, 0.0);
 		//entites[28].model.Scale(-1.0, 1.0, 1.0);
 		//entites[28].model.Scale(-1 * scaleXFactor, 1.0, 1.0);
@@ -381,29 +386,29 @@ void Platform::renderUpdate(ShaderProgram& program, GLuint& texture, AstralEntit
 	}
 	else if (keys[SDL_SCANCODE_S]) {
 		player.VDirection = -1;
-		player.incrementYPos(0.75 * player.velocity * player.VDirection * fixedElapsed);
+		player.incrementYPos(0.75 * player.velocity * player.VDirection * elapsed);
 	}
 	else if (keys[SDL_SCANCODE_W]) {
 		player.VDirection = 1;
-		player.incrementYPos(0.75 * player.velocity * player.VDirection * fixedElapsed);
+		player.incrementYPos(0.75 * player.velocity * player.VDirection * elapsed);
 	}
 
 	else {
 		animationIndex = 0;
 	}
-
+	
 	animations[animationIndex].Draw(program);
 
 	/*for (int y = 0; y < LEVEL_HEIGHT; y++) {
-		for (int x = 0; x < LEVEL_WIDTH; x++) {
-			if ((player.XPos ) - (0.5 * player.width) < (TILE_SIZE * tileLength) + TILE_SIZE) {
-				if (solid[y][x]) {
-					player.XPos = -2.4;
-				}
-			}
-		}
+	for (int x = 0; x < LEVEL_WIDTH; x++) {
+	if ((player.XPos ) - (0.5 * player.width) < (TILE_SIZE * tileLength) + TILE_SIZE) {
+	if (solid[y][x]) {
+	player.XPos = -2.4;
+	}
+	}
+	}
 	}*/
-	
+
 	collisionHandler(player);
 }
 float Platform::collisionDetectionX(float x, float y) {
@@ -448,14 +453,14 @@ float Platform::collisionDetectionY(float x, float y) {
 		penetrationY = -1 * y - gridY * tileHeight;
 	}*/
 	else if (y > -(TILE_SIZE * tileHeight) ){
-	if (solid[gridY][gridX]) {
+	//if (solid[gridY][gridX]) {
 			penetrationY = -1 * y - ( gridY * tileHeight);
-	}
+	//}
 	}
 	else if (y < (-TILE_SIZE * tileHeight) - TILE_SIZE) {
-		if (solid[gridY][gridX]) {
+		//if (solid[gridY][gridX]) {
 			penetrationY = -1 * y - (gridY * tileHeight);
-		}
+		//}
 	}
 	else {
 		penetrationY = 0.0;
