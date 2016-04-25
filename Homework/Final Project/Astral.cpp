@@ -29,7 +29,7 @@ AstralEntity::AstralEntity()
 	YPos = 0.0;
 	HDirection = 1.0;
 	VDirection = 1.0;
-	health = 100.0;
+	health = 100;
 	score = 0;
 	ammoIndex = 0;
 	maxshots = 10;
@@ -55,7 +55,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 	YPos = 0.0;
 	HDirection = 1.0;
 	VDirection = 1.0;
-	health = 100.0;
+	health = 100;
 	model = modelMatrix;
 	projection = projectionMatrix;
 	//view = viewMatrix;
@@ -73,7 +73,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 	YPos = 0.0;
 	HDirection = 1.0;
 	VDirection = 1.0;
-	health = 100.0;
+	health = 100;
 	model = modelMatrix;
 	projection = projectionMatrix;
 	//view = viewMatrix;

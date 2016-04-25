@@ -33,7 +33,7 @@ Projectile::Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& vi
 Projectile::Projectile(){
 	YPos = -1.5;
 	remove = false;
-
+	visible = false;
 	position.x = 0.0;
 	position.y = -1.5;
 	position.z = 0.0;

@@ -54,10 +54,10 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	g_filter = 0.0;
 	b_filter = 0.5;
 	player[0].position.y = -1.5;
-	player[0].position.x = 0.0;
+	player[0].position.x = 1.5;
 
 	player[1].position.y = 1.5;
-	player[1].position.x = 0.0;
+	player[1].position.x = -1.5;
 
 	/*player[2].YPos = 1.5;
 	player[2].XPos = 0.0;
@@ -99,7 +99,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	player[4].height = sprites[2].height;
 	sprites[3].size = 0.4;
 	shotIndex = 0;
-	shots[shotIndex].position.y = -1.5;
+	shots[shotIndex].position.y = player[0].position.y;
 	shots[shotIndex].width = sprites[1].width;
 	shots[shotIndex].height = sprites[1].height;
 	//player = new AstralEntity();
@@ -242,23 +242,23 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 
 void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 
-	while (SDL_PollEvent(&events)) {
+	//while (SDL_PollEvent(&events)) {
 
 		/*if (events.type == SDL_QUIT || events.type == SDL_WINDOWEVENT_CLOSE) { 
 			done = true;
 
 		}*/
-		if (events.type == SDL_KEYDOWN) {
-			if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-				Mix_PlayChannel(-1, start, 0);
-				state = 1;
-			}
-			//shots[0].incrementYPos(4.0 * elapsed);
+		//if (events.type == SDL_KEYDOWN) {
+		//	if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+		//		Mix_PlayChannel(-1, start, 0);
+		//		state = 1;
+		//	}
+		//	//shots[0].incrementYPos(4.0 * elapsed);
 
-		}
+		//}
 
 
-	}
+	//}
 
 
 }
@@ -290,18 +290,18 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	//spriteSheets[0].Draw(program);
 	sprites[0].Draw(program);
 	
-	for (int k = 0; k < 2; k++) {
-		player[k].velocity.x += player[k].acceleration.x * FIXED_TIMESTEP;
-		player[k].velocity.x = player[k].lerp(player[k].velocity.x, 0.0, FIXED_TIMESTEP * player[k].friction.x);
-		player[k].velocity.y += player[k].acceleration.y * FIXED_TIMESTEP;
-		player[k].velocity.y = player[k].lerp(player[k].velocity.y, 0.0, FIXED_TIMESTEP * player[k].friction.y);
-		//player[k].velocityY = player[k].lerp(player[k].velocityY, 0.0, FIXED_TIMESTEP * player[k].frictionY);
+	//for (int k = 0; k < 2; k++) {
+	//	player[k].velocity.x += player[k].acceleration.x * FIXED_TIMESTEP;
+	//	player[k].velocity.x = player[k].lerp(player[k].velocity.x, 0.0, FIXED_TIMESTEP * player[k].friction.x);
+	//	player[k].velocity.y += player[k].acceleration.y * FIXED_TIMESTEP;
+	//	player[k].velocity.y = player[k].lerp(player[k].velocity.y, 0.0, FIXED_TIMESTEP * player[k].friction.y);
+	//	//player[k].velocityY = player[k].lerp(player[k].velocityY, 0.0, FIXED_TIMESTEP * player[k].frictionY);
 
-		
-		//player[k].velocityY += player[k].accelerationY * FIXED_TIMESTEP;
+	//	
+	//	//player[k].velocityY += player[k].accelerationY * FIXED_TIMESTEP;
 
-		//player[k].incrementAccelerationX(FIXED_TIMESTEP);
-	}
+	//	//player[k].incrementAccelerationX(FIXED_TIMESTEP);
+	//}
 	//for (int indx = 1; indx < 5; indx++) {
 		//if (player[indx].alive) {
 			sprites[2].textureID = spriteSheetTexture;
@@ -323,9 +323,9 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	shots[shotIndex].identityMatrix();
 	
 	//shots[shotIndex].YPos = player[0].YPos;
-	shots[shotIndex].incrementYPos(9.0 * elapsed);
+	
 	//spriteSheets[1].Draw(program);
-	sprites[1].Draw(program);
+	
 
 
 
@@ -334,6 +334,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	player[2].incrementXPos(-1.0 * player[2].HDirection * player[2].velocityY * elapsed);
 	player[3].incrementXPos(1.75 * player[3].HDirection * player[3].velocityY * elapsed);
 	player[4].incrementXPos(-1.25 * player[4].HDirection * player[4].velocityY * elapsed);*/
+	//shots[shotIndex].visible = false;
 	shots[shotIndex].moveMatrix(shots[shotIndex].position.x, shots[shotIndex].position.y + 0.5, 0.0);
 	//while (SDL_PollEvent(&events)) {
 
@@ -355,17 +356,23 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	//		//shots[0].incrementYPos(4.0 * elapsed);
 
 	//	}
-
-
+	sprites[1].Draw(program);
+	shots[shotIndex].incrementYPos(8.0 * elapsed);
 	//}
-	
-	if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
-		shots[shotIndex].position.x = player[0].position.x;
-		
-
-		//shots[shotIndex].YPos = player[0].YPos;
-		shoot(FIXED_TIMESTEP);
-	}
+	// time_t timer;
+	//if (time(&timer) > 5) {
+	//if (events.type == SDL_KEYDOWN) {
+	//	if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+	//		//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
+	//		shots[shotIndex].position.x = player[0].position.x;
+	//		shoot(program, FIXED_TIMESTEP);
+	//	}
+	//}
+			//shots[shotIndex].YPos = player[0].YPos;
+			
+			/*shoot(program, FIXED_TIMESTEP);*/
+		//}
+	//}
 
 
 
@@ -405,49 +412,255 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	if (player[0].position.y > 2.5) {
 		player[0].position.y = 2.5;
 	}
+	else if (player[0].position.y > 0.0) {
+		player[0].model.Rotate(180.0 * (3.1415926 / 180.0));
+		shots[shotIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
+	}
 	if (player[1].position.y < -2.5) {
 		player[1].position.y = -2.5;
 	}
 	if (player[1].position.y > 2.5) {
 		player[1].position.y = 2.5;
 	}
+	else if (player[1].position.y < 0.0) {
+		player[1].model.Rotate(180.0 * (3.1415926 / 180.0));
+	}
+	bool collisiontwofromone, collissiononefromtwo;
+	collisiontwofromone = raySegmentIntersect(player[0].position, player[0].direction, player[1].position, player[1].direction, elapsed);
+	if (collisiontwofromone) {
+		shots[shotIndex].visible = false;
+		score += 5;
+		player[1].health -= 10;
+	}
 	//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
-	for (int i = 0; i < 2; i++) { //Bullet collision with enemy
-		if (shots[shotIndex].position.y < player[i].position.y + player[i].height * 0.5
-			&& shots[shotIndex].position.y > player[i].position.y - player[i].height * 0.5
-			&& shots[shotIndex].position.x < player[i].position.x + player[i].width * 0.5
-			&& shots[shotIndex].position.x > player[i].position.x - player[i].width * 0.5) {
-			shots[shotIndex].position.y = player[0].position.y + 4.0; //still gotta remove bullet, just a temp fix
-			player[i].health -= 10;
-			//score += 5;
+	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy
+	//	if (shots[shotIndex].position.y < player[i].position.y + player[i].height * 0.95
+	//		&& shots[shotIndex].position.y > player[i].position.y - player[i].height * 0.95
+	//		&& shots[shotIndex].position.x < player[i].position.x + player[i].width * 0.95
+	//		&& shots[shotIndex].position.x > player[i].position.x - player[i].width * 0.95) {
+	//		if (shots[shotIndex].visible) {
+	//			//shots[shotIndex].position.y = player[0].position.y; //still gotta remove bullet, just a temp fix
+	//		shots[shotIndex].visible = false;
+	//			player[i].health -= 10;
+	//			//score += 5;
+	//		}
+	//		if (player[i].health <= 0) {
+	//			player[i].alive = false;
+	//			//player[i].setWidthAndHeight(0.0, 0.0);
+	//			//player.erase(remove_if(player.begin(), player.end(), player[i].alive), player.end());
+	//			score += 100;
+	//			state = 2;
+	//			/*shots[shotIndex].remove = true;
+	//			numEnemies -= 1;
+	//			Mix_PlayChannel(-1, scored, 0);*/
+	//			//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
 
-			if (player[i].health <= 0) {
-				player[i].alive = false;
-				//player[i].setWidthAndHeight(0.0, 0.0);
-				//player.erase(remove_if(player.begin(), player.end(), player[i].alive), player.end());
-				score += 100;
-				state = 2;
-				/*shots[shotIndex].remove = true;
-				numEnemies -= 1;
-				Mix_PlayChannel(-1, scored, 0);*/
-				//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
+	//			//numEnemies--;
+	//		}
+	//	}
+	//	/*if (player[i].YPos < -1.5) {
+	//		Mix_PlayChannel(-1, gameover, 0);
+	//		state = 2;
+	//	}
+	//	if (numEnemies == 0) {
+	//		Mix_PlayChannel(-1, victory, 0);
+	//		state = 3;
+	//	}*/
 
-				//numEnemies--;
-			}
-		}
-		/*if (player[i].YPos < -1.5) {
-			Mix_PlayChannel(-1, gameover, 0);
-			state = 2;
-		}
-		if (numEnemies == 0) {
-			Mix_PlayChannel(-1, victory, 0);
-			state = 3;
-		}*/
+	//}
+
+
+
+	//if (keys[SDL_SCANCODE_B]) {
+	//	state = 2;
+	//	//player.XPos = 0.0;
+	//	//objects[0].XPos = 0.0;
+	//	player[0].position.x = 0.0;
+	//}
+	//if (keys[SDL_SCANCODE_LEFT]) {
+	//	//player.incrementXPos(-2.0 * elapsed);
+	//	player[0].incrementXPos(-1.5 * player[0].direction.x * player[0].velocity.x * elapsed);
+	//	shots[shotIndex].incrementXPos(-1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
+	//	//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
+	//	//ammo[1].incrementXPos(-2.0 * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_RIGHT]) {
+	//	//player.incrementXPos(2.0 * elapsed);
+	//	player[0].incrementXPos(1.5 * player[0].direction.x *  player[0].velocity.x * elapsed);
+	//	shots[shotIndex].incrementXPos(1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
+	//	//player[0].incrementAccelerationX(FIXED_TIMESTEP);
+	//	//score += 100;
+	//	//ammo[1].incrementXPos(2.0 * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_UP]) {
+	//	//player.incrementXPos(-2.0 * elapsed);
+	//	player[0].incrementYPos(1.5 *player[0].direction.y * player[0].velocity.y * elapsed);
+	//	shots[shotIndex].incrementYPos(1.5 *player[0].direction.y * player[0].velocity.y *  elapsed);
+	//	//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
+	//	//ammo[1].incrementXPos(-2.0 * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_DOWN]) {
+	//	//player.incrementXPos(2.0 * elapsed);
+	//	player[0].incrementYPos(-1.5 *player[0].direction.y *  player[0].velocity.y * elapsed);
+	//	shots[shotIndex].incrementYPos(-1.5 * player[0].direction.y * player[0].velocity.y *  elapsed);
+	//	//player[0].incrementAccelerationX(FIXED_TIMESTEP);
+	//	//score += 100;
+	//	//ammo[1].incrementXPos(2.0 * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_A]) {
+	//	player[1].incrementXPos(-2.0 * player[1].velocity.x * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_D]) {
+	//	player[1].incrementXPos(2.0 * player[1].velocity.x * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_S]) {
+	//	player[1].incrementYPos(-2.0 * player[1].velocity.y * elapsed);
+	//}
+	//if (keys[SDL_SCANCODE_W]) {
+	//	player[1].incrementYPos(2.0 * player[1].velocity.y * elapsed);
+	//}
+
+
+
+}
+
+void SpacialArea::endGameEvents(SDL_Event event) {
+	
+	
+
+		//if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
+		//	done = true;
+
+		//}
+		// if (event.type == SDL_KEYDOWN) {
+		//	if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { //RESET
+		//		player[1].alive = true;
+		//		numEnemies = 1;
+		//		state = 1;
+		//		
+		//		//player[1].YPos = 1.5;
+		//		//SpacialArea();
+		//	}
+		//	//shots[0].incrementYPos(4.0 * elapsed);
+
+		//}
+
+
+	
+
+}
+
+void SpacialArea::updateThings(ShaderProgram& program, float elasped) {
+	switch (state) {
+	case STATE_TITLE:
+		titleEvents(events, program);
+		break;
+	case STATE_GAME_LEVEL:
+		inGameEvents(events, program, elasped);
+		break;
+	case STATE_GAME_OVER:
+		endGameEvents(events);
+		break;
+	case STATE_VICTORY:
+		endGameEvents(events);
+		break;
+
 
 	}
 
 
+}
 
+void SpacialArea::shoot(ShaderProgram& program, float elapsed) {
+	//shots[0].setMatrices(program);
+	////shots[0].YPos = -1.5;
+	//sprite.Draw(program);
+	//shots[0].incrementYPos(7.5 * elapsed);
+	//shots[shotIndex].position.y = player[0].YPos;
+	shots[shotIndex].visible = true;
+	
+	
+	if (shots[shotIndex].position.y > 2.0) {
+		shots[shotIndex].position.y = -1.5;
+	}
+	shotIndex++;
+	
+
+	if (shotIndex > maxshots - 1) {
+		shotIndex = 0;
+
+	}
+
+}
+
+bool SpacialArea::shouldRemoveBullet(Projectile& bullet)
+{
+	if (bullet.remove) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool SpacialArea::raySegmentIntersect(const Vector &rayOrigin, const Vector &rayDirection, const
+	Vector &linePt1, const Vector &linePt2, float &dist)
+{
+	Vector seg1 = linePt1;
+	Vector segD;
+	segD.x = linePt2.x - seg1.x;
+	segD.y = linePt2.y - seg1.y;
+
+	float raySlope = rayDirection.y / rayDirection.x;
+	float n = ((seg1.x - rayOrigin.x)*raySlope + (rayOrigin.y - seg1.y)) / (segD.y -
+		segD.x*raySlope);
+
+	if (n < 0 || n > 1)
+		return false;
+
+	float m = (seg1.x + segD.x * n - rayOrigin.x) / rayDirection.x;
+	if (m < 0)
+		return false;
+
+	dist = m;
+	return true;
+}
+bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
+	while (SDL_PollEvent(&events)) {
+
+		//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
+		if (events.type == SDL_QUIT || events.type == SDL_WINDOWEVENT_CLOSE) {
+			return true;
+		}
+		if (events.type == SDL_KEYDOWN) {
+			if (events.key.keysym.scancode == SDL_SCANCODE_P) { //RESET
+				player[1].alive = true;
+				numEnemies = 1;
+				state = 1;
+
+				//player[1].YPos = 1.5;
+				//SpacialArea();
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+				//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
+				shots[shotIndex].position.x = player[0].position.x;
+				shoot(program, FIXED_TIMESTEP);
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+				Mix_PlayChannel(-1, start, 0);
+				state = 1;
+			}
+			//shots[0].incrementYPos(4.0 * elapsed);
+
+		}
+		//if (events.type == SDL_KEYDOWN) {
+			if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+				//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
+				shots[shotIndex].position.x = player[0].position.x;
+				shoot(program, FIXED_TIMESTEP);
+			}
+		//}
+
+	}
 	if (keys[SDL_SCANCODE_B]) {
 		state = 2;
 		//player.XPos = 0.0;
@@ -497,102 +710,96 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[1].incrementYPos(2.0 * player[1].velocity.y * elapsed);
 	}
 
-
-
+	return false;
 }
+bool SpacialArea::collisionDetectionX(float x, float y) {
+	//int gridX, gridY;
+	//worldToTileCoordinates(x, y, &gridX, &gridY);
+	////float penetration;
 
-void SpacialArea::endGameEvents(SDL_Event event) {
+	//if (0 > gridY > mapHeight - 1) {
+	//	penetrationY = 0.0;
+	//}
+
+	/*else if (solid[gridY][gridX]) {
+	penetrationY = -1 * y - gridY * tileHeight;
+	}*/
+	//else if (y > -(TILE_SIZE * tileHeight) ){
+	////if (solid[gridY][gridX]) {
+	//		penetrationY = -1 * y - ( gridY * tileHeight);
+	////}
+	//}
+	//else if (y < (-TILE_SIZE * tileHeight) - TILE_SIZE) {
+	//	//if (solid[gridY][gridX]) {
+	//		penetrationY = -1 * y - (gridY * tileHeight);
+	//	//}
+	//}
+	//else {
+	//	penetrationY = 0.0;
+	//}
+
+
+
+	return false;
+}
+bool SpacialArea::collisionDetectionY(float x, float y) {
+	//int gridX, gridY;
+	//worldToTileCoordinates(x, y, &gridX, &gridY);
+	////float penetration;
+
+	//if (0 > gridY > mapHeight - 1) {
+	//	penetrationY = 0.0;
+	//}
 	
-	
-
-		//if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { //Toss this entire if statement into processInput function
-		//	done = true;
-
-		//}
-		 if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { //RESET
-				player[1].alive = true;
-				numEnemies = 1;
-				state = 1;
-				
-				//player[1].YPos = 1.5;
-				//SpacialArea();
-			}
-			//shots[0].incrementYPos(4.0 * elapsed);
-
-		}
+	/*else if (solid[gridY][gridX]) {
+		penetrationY = -1 * y - gridY * tileHeight;
+	}*/
+	//else if (y > -(TILE_SIZE * tileHeight) ){
+	////if (solid[gridY][gridX]) {
+	//		penetrationY = -1 * y - ( gridY * tileHeight);
+	////}
+	//}
+	//else if (y < (-TILE_SIZE * tileHeight) - TILE_SIZE) {
+	//	//if (solid[gridY][gridX]) {
+	//		penetrationY = -1 * y - (gridY * tileHeight);
+	//	//}
+	//}
+	//else {
+	//	penetrationY = 0.0;
+	//}
 
 
 	
-
+	return false;
 }
 
-void SpacialArea::updateThings(ShaderProgram& program, SDL_Event event, float elasped) {
-	switch (state) {
-	case STATE_TITLE:
-		titleEvents(event, program);
-		break;
-	case STATE_GAME_LEVEL:
-		inGameEvents(event, program, elasped);
-		break;
-	case STATE_GAME_OVER:
-		endGameEvents(event);
-		break;
-	case STATE_VICTORY:
-		endGameEvents(event);
-		break;
+void SpacialArea::collisionHandler(Projectile& bullets,AstralEntity& player) {
+	float penetrationXL, penetrationXR, penetrationYT, penetrationYB; //left, right, top, bottom
+
+	penetrationXL = collisionDetectionX(player.XPos - ( 0.5  * player.width), player.YPos);
+	penetrationXR = collisionDetectionX(player.XPos + (0.5  * player.width), player.YPos);
+	penetrationYT = collisionDetectionY(player.XPos, player.YPos + (0.5 * player.height));
+	penetrationYB = collisionDetectionY(player.XPos, player.YPos - (0.5 * player.height));
 
 
-	}
-
-
+	//if (penetrationXL > 0.0) {
+	//	player.incrementXPos(0.2 * penetrationXL);
+	//	//player.velocity = 0;
+	//	player.collideLeft = true;
+	//}
+	//else if (penetrationXR > 0.0) {
+	//	player.incrementXPos(0.2 * ( penetrationXR - tileLength));
+	//	//player.velocity = 0;
+	//	player.collideRight = true;
+	//}
+	//else if (penetrationYT > 0.0) {
+	//	player.incrementYPos(0.2 * (penetrationYT));
+	//	//player.velocity = 0;
+	//	player.collideTop = true;
+	//}
+	//else if (penetrationYB > 0.0) {
+	//	player.incrementYPos(0.2 * (penetrationYB - tileHeight));
+	//	//player.velocity = 0;
+	//	player.collideBottom = true;
+	//}
 }
-
-void SpacialArea::shoot(float elapsed) {
-	//shots[0].setMatrices(program);
-	////shots[0].YPos = -1.5;
-	//sprite.Draw(program);
-	//shots[0].incrementYPos(7.5 * elapsed);
-	if (shots[shotIndex].position.y > 2.0) {
-		shots[shotIndex].position.y = -1.5;
-	}
-	shotIndex++;
-
-	if (shotIndex > maxshots - 1) {
-		shotIndex = 0;
-
-	}
-
-}
-
-bool SpacialArea::shouldRemoveBullet(Projectile& bullet)
-{
-	if (bullet.remove) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-//bool SpacialArea::raySegmentIntersect(const Vector &rayOrigin, const Vector &rayDirection, const
-//	Vector &linePt1, const Vector &linePt2, float &dist)
-//{
-//	Vector seg1 = linePt1;
-//	Vector segD;
-//	segD.x = linePt2.x - seg1.x;
-//	segD.y = linePt2.y - seg1.y;
-//
-//	float raySlope = rayDirection.y / rayDirection.x;
-//	float n = ((seg1.x - rayOrigin.x)*raySlope + (rayOrigin.y - seg1.y)) / (segD.y -
-//		segD.x*raySlope);
-//
-//	if (n < 0 || n > 1)
-//		return false;
-//
-//	float m = (seg1.x + segD.x * n - rayOrigin.x) / rayDirection.x;
-//	if (m < 0)
-//		return false;
-//
-//	dist = m;
-//	return true;
-//}

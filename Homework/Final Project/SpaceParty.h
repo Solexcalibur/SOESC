@@ -32,10 +32,15 @@
 		void titleEvents(SDL_Event event, ShaderProgram& program);
 		void inGameEvents(SDL_Event event, ShaderProgram& program, float elasped);
 		void endGameEvents(SDL_Event event);
-		void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
+		void updateThings(ShaderProgram & program, float elasped);
+		void shoot(ShaderProgram & program, float elapsed);
 		//void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
 		void shoot(float elapsed);
 		bool shouldRemoveBullet(Projectile & bullet);
+		bool inputProcessor(ShaderProgram & program, float elapsed);
+		bool collisionDetectionX(float x, float y);
+		bool collisionDetectionY(float x, float y);
+		void collisionHandler(Projectile & bullets, AstralEntity & player);
 		bool raySegmentIntersect(const Vector & rayOrigin, const Vector & rayDirection, const Vector & linePt1, const Vector & linePt2, float & dist);
 		void setup();
 		bool windowCloseChecker(SDL_Event event);
