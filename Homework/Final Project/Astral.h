@@ -35,16 +35,17 @@ public:
 	float lerp(float start, float end, float time);
 	//void renderWithNoTexture(ShaderProgram*program, float vertices[]);
 	void shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed);
+	void shoot();
 	GLuint LoadTexture(const char* image_path);
 	
 	Matrix model, projection, view;
 	GLuint texID;
 	Vector position, direction, acceleration, friction, velocity;
 	float XPos, YPos, HDirection, VDirection, width, height, spriteIndex, accelerationX, accelerationY, velocityX, velocityY
-		, frictionX, frictionY;
+		, frictionX, frictionY, scaleFactor;
 	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
 	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health;
-	
+	std::vector<Projectile> shots;
 
 
 };

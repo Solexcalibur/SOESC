@@ -18,6 +18,8 @@ The bulk of the functions are in SpaceParty.cpp
 #include "ShaderProgram.h"
 #include "SpriteSheet.h"//
 #include "Projectile.h"//
+#include "ParticleEmitter.h"
+//#include "Color.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -49,6 +51,7 @@ int main(int argc, char *argv[]){
 	Matrix model, projection, view;
 	vector<AstralEntity> objects;
 	AstralEntity text(model, projection, view);
+	AstralEntity particletest(model, projection, view);
 	/*AstralEntity text2(model, projection, view);
 	AstralEntity player(model, projection, view);
 	AstralEntity enemy(model, projection, view);
@@ -57,7 +60,7 @@ int main(int argc, char *argv[]){
 
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 	Mix_Music *mysteriousSound;
-	mysteriousSound = Mix_LoadMUS("ASDF.mp3");
+	mysteriousSound = Mix_LoadMUS("UT4 Music Concept - Atrium.mp3");
 	//
 	//Mix_Chunk *scores;
 	Mix_Chunk *scores, *gameOver, *victory, *begin;
@@ -69,13 +72,21 @@ int main(int argc, char *argv[]){
 	environment.victory = victory;
 	begin = Mix_LoadWAV("Skyjack.ogg");
 	environment.start = begin;
-
+	//unsigned int particlecnt = 10;
 	
 	
 	GLuint words = text.LoadTexture("font2.png");
 	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
+	
 	environment.wordTexture = words;
 	environment.spriteSheetTexture = sprites;
+	//environment.particletex = particle;
+	//ParticleEmitter party(particlecnt);
+	//ParticleEmitter p;
+	/*GLuint particle = party.LoadTexture("fire.png");
+	particletest.texID = particle;*/
+	//party.Render(&program);
+	
 	
 	//<SubTexture name="playerShip1_red.png" x="224" y="832" width="99" height="75"/>
 	
@@ -147,13 +158,14 @@ int main(int argc, char *argv[]){
 		
 	
 		
-
+		
 
 		text.setMatrices(program);
 		text.identityMatrix();
 		text.moveMatrix(-2.5, 2.6, 0.0);
 		
-		
+		//particletest.setMatrices(program);
+		//party.Render(&program);
 
 
 		environment.windowSwapping();
@@ -169,7 +181,7 @@ int main(int argc, char *argv[]){
 	//Mix_FreeChunk(victory);
 	//Mix_FreeChunk(gameOver);
 	//Mix_FreeChunk(begin);
-	SDL_Quit();
+	
 	return 0;
 
 }

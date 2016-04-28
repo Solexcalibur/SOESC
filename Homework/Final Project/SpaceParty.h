@@ -5,16 +5,20 @@
 #include "Astral.h"
 #include "Projectile.h"
 #include "SpriteSheet.h"
+#include "ParticleEmitter.h"
 #include <vector>
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_audio.h>
 
+#define LEVEL_HEIGHT 32
+#define LEVEL_WIDTH 32
+#define TILE_SIZE 0.4f
 
 	class SpacialArea {
 	public:
 		SpacialArea();
-		//~SpacialArea();
+		~SpacialArea();
 		void render();
 		void update();
 		void updatePlusRender();
@@ -33,7 +37,7 @@
 		void inGameEvents(SDL_Event event, ShaderProgram& program, float elasped);
 		void endGameEvents(SDL_Event event);
 		void updateThings(ShaderProgram & program, float elasped);
-		void shoot(ShaderProgram & program, float elapsed);
+		void shoot(AstralEntity& player);
 		//void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
 		void shoot(float elapsed);
 		bool shouldRemoveBullet(Projectile & bullet);
@@ -47,13 +51,21 @@
 		void clearScreen();
 		void windowSwapping();
 		void sweep(int index);
+		void readFile(const char * levelFile, ShaderProgram & program);
+		bool readEntityData(std::ifstream & stream, ShaderProgram & program);
 
-		GLuint wordTexture, spriteSheetTexture;
+		bool readLayerData(std::ifstream & stream);
+		void placeEntity(std::string type, float x, float y);
+
+
+		bool readHeader(std::ifstream & stream);
+
+		GLuint wordTexture, spriteSheetTexture, particletex;
 		Mix_Chunk *scored, *gameover, *victory, *start;
 	private:
 		SDL_Window* displayWindow;
 		
-		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY };
+		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT };
 		int state, numEnemies, shotIndex, maxshots, score, index;
 		const Uint8* keys;
 		const char* fontSheetPath = "font2.png";
@@ -63,17 +75,19 @@
 		//Projectile* shots = new Projectile[4];
 		//AstralEntity player[5];
 		//Projectile shots[10];
-		SpriteSheet sprites[4];
+		SpriteSheet sprites[6];
 		std::vector<AstralEntity> player;
 		std::vector<Projectile> shots;
-		
+		int mapHeight, mapWidth, tileLength, tileHeight;
+		unsigned char** levelData;
 		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];
 		float r_filter, g_filter, b_filter;
-
+		SDL_Joystick * playerOne;
+		SDL_Joystick * playerTwo;
 
 	};
 

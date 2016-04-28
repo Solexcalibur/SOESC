@@ -46,6 +46,16 @@ AstralEntity::AstralEntity()
 	collideLeft = false;
 	collideRight = false;
 	collideTop = false;
+	scaleFactor = 1.0;
+	for (int i = 0; i < 10; i++) {
+		shots.push_back(Projectile());
+	}
+	//shots[ammoIndex].width = width;
+	//shots[ammoIndex].height = height;
+	/*shots[ammoIndex].position.y = position.y;
+	shots[ammoIndex].position.x = position.x;*/
+	shots[ammoIndex].direction.x = direction.x;
+	shots[ammoIndex].direction.y = 1.0;
 	//width = 1.0;
 	//height = 1.0;
 }
@@ -63,6 +73,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 	ammoIndex = 0;
 	maxshots = 10;
 	alive = true;
+	scaleFactor = 1.0;
 	//velocity = 1;
 	//sprite = spritez;
 
@@ -81,6 +92,7 @@ AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix
 	ammoIndex = 0;
 	maxshots = 10;
 	texID = spritez.textureID;
+	scaleFactor = 1.0;
 	//velocity = 1;
 	//sprite = spritez;
 
@@ -204,57 +216,74 @@ void AstralEntity::incrementXPos(float value){
 			//XPos += value;
 			position.x += value;
 		}
+void AstralEntity::shoot() {
 
-void AstralEntity::shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed){
-	
-	//bullet.identityMatrix();
-	//bullet.renderWithNoTexture(program, vertices_ball);
-	//bullet.incrementXPos(-0.75 * elapsed);
-	//bullet.incrementYPos(0.75 * elapsed);
-	//bullet.moveMatrix(0.0, bullet.YPos, 0.0);
-	//ammo[ammoIndex].renderWithNoTexture(program);
-	//ammo[0].setMatrices(program);
-	/*ammo[0].setMatrices(program);
-	spriteSheets[1].Draw(program);*/
-	//ammo[0].YPos = -1.5;
-	int ammoIndex = 0;
-	
-	ammo[ammoIndex].setMatrices(program);
-	ammo[ammoIndex].identityMatrix();
-	ammo[ammoIndex].moveMatrix(ammo[ammoIndex].XPos, ammo[ammoIndex].YPos, 0.0);
-	
-	spriteSheets[1].Draw(program); 
-	ammo[ammoIndex].incrementYPos(6.5 * elapsed);
-	
-	if (ammo[ammoIndex].YPos > 2.0){
-		ammoIndex++;
+	shots[ammoIndex].visible = true;
+	//shots[ammoIndex].position.y = position.y;
+	shots[ammoIndex].position.x = position.x;
+	shots[ammoIndex].position.y = position.y + 0.5;
+
+	if (shots[ammoIndex].position.y > 2.0) {
+		shots[ammoIndex].position.y = position.y;
 	}
-	
-	
-	/*for (int i = 1; i < 3; i++){
-		ammo[i].setMatrices(program);
-		ammo[i].incrementYPos(-5.75 * elapsed);
-		spriteSheets[3].Draw(program); 
-	}*/
-	/*ammo[1].setMatrices(program);
-	ammo[1].incrementYPos(-5.75 * elapsed);
-	spriteSheets[3].Draw(program);
-	ammo[2].setMatrices(program);
-	ammo[2].incrementYPos(-5.75 * elapsed);
-	spriteSheets[3].Draw(program);*/
-	//ammo[0].scaleMatrix(20.0, 1.0, 1.0);
-	
-	if (ammoIndex > maxshots - 1){
+
+	ammoIndex++;
+	if (ammoIndex > maxshots - 1) {
 		ammoIndex = 0;
-
 	}
-	/*ammo[ammoIndex]->renderWithNoTexture(program, ammo[ammoIndex]->vertices);
-	ammo[ammoIndex]->identityMatrix();
-	ammo[ammoIndex]->incrementYPos(2.0 * elapsed);
-	ammo[ammoIndex]->moveMatrix(0.0, ammo[ammoIndex]->YPos, 0.0);*/
-
 
 }
+
+//void AstralEntity::shoot(ShaderProgram& program, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, float elapsed){
+//	
+//	//bullet.identityMatrix();
+//	//bullet.renderWithNoTexture(program, vertices_ball);
+//	//bullet.incrementXPos(-0.75 * elapsed);
+//	//bullet.incrementYPos(0.75 * elapsed);
+//	//bullet.moveMatrix(0.0, bullet.YPos, 0.0);
+//	//ammo[ammoIndex].renderWithNoTexture(program);
+//	//ammo[0].setMatrices(program);
+//	/*ammo[0].setMatrices(program);
+//	spriteSheets[1].Draw(program);*/
+//	//ammo[0].YPos = -1.5;
+//	int ammoIndex = 0;
+//	
+//	ammo[ammoIndex].setMatrices(program);
+//	ammo[ammoIndex].identityMatrix();
+//	ammo[ammoIndex].moveMatrix(ammo[ammoIndex].XPos, ammo[ammoIndex].YPos, 0.0);
+//	
+//	spriteSheets[1].Draw(program); 
+//	ammo[ammoIndex].incrementYPos(6.5 * elapsed);
+//	
+//	if (ammo[ammoIndex].YPos > 2.0){
+//		ammoIndex++;
+//	}
+//	
+//	
+//	/*for (int i = 1; i < 3; i++){
+//		ammo[i].setMatrices(program);
+//		ammo[i].incrementYPos(-5.75 * elapsed);
+//		spriteSheets[3].Draw(program); 
+//	}*/
+//	/*ammo[1].setMatrices(program);
+//	ammo[1].incrementYPos(-5.75 * elapsed);
+//	spriteSheets[3].Draw(program);
+//	ammo[2].setMatrices(program);
+//	ammo[2].incrementYPos(-5.75 * elapsed);
+//	spriteSheets[3].Draw(program);*/
+//	//ammo[0].scaleMatrix(20.0, 1.0, 1.0);
+//	
+//	if (ammoIndex > maxshots - 1){
+//		ammoIndex = 0;
+//
+//	}
+//	/*ammo[ammoIndex]->renderWithNoTexture(program, ammo[ammoIndex]->vertices);
+//	ammo[ammoIndex]->identityMatrix();
+//	ammo[ammoIndex]->incrementYPos(2.0 * elapsed);
+//	ammo[ammoIndex]->moveMatrix(0.0, ammo[ammoIndex]->YPos, 0.0);*/
+//
+//
+//}
 
 GLuint AstralEntity::LoadTexture(const char* image_path) {
 
