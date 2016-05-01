@@ -17,6 +17,7 @@
 using namespace std;
 
 #define FIXED_TIMESTEP 0.0166666f 
+#define JOYSTICK_DEADZONE 8000
 
 GLuint SpacialArea::LoadTexture(const char* image_path) {
 
@@ -42,6 +43,8 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	score = 0;
 	state = 0;
 	keys = SDL_GetKeyboardState(nullptr);
+	playerOne = nullptr;
+	playerTwo = nullptr;
 	for (int i = 0; i < 5; i++) {
 		player.push_back(AstralEntity());
 	}
@@ -58,8 +61,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 
 	player[1].position.y = 1.5;
 	player[1].position.x = -1.5;
-	playerOne = SDL_JoystickOpen(0);
-	playerTwo = SDL_JoystickOpen(1);
+	
 	/*player[2].YPos = 1.5;
 	player[2].XPos = 0.0;
 
@@ -130,7 +132,9 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 SpacialArea::~SpacialArea()
 {
 	SDL_JoystickClose(playerOne);
+	playerOne = nullptr;
 	SDL_JoystickClose(playerTwo);
+	playerTwo = nullptr;
 	SDL_Quit();
 }
 
@@ -142,6 +146,12 @@ void SpacialArea::setup() {
 	displayWindow = SDL_CreateWindow("Astral Horizon", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
+	//SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN);
+	SDL_JoystickEventState(SDL_ENABLE);
+	playerOne = SDL_JoystickOpen(0);
+	//SDL_JoystickEventState(SDL_ENABLE);
+	playerTwo = SDL_JoystickOpen(1);
+	
 	//scored = Mix_LoadWAV("Score.ogg");
 
 #ifdef _WINDOWS
@@ -293,13 +303,14 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed) {
 
+	
 	//numEnemies = player.size() - 1;
 	/*time_t timer;
 	if (time(&timer) % 5 == 0) {
 		score += 1;
 	}*/
+
 	
-	//score = 0;
 	int ammoIndex = 0;
 	//int maxshots = 10;
 
@@ -702,9 +713,11 @@ bool SpacialArea::raySegmentIntersect(const Vector &rayOrigin, const Vector &ray
 	return true;
 }
 bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
+	
 	while (SDL_PollEvent(&events)) {
 
 		//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
+
 		if (events.type == SDL_QUIT || events.type == SDL_WINDOWEVENT_CLOSE) {
 			return true;
 		}
@@ -723,7 +736,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//shoot(program, FIXED_TIMESTEP);
 				//player[0].shots[player[0].ammoIndex].position.y = player[0].position.y;
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
-					shoot(player[0]);
+				shoot(player[0]);
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_R) {
 				//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
@@ -738,28 +751,107 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				state = 1;
 			}
 			//shots[0].incrementYPos(4.0 * elapsed);
-			else if (events.type == SDL_JOYAXISMOTION) {
-				if (events.jaxis.which == 0) {
-					if (events.jaxis.axis == 0) {
-						player[0].incrementXPos(2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
-						if (events.jaxis.value < 0)
-							player[0].direction.x = -1.0;
-						else if (events.jaxis.value > 0)
-							player[0].direction.x = 1.0;
-					}
-					else if (events.jaxis.axis == 1) {
+			//else if (events.type == SDL_JOYAXISMOTION) {
+			//	//shoot(player[0]);
+			//	if (events.jaxis.which == 0) {
+			//		if (events.jaxis.axis == 0) {
+			//			player[0].incrementXPos(2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
+			//			if (events.jaxis.value < 0)
+			//				player[0].direction.x = -1.0;
+			//			else if (events.jaxis.value > 0)
+			//				player[0].direction.x = 1.0;
+			//		}
+			//		else if (events.jaxis.axis == 1) {
 
-						player[0].incrementYPos(2.0 * player[0].direction.y * player[0].velocity.y * elapsed);
-						if (events.jaxis.value < 0)
-							player[0].direction.y = -1.0;
-						else if (events.jaxis.value > 0)
-							player[0].direction.y = 1.0;
+			//			player[0].incrementYPos(2.0 * player[0].direction.y * player[0].velocity.y * elapsed);
+			//			if (events.jaxis.value < 0)
+			//				player[0].direction.y = -1.0;
+			//			else if (events.jaxis.value > 0)
+			//				player[0].direction.y = 1.0;
 
-					}
+			//		}
+			//	}
+			//	
+			//}
+			//if (events.type = SDL_JOYBUTTONDOWN) {
+			//	//cout << SDL_JoystickNameForIndex(0) << endl;
+			//	//cout << events.jbutton.button << endl;
+			//	shoot(player[0]);
+
+			//}
+			
+		}
+		else if (events.type == SDL_JOYAXISMOTION) {
+
+
+			if (events.jaxis.which == 0) {
+				if (events.jaxis.axis == 0)
+				{
+					if (events.jaxis.value < -JOYSTICK_DEADZONE)
+						/* Left-right movement code goes here */
+						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+						player[0].incrementXPos(-3.0 * elapsed);
+					else if (events.jaxis.value > JOYSTICK_DEADZONE)
+						player[0].incrementXPos(3.0 * elapsed);
 				}
+
+				else if (events.jaxis.axis == 1)
+				{
+					if (events.jaxis.value < -JOYSTICK_DEADZONE)
+						/* Left-right movement code goes here */
+						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+						player[0].incrementYPos(3.0 * elapsed);
+					else if (events.jaxis.value > JOYSTICK_DEADZONE)
+						player[0].incrementYPos(-3.0 * elapsed);
+				}
+
+			}
+			if (events.jaxis.which == 1) {
+				if (events.jaxis.axis == 0)
+				{
+					if (events.jaxis.value < -JOYSTICK_DEADZONE)
+						/* Left-right movement code goes here */
+						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+						player[1].incrementXPos(-3.0 * elapsed);
+					else if (events.jaxis.value > JOYSTICK_DEADZONE)
+						player[1].incrementXPos(3.0 * elapsed);
+				}
+
+				else if (events.jaxis.axis == 1)
+				{
+					if (events.jaxis.value < -JOYSTICK_DEADZONE)
+						/* Left-right movement code goes here */
+						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+						player[1].incrementYPos(3.0 * elapsed);
+					else if (events.jaxis.value > JOYSTICK_DEADZONE)
+						player[1].incrementYPos(-3.0 * elapsed);
+				}
+
+			}
+
+			
+		}
+		else if (events.type == SDL_JOYBUTTONDOWN) {
+			if (events.jbutton.which == 0)
+			{
+				/* code goes here */
+				//Mapping FOR PS4 Controller (and third party PS3 controllers) ONLY
+				//Button 0 is SQUARE, 1 is X, 2 is CIRCLE, 3 is TRANGLE, 4 IS L1, 5 is R1, 6 is L2, 7 is R2, 
+				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
+				if (events.jbutton.button == 5) 
+				shoot(player[0]);
+			}
+			if (events.jbutton.which == 1)
+			{
+				/* code goes here */
+				//Mapping for FOR PS4 Controller ONLY
+				//Button 0 is SQUARE, 1 is X, 2 is CIRCLE, 3 is TRANGLE, 4 IS L1, 5 is R1, 6 is L2, 7 is R2, 
+				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
+				//For PS3 Controller, Button 9 IS L1
+				if (events.jbutton.button == 9)
+					shoot(player[1]);
 			}
 		}
-		
 		//if (events.type == SDL_KEYDOWN) {
 			//if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
 			//	//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
