@@ -37,6 +37,7 @@
 		void inGameEvents(SDL_Event event, ShaderProgram& program, float elasped);
 		void endGameEvents(SDL_Event event);
 		void updateThings(ShaderProgram & program, float elasped);
+		void shoot(AstralEntity & player, float elapsed);
 		void shoot(AstralEntity& player);
 		//void updateThings(ShaderProgram & program, SDL_Event event, float elasped);
 		void shoot(float elapsed);
@@ -72,6 +73,7 @@
 		const char* spritepath = "SpaceStuff.png";
 		bool done = false;
 		SDL_Event events;
+		bool shotfired = false;
 		//Projectile* shots = new Projectile[4];
 		//AstralEntity player[5];
 		//Projectile shots[10];

@@ -658,26 +658,30 @@ void SpacialArea::shoot(AstralEntity& player) {
 	////shots[0].YPos = -1.5;
 	//sprite.Draw(program);
 	//shots[0].incrementYPos(7.5 * elapsed);
-	if (player.position.y < 0) {
-		player.shots[shotIndex].position.y = player.position.y + 0.5;
-	}
-	else {
-		player.shots[shotIndex].position.y = player.position.y - 0.5;
-	}
-	player.shots[shotIndex].position.x = player.position.x;
-	shots[shotIndex].visible = true;
-	
-	
-	if (shots[shotIndex].position.y > 2.0) {
-		shots[shotIndex].position.y = -1.5;
-	}
-	shotIndex++;
-	
+	//if (shotfired) {
+		if (player.position.y < 0) {
+			player.shots[shotIndex].position.y = player.position.y + 0.5;
+		}
+		else {
+			player.shots[shotIndex].position.y = player.position.y - 0.5;
+		}
+		player.shots[shotIndex].position.x = player.position.x;
 
-	if (shotIndex > maxshots - 1) {
-		shotIndex = 0;
+		shots[shotIndex].visible = true;
+		//player.shots[player.ammoIndex].incrementYPos(8.0 * player.shots[player.ammoIndex].direction.y * elapsed);
 
-	}
+		if (shots[shotIndex].position.y > 2.0) {
+			shots[shotIndex].position.y = -1.5;
+		}
+		shotIndex++;
+
+
+		if (shotIndex > maxshots - 1) {
+			shotIndex = 0;
+
+		}
+	//}
+	
 
 }
 
@@ -713,7 +717,11 @@ bool SpacialArea::raySegmentIntersect(const Vector &rayOrigin, const Vector &ray
 	return true;
 }
 bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
-	
+	/*time_t timer;
+	if (time(&timer) % 5 == 0) {
+	score += 1;
+	}*/
+	time_t refireTimerOne, refireTimerTwo;
 	while (SDL_PollEvent(&events)) {
 
 		//done = environment.windowCloseChecker(event, ships, ammos, spriteSheets, program, fixedElapsed);
@@ -736,7 +744,9 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//shoot(program, FIXED_TIMESTEP);
 				//player[0].shots[player[0].ammoIndex].position.y = player[0].position.y;
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
-				shoot(player[0]);
+				if (time(&refireTimerOne) % 2 == 0) {
+					shoot(player[0]);
+				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_R) {
 				//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
@@ -744,7 +754,9 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//shoot(program, FIXED_TIMESTEP);
 				//player[0].shots[player[0].ammoIndex].position.y = player[0].position.y;
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
-				shoot(player[1]);
+				if (time(&refireTimerOne) % 2 == 0) {
+					shoot(player[1]);
+				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
 				Mix_PlayChannel(-1, start, 0);
@@ -839,7 +851,9 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//Button 0 is SQUARE, 1 is X, 2 is CIRCLE, 3 is TRANGLE, 4 IS L1, 5 is R1, 6 is L2, 7 is R2, 
 				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
 				if (events.jbutton.button == 5) 
-				shoot(player[0]);
+					if (time(&refireTimerOne) % 2 == 0) {
+						shoot(player[0]);
+					}
 			}
 			if (events.jbutton.which == 1)
 			{
@@ -849,7 +863,9 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
 				//For PS3 Controller, Button 9 IS L1
 				if (events.jbutton.button == 9)
-					shoot(player[1]);
+					if (time(&refireTimerOne) % 2 == 0) {
+						shoot(player[1]);
+					}
 			}
 		}
 		//if (events.type == SDL_KEYDOWN) {
