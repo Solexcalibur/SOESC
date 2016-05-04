@@ -44,6 +44,10 @@ Projectile::Projectile(){
 	velocity.x = 1.0;
 	velocity.y = 1.0;
 	velocity.z = 0.0;
+
+	direction.x = 1.0;
+	direction.y = 1.0;
+	direction.z = 0.0;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,
@@ -84,11 +88,11 @@ void Projectile::renderWithNoTexture(ShaderProgram program, float vertices[]){
 
 void Projectile::incrementYPos(float value){
 	position.y += value;
-	YPos += value;
+	//YPos += value;
 }
 void Projectile::incrementXPos(float value){
 	position.x += value;
-	XPos += value;
+	//XPos += value;
 }
 
 void Projectile::BlendSprite(GLuint& texture) {

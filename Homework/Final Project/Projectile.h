@@ -11,7 +11,7 @@ public:
 	Projectile(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix);
 	Projectile();
 
-	Vector position, velocity, acceleration;
+	Vector position, velocity, acceleration, direction;
 	float XPos, YPos, flightTime, width, height, velocityX, velocityY, accelertionX, accelerationY;
 	float vertices[12];
 	Matrix model, projection, view;

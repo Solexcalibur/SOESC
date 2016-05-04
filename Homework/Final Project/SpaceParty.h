@@ -14,6 +14,8 @@
 #define LEVEL_HEIGHT 32
 #define LEVEL_WIDTH 32
 #define TILE_SIZE 0.4f
+#define SPRITE_COUNT_X 32
+#define SPRITE_COUNT_Y 32
 
 	class SpacialArea {
 	public:
@@ -61,13 +63,18 @@
 
 		bool readHeader(std::ifstream & stream);
 
-		GLuint wordTexture, spriteSheetTexture, particletex;
+		void render(ShaderProgram & program);
+
+		void setupAndRender(ShaderProgram & program, float vertices[], float texCoords[], GLuint & texture);
+
+		
 		Mix_Chunk *scored, *gameover, *victory, *start;
 	private:
 		SDL_Window* displayWindow;
 		
 		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT };
 		int state, numEnemies, shotIndex, maxshots, score, index;
+		GLuint wordTexture, spriteSheetTexture, particletex, metalTex;
 		const Uint8* keys;
 		const char* fontSheetPath = "font2.png";
 		const char* spritepath = "SpaceStuff.png";
@@ -80,14 +87,19 @@
 		SpriteSheet sprites[6];
 		std::vector<AstralEntity> player;
 		std::vector<Projectile> shots;
-		int mapHeight, mapWidth, tileLength, tileHeight;
+		std::vector<float> vertexData;
+		std::vector<float> texCoordData;
+		std::vector<ParticleEmitter> party;
+		//ParticleEmitter party;
+		//ParticleEmitter party;
+		int mapHeight, mapWidth;
 		unsigned char** levelData;
 		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];
-		float r_filter, g_filter, b_filter;
+		float r_filter, g_filter, b_filter ,spriteWidth, spriteHeight, tileLength, tileHeight;
 		SDL_Joystick * playerOne;
 		SDL_Joystick * playerTwo;
 

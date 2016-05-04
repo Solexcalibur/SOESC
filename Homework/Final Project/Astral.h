@@ -40,11 +40,11 @@ public:
 	
 	Matrix model, projection, view;
 	GLuint texID;
-	Vector position, direction, acceleration, friction, velocity;
+	Vector position, direction, acceleration, friction, velocity, segment1, segment2;
 	float XPos, YPos, HDirection, VDirection, width, height, spriteIndex, accelerationX, accelerationY, velocityX, velocityY
 		, frictionX, frictionY, scaleFactor;
 	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
-	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health;
+	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health, shields;
 	std::vector<Projectile> shots;
 
 

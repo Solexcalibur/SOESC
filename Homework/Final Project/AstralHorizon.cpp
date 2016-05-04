@@ -75,11 +75,13 @@ int main(int argc, char *argv[]){
 	//unsigned int particlecnt = 10;
 	
 	
-	GLuint words = text.LoadTexture("font2.png");
-	GLuint sprites = environment.LoadTexture("SpaceStuff.png");
+	//GLuint words = text.LoadTexture("font2.png");
+	//GLuint sprites = environment.LoadTexture("SpaceStuff.png");
+	//GLuint partikle = environment.LoadTexture("fire.png");
 	
-	environment.wordTexture = words;
-	environment.spriteSheetTexture = sprites;
+	//environment.wordTexture = words;
+	//environment.spriteSheetTexture = sprites;
+	//environment.particletex = partikle;
 	//environment.particletex = particle;
 	//ParticleEmitter party(particlecnt);
 	//ParticleEmitter p;
@@ -105,7 +107,7 @@ int main(int argc, char *argv[]){
 	//index 1 to n will be enemies
 	//press space to draw index
 	
-	objects.push_back(text);
+	//objects.push_back(text);
 	//ships.push_back(player);
 
 	
@@ -117,7 +119,8 @@ int main(int argc, char *argv[]){
 	
 	text.setOrthoProjection();
 
-	
+	//environment.readFile("Metal Sheet Tiles.txt", program);
+	//environment.render(program);
 	Mix_PlayMusic(mysteriousSound, -1);
 	bool done = false;
 	float lastFrameTicks = 0.0;

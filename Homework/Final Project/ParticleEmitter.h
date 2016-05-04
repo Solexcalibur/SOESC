@@ -1,11 +1,14 @@
-#pragma once
+#ifndef PARTICLEEMITTER_H
+#define PARTICLEEMITTER_H
 #include "ShaderProgram.h"
 #include "Matrix.h"
 #include <map>
 #include <vector>
-//#include "Particle.h"
 #include "Vector.h"
 #include "Color.h"
+#include <SDL_image.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
 struct Particle {
 
 	Particle();
@@ -23,7 +26,8 @@ class ParticleEmitter {
 public:
 	ParticleEmitter();
 	ParticleEmitter(unsigned int ParticleCount);
-	~ParticleEmitter();
+	void SetTex(const char * path);
+	//~ParticleEmitter();
 
 	void Update(float elasped);
 	void Render(ShaderProgram* program);
@@ -33,6 +37,8 @@ public:
 
 	float lerp(float start, float end, float time);
 
+	GLuint LoadTexture(const char * image_path);
+	GLuint texture;
 	Color startColor, endColor;
 	Vector position, gravity, velocity, velocityDeviation;
 
@@ -42,3 +48,4 @@ public:
 
 	float minLifeTime, maxLifeTime, particleSize, decayRate, m, startSize, endSize, sizeDeviation;
 };
+#endif

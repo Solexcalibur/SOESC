@@ -51,6 +51,9 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	for (int i = 0; i < 10; i++) {
 		shots.push_back(Projectile());
 	}
+	for (int i = 0; i < 2; i++) {
+		party.push_back(ParticleEmitter(10));
+	}
 	//wordTexture = LoadTexture(fontSheetPath);
 	//spriteSheetTexture = LoadTexture(spritepath);
 	r_filter = 0.5;
@@ -126,6 +129,12 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	//shots[shotIndex].position.y = player[0].position.y;
 	numEnemies = player.size() - 1;
 	player[1].scaleFactor = -1.0;
+	mapHeight = LEVEL_HEIGHT;
+	mapWidth = LEVEL_WIDTH;
+	tileLength = TILE_SIZE * LEVEL_WIDTH;
+	tileHeight = TILE_SIZE * LEVEL_HEIGHT;
+	//particles = vector<ParticleEmitter>(10);
+	
 	
 }
 
@@ -151,8 +160,16 @@ void SpacialArea::setup() {
 	playerOne = SDL_JoystickOpen(0);
 	//SDL_JoystickEventState(SDL_ENABLE);
 	playerTwo = SDL_JoystickOpen(1);
-	
+	metalTex = LoadTexture("MetalSheet.png");
 	//scored = Mix_LoadWAV("Score.ogg");
+	//party.texture = LoadTexture("fire.png");
+	
+	
+	wordTexture = LoadTexture("font2.png");
+	particletex = LoadTexture("fire.png");
+	party[0].texture = particletex;
+	//party.SetTex("fire.png");
+	spriteSheetTexture = LoadTexture("SpaceStuff.png");
 
 #ifdef _WINDOWS
 	glewInit();
@@ -234,13 +251,14 @@ void SpacialArea::TitleScreen(ShaderProgram& program) {
 	//DrawText(program, fontTex, "Can you win?", 0.25, 0);
 
 
-	blendSprite(wordTexture);
+	blendSprite(particletex);
 
 }
 
 void SpacialArea::scoreBoard(ShaderProgram& program) {
-	DrawText(program, wordTexture, "HEALTH:" + to_string(player[1].health), 0.15, 0);
-	blendSprite(wordTexture);
+	DrawText(program, wordTexture,  "P2 HEALTH:" + to_string(player[1].health) + " SHIELDS:" + to_string(player[1].shields), 0.12, 0);
+	//DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields), 0.12, 0);
+	blendSprite(wordTexture); //Blend Particle Sprite
 
 }
 
@@ -256,7 +274,7 @@ void SpacialArea::VictoryScreen(ShaderProgram& program) {
 	
 	DrawText(program, wordTexture, "Good work! Go another round? (Press Enter)", 0.1, 0);
 	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
-	blendSprite(wordTexture);
+	//blendSprite(wordTexture);
 }
 
 void SpacialArea::screenSelector(ShaderProgram& program) {
@@ -302,15 +320,24 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 
 
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed) {
+	//party[0].Render(&program);
 
 	
+	//blendSprite(party[0].texture);
+
 	//numEnemies = player.size() - 1;
 	/*time_t timer;
 	if (time(&timer) % 5 == 0) {
 		score += 1;
 	}*/
-
-	
+	/*for (int i = 0; i < particles.size(); i++) {
+		particles[i].Render(&program);
+		particles[i].Update(elapsed);
+		
+	}
+	particles[0].EmitXDirection(2, true);*/
+	//render(program);
+	//setupAndRender(program, vertexData.data(), texCoordData.data(), metalTex);
 	int ammoIndex = 0;
 	//int maxshots = 10;
 
@@ -441,23 +468,23 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	player[1].shots[player[1].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 	player[1].model.Scale(1.0, player[1].scaleFactor, 1.0);
 	//for (int i = 1; i < 5; i++) {
-		if (player[1].position.x > 2.0) {
-			player[1].position.x = 2.0;
+		if (player[1].position.x > 2.7) {
+			player[1].position.x = 2.7;
 			//player[1].HDirection *= -1;
 			//player[i].incrementYPos(-0.25 * player[i].velocityY);
 		}
-		if (player[1].position.x < -2.0) {
-			player[1].position.x = -2.0;
+		if (player[1].position.x < -2.7) {
+			player[1].position.x = -2.7;
 			//player[1].HDirection *= -1;
 			//player[i].incrementYPos(-0.25 * player[i].velocityY);
 		}
-		if (player[0].position.x > 2.0) {
-			player[0].position.x = 2.0;
+		if (player[0].position.x > 2.7) {
+			player[0].position.x = 2.7;
 			//player[1].HDirection *= -1;
 			//player[i].incrementYPos(-0.25 * player[i].velocityY);
 		}
-		if (player[0].position.x < -2.0) {
-			player[0].position.x = -2.0;
+		if (player[0].position.x < -2.7) {
+			player[0].position.x = -2.7;
 			//player[1].HDirection *= -1;
 			//player[i].incrementYPos(-0.25 * player[i].velocityY);
 		}
@@ -505,27 +532,71 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[1].scaleFactor = -1.0;
 		player[1].shots[player[1].ammoIndex].direction.y = -1.0;
 	}
-	float ydist = abs(player[1].position.y - player[0].position.y);
-	bool collisiontwofromone, collissiononefromtwo;
-	/*collisiontwofromone = raySegmentIntersect(player[0].shots[player[0].ammoIndex].position, player[0].shots[player[0].ammoIndex].direction,
-		player[1].position, player[1].position, ydist);
+	float ydist = abs(player[0].position.y - player[1].position.y);
+	float xdist = 20;
+
+	if (player[0].shots[player[0].ammoIndex].position.y > 2.4 || player[0].shots[player[0].ammoIndex].position.y < - 2.4) {
+		player[0].shots[player[0].ammoIndex].visible = false;
+		player[0].shots[player[0].ammoIndex].scaleMatrix(0.0, 0.0, 0.0);
+	}
+	/*bool collisiontwofromone, collissiononefromtwo;
+	collisiontwofromone = raySegmentIntersect(player[0].shots[player[0].ammoIndex].position, player[0].shots[player[0].ammoIndex].direction,
+		player[1].segment1, player[1].segment2, xdist);
 	if (collisiontwofromone) {
 		shots[player[0].ammoIndex].visible = false;
 		score += 5;
 		player[1].health -= 10;
 	}*/
+	
 	//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
-	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy
-	//	if (shots[shotIndex].position.y < player[i].position.y + player[i].height * 0.95
-	//		&& shots[shotIndex].position.y > player[i].position.y - player[i].height * 0.95
-	//		&& shots[shotIndex].position.x < player[i].position.x + player[i].width * 0.95
-	//		&& shots[shotIndex].position.x > player[i].position.x - player[i].width * 0.95) {
-	//		if (shots[shotIndex].visible) {
-	//			//shots[shotIndex].position.y = player[0].position.y; //still gotta remove bullet, just a temp fix
-	//		shots[shotIndex].visible = false;
-	//			player[i].health -= 10;
-	//			//score += 5;
-	//		}
+	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy. Incresed hitbox so that hitting any part of ship deals damage
+		if (player[0].shots[player[0].ammoIndex].position.y < player[1].position.y + player[1].height * 0.5
+			&& player[0].shots[player[0].ammoIndex].position.y > player[1].position.y - player[1].height * 0.5
+			&& player[0].shots[player[0].ammoIndex].position.x < player[1].position.x + player[1].width * 3.25
+			&& player[0].shots[player[0].ammoIndex].position.x > player[1].position.x - player[1].width * 1.75) {
+			if (player[0].shots[player[0].ammoIndex].visible) {
+
+				player[0].shots[player[0].ammoIndex].position.x = 20.5;
+				player[0].shots[player[0].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
+				player[0].shots[player[0].ammoIndex].visible = false;
+				if (player[1].shields > 0) {
+					player[1].shields -= 6;
+					player[1].health -= 4;
+				}
+				else {
+					player[1].shields = 0;
+					player[0].shots[player[0].ammoIndex].position.y = 2.5;
+					player[1].health -= 10;
+					
+					
+				}
+				//score += 5;
+			}
+		}
+		if (player[1].shots[player[1].ammoIndex].position.y < player[0].position.y + player[0].height * 0.5
+			&& player[1].shots[player[1].ammoIndex].position.y > player[0].position.y - player[0].height * 0.5
+			&& player[1].shots[player[1].ammoIndex].position.x < player[0].position.x + player[0].width * 3.25
+			&& player[1].shots[player[1].ammoIndex].position.x > player[0].position.x - player[0].width * 1.75) {
+			if (player[1].shots[player[1].ammoIndex].visible) {
+				player[1].shots[player[1].ammoIndex].position.x = 20.5;
+				player[1].shots[player[1].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
+				player[1].shots[player[1].ammoIndex].visible = false;
+				if (player[0].shields > 0) {
+					player[0].shields -= 6;
+					player[0].health -= 4;
+				}
+				else {
+					player[1].shots[player[1].ammoIndex].position.y = 2.5;
+					player[0].health -= 10;
+					
+				}
+				//score += 5;
+			}
+		}
+		if (player[0].health < 0 || player[1].health < 0) {
+			state = 2;
+		}
+	//}
 	//		if (player[i].health <= 0) {
 	//			player[i].alive = false;
 	//			//player[i].setWidthAndHeight(0.0, 0.0);
@@ -614,15 +685,16 @@ void SpacialArea::endGameEvents(SDL_Event event) {
 		//	done = true;
 
 		//}
-		// if (event.type == SDL_KEYDOWN) {
-		//	if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { //RESET
-		//		player[1].alive = true;
-		//		numEnemies = 1;
-		//		state = 1;
-		//		
-		//		//player[1].YPos = 1.5;
-		//		//SpacialArea();
-		//	}
+	//if (event.type == SDL_KEYDOWN) {
+	//	if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { //RESET
+	//		player[1].alive = true;
+	//		numEnemies = 1;
+	//		state = 1;
+
+	//		//player[1].YPos = 1.5;
+	//		//SpacialArea();
+	//	}
+	//}
 		//	//shots[0].incrementYPos(4.0 * elapsed);
 
 		//}
@@ -667,7 +739,7 @@ void SpacialArea::shoot(AstralEntity& player) {
 		}
 		player.shots[shotIndex].position.x = player.position.x;
 
-		shots[shotIndex].visible = true;
+		player.shots[shotIndex].visible = true;
 		//player.shots[player.ammoIndex].incrementYPos(8.0 * player.shots[player.ammoIndex].direction.y * elapsed);
 
 		if (shots[shotIndex].position.y > 2.0) {
@@ -759,8 +831,25 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-				Mix_PlayChannel(-1, start, 0);
-				state = 1;
+				if (state == 0) {
+					Mix_PlayChannel(-1, start, 0);
+					player[0].health = 100;
+					player[0].shields = 100;
+					player[1].health = 100;
+					player[1].shields = 100;
+					state = 1;
+				}
+				else if (state == 2) {
+					player[0].health = 100;
+					player[0].shields = 100;
+					player[0].position.x = 2.0;
+					player[0].position.y = -2.0;
+					player[1].health = 100;
+					player[1].shields = 100;
+					player[1].position.x = -2.0;
+					player[1].position.y = 2.0;
+					state = 1;
+				}
 			}
 			//shots[0].incrementYPos(4.0 * elapsed);
 			//else if (events.type == SDL_JOYAXISMOTION) {
@@ -1147,4 +1236,79 @@ bool SpacialArea::readHeader(std::ifstream &stream) {
 		return true;
 	}
 }
+void SpacialArea::render(ShaderProgram& program) {
 
+	/*for (int i = 0; i < 7; i++) {
+	playerAnimation[i].textureID = animation;
+	}*/
+
+	for (int y = 0; y < LEVEL_HEIGHT; y++) {
+		for (int x = 0; x < LEVEL_WIDTH; x++) {
+			if (levelData[y][x] != 0) {
+
+				float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+				float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+
+				spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+				spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+
+				vertexData.insert(vertexData.end(), {
+					TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+
+					TILE_SIZE * x, -TILE_SIZE * y,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
+
+				});
+				texCoordData.insert(texCoordData.end(), {
+					u, v,
+					u, v + (spriteHeight),
+					u + spriteWidth, v + (spriteHeight),
+
+					u, v,
+					u + spriteWidth, v + (spriteHeight),
+					u + spriteWidth, v
+				});
+
+
+
+				
+				/*if (player.XPos < -2.6) {
+				player.XPos = -2.59999999999;
+				}
+				if (player.XPos > 2.5) {
+				player.XPos = 2.49999999999;
+				}*/
+			}
+
+
+		}
+
+	}
+	//bool x = solid[20][20];
+
+	//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
+	//worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
+
+
+}
+void SpacialArea::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {
+	blendSprite(texture);//Blend first? Why?
+	glUseProgram(program.programID);
+
+
+
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(program.positionAttribute);
+
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(program.texCoordAttribute);
+
+	glDrawArrays(GL_TRIANGLES, 0, LEVEL_HEIGHT * LEVEL_WIDTH * 6);
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
+
+
+}
