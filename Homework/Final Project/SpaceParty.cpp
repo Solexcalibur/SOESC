@@ -119,6 +119,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	sprites[5].width = 9.0 / 1024.0;
 	sprites[5].height = 54.0 / 1024.0;
 	sprites[5].size = 0.4;
+	//<SubTexture name="shield1.png" x="0" y="412" width="133" height="108"/>
 	player[0].shots[shotIndex].width = sprites[1].width;
 	player[0].shots[shotIndex].height = sprites[1].height;
 	player[0].shots[shotIndex].position.y = player[0].position.y;
@@ -134,7 +135,10 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	tileLength = TILE_SIZE * LEVEL_WIDTH;
 	tileHeight = TILE_SIZE * LEVEL_HEIGHT;
 	//particles = vector<ParticleEmitter>(10);
-	
+	playerIndexOne = 0;
+	playerIndexTwo = 0;
+	laserIndexOne = 1;
+	laserIndexTwo = 1;
 	
 }
 
@@ -144,6 +148,8 @@ SpacialArea::~SpacialArea()
 	playerOne = nullptr;
 	SDL_JoystickClose(playerTwo);
 	playerTwo = nullptr;
+	Mix_FreeChunk(laserShot);
+	Mix_FreeChunk(select);
 	SDL_Quit();
 }
 
@@ -155,6 +161,7 @@ void SpacialArea::setup() {
 	displayWindow = SDL_CreateWindow("Astral Horizon", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 	//SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN);
 	SDL_JoystickEventState(SDL_ENABLE);
 	playerOne = SDL_JoystickOpen(0);
@@ -164,12 +171,15 @@ void SpacialArea::setup() {
 	//scored = Mix_LoadWAV("Score.ogg");
 	//party.texture = LoadTexture("fire.png");
 	
-	
+	particle.party = ParticleEmitter(2);
 	wordTexture = LoadTexture("font2.png");
 	particletex = LoadTexture("fire.png");
 	party[0].texture = particletex;
+	particle.texID = LoadTexture("fire.png");
 	//party.SetTex("fire.png");
 	spriteSheetTexture = LoadTexture("SpaceStuff.png");
+	laserShot = Mix_LoadWAV("Laser_Shoot26.wav");
+	select = Mix_LoadWAV("Blip_Select.wav");
 
 #ifdef _WINDOWS
 	glewInit();
@@ -292,9 +302,31 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 	case STATE_VICTORY:
 		VictoryScreen(program);
 		break;
+	case STATE_CHARACTER_SELECT:
+		SelectCharacter(program);
+		break;
 	}
 }
 
+void SpacialArea::SelectCharacter(ShaderProgram& program) {
+	DrawText(program, wordTexture, "Select your ship", 0.077, 0);
+	sprites[playerIndexOne].textureID = spriteSheetTexture;
+	player[0].setMatrices(program);
+	player[0].setOrthoProjection();
+	player[0].identityMatrix();
+	player[0].moveMatrix(2.5, 0.0, 0.0);
+	//spriteSheets[0].Draw(program);
+	sprites[playerIndexOne].Draw(program);
+	sprites[playerIndexTwo].textureID = spriteSheetTexture;
+	player[1].setMatrices(program);
+	player[1].setOrthoProjection();
+	player[1].identityMatrix();
+	player[1].moveMatrix(-2.5, 0.0, 0.0);
+	//spriteSheets[0].Draw(program);
+	sprites[playerIndexTwo].Draw(program);
+
+
+}
 void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 
 	//while (SDL_PollEvent(&events)) {
@@ -318,11 +350,64 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 
 }
 
+void SpacialArea::setupThings(ShaderProgram& program) {
+	sprites[playerIndexOne].textureID = spriteSheetTexture;
+	player[0].setMatrices(program);
+	player[0].setOrthoProjection();
+	player[0].identityMatrix();
+	player[0].moveMatrix(player[0].position.x, player[0].position.y, 0.0);
+	//spriteSheets[0].Draw(program);
+	sprites[playerIndexOne].Draw(program);
+	if (playerIndexOne == 0)
+		laserIndexOne = 1;
+	else if (playerIndexOne == 2)
+		laserIndexOne = 4;
+	else if (playerIndexOne == 3)
+		laserIndexOne = 5;
 
+	sprites[laserIndexOne].textureID = spriteSheetTexture;
+	/*shots[shotIndex].setOrthoProjection();
+	shots[shotIndex].setMatrices(program);
+	shots[shotIndex].identityMatrix();*/
+	player[0].shots[player[0].ammoIndex].setOrthoProjection();
+	player[0].shots[player[0].ammoIndex].setMatrices(program);
+	player[0].shots[player[0].ammoIndex].identityMatrix();
+	sprites[laserIndexOne].Draw(program);
+	if (playerIndexTwo == 0)
+		laserIndexTwo = 1;
+	else if (playerIndexTwo == 2)
+		laserIndexTwo = 4;
+	else if (playerIndexTwo == 3)
+		laserIndexTwo = 5;
+	sprites[playerIndexTwo].textureID = spriteSheetTexture;
+	player[1].setMatrices(program);
+	player[1].setOrthoProjection();
+	player[1].identityMatrix();
+	player[1].moveMatrix(player[1].position.x, player[1].position.y, 0.0);
+	//player[indx].alive = true;
+	//spriteSheets[2].Draw(program);
+	sprites[playerIndexTwo].Draw(program);
+
+	sprites[laserIndexTwo].textureID = spriteSheetTexture;
+	/*shots[shotIndex].setOrthoProjection();
+	shots[shotIndex].setMatrices(program);
+	shots[shotIndex].identityMatrix();*/
+	player[1].shots[player[1].ammoIndex].setOrthoProjection();
+	player[1].shots[player[1].ammoIndex].setMatrices(program);
+	player[1].shots[player[1].ammoIndex].identityMatrix();
+	sprites[laserIndexTwo].Draw(program);
+}
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed) {
-	//party[0].Render(&program);
-
 	
+	setupThings(program);
+
+
+	/*particle.setOrthoProjection();
+	particle.setMatrices(program);
+	particle.identityMatrix();*/
+	
+
+	//party[0].Update(elapsed);
 	//blendSprite(party[0].texture);
 
 	//numEnemies = player.size() - 1;
@@ -333,6 +418,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	/*for (int i = 0; i < particles.size(); i++) {
 		particles[i].Render(&program);
 		particles[i].Update(elapsed);
+
 		
 	}
 	particles[0].EmitXDirection(2, true);*/
@@ -347,13 +433,13 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	}
 	
 	//objects[0].setMatrices(program);
-	sprites[0].textureID = spriteSheetTexture;
-	player[0].setMatrices(program);
-	player[0].setOrthoProjection();
-	player[0].identityMatrix();
-	player[0].moveMatrix(player[0].position.x, player[0].position.y, 0.0);
-	//spriteSheets[0].Draw(program);
-	sprites[0].Draw(program);
+	//sprites[0].textureID = spriteSheetTexture;
+	//player[0].setMatrices(program);
+	//player[0].setOrthoProjection();
+	//player[0].identityMatrix();
+	//player[0].moveMatrix(player[0].position.x, player[0].position.y, 0.0);
+	////spriteSheets[0].Draw(program);
+	//sprites[0].Draw(program);
 	
 	//for (int k = 0; k < 2; k++) {
 	//	player[k].velocity.x += player[k].acceleration.x * FIXED_TIMESTEP;
@@ -369,36 +455,29 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	//}
 	//for (int indx = 1; indx < 5; indx++) {
 		//if (player[indx].alive) {
-			sprites[2].textureID = spriteSheetTexture;
-			player[1].setMatrices(program);
-			player[1].setOrthoProjection();
-			player[1].identityMatrix();
-			player[1].moveMatrix(player[1].position.x, player[1].position.y, 0.0);
-			//player[indx].alive = true;
-			//spriteSheets[2].Draw(program);
-			sprites[2].Draw(program);
+			
 		//}
 	//}
 
 
 
-	sprites[1].textureID = spriteSheetTexture;
-	/*shots[shotIndex].setOrthoProjection();
-	shots[shotIndex].setMatrices(program);
-	shots[shotIndex].identityMatrix();*/
-	player[0].shots[player[0].ammoIndex].setOrthoProjection();
-	player[0].shots[player[0].ammoIndex].setMatrices(program);
-	player[0].shots[player[0].ammoIndex].identityMatrix();
-	sprites[1].Draw(program);
+	//sprites[1].textureID = spriteSheetTexture;
+	///*shots[shotIndex].setOrthoProjection();
+	//shots[shotIndex].setMatrices(program);
+	//shots[shotIndex].identityMatrix();*/
+	//player[0].shots[player[0].ammoIndex].setOrthoProjection();
+	//player[0].shots[player[0].ammoIndex].setMatrices(program);
+	//player[0].shots[player[0].ammoIndex].identityMatrix();
+	//sprites[1].Draw(program);
 
-	sprites[4].textureID = spriteSheetTexture;
-	/*shots[shotIndex].setOrthoProjection();
-	shots[shotIndex].setMatrices(program);
-	shots[shotIndex].identityMatrix();*/
-	player[1].shots[player[1].ammoIndex].setOrthoProjection();
-	player[1].shots[player[1].ammoIndex].setMatrices(program);
-	player[1].shots[player[1].ammoIndex].identityMatrix();
-	sprites[4].Draw(program);
+	//sprites[4].textureID = spriteSheetTexture;
+	///*shots[shotIndex].setOrthoProjection();
+	//shots[shotIndex].setMatrices(program);
+	//shots[shotIndex].identityMatrix();*/
+	//player[1].shots[player[1].ammoIndex].setOrthoProjection();
+	//player[1].shots[player[1].ammoIndex].setMatrices(program);
+	//player[1].shots[player[1].ammoIndex].identityMatrix();
+	//sprites[4].Draw(program);
 	
 	/*shots[shotIndex].setMatrices(program);
 	shots[shotIndex].identityMatrix();
@@ -463,7 +542,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	//}
 
 
-
+	
 	player[0].model.Scale(1.0, player[0].scaleFactor, 1.0);
 	player[1].shots[player[1].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 	player[1].model.Scale(1.0, player[1].scaleFactor, 1.0);
@@ -810,13 +889,57 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//player[1].YPos = 1.5;
 				//SpacialArea();
 			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_LEFT) {
+				if (state == 4) {
+					Mix_PlayChannel(-1, select, 0);
+					playerIndexOne--;
+					if (playerIndexOne < 0)
+						playerIndexOne = 3;
+					else if (playerIndexOne == 1)
+						playerIndexOne = 0;
+					
+				}
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_RIGHT) {
+				if (state == 4) {
+					Mix_PlayChannel(-1, select, 0);
+					playerIndexOne++;
+					if (playerIndexOne > 3)
+						playerIndexOne = 0;
+					else if (playerIndexOne == 1)
+						playerIndexOne = 2;
+				}
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_A) {
+				if (state == 4) {
+					Mix_PlayChannel(-1, select, 0);
+					playerIndexTwo--;
+					if (playerIndexTwo < 0)
+						playerIndexTwo = 3;
+					else if (playerIndexTwo == 1)
+						playerIndexTwo = 0;
+
+				}
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_D) {
+				if (state == 4) {
+					Mix_PlayChannel(-1, select, 0);
+					playerIndexTwo++;
+					if (playerIndexTwo > 3)
+						playerIndexTwo = 0;
+					else if (playerIndexTwo == 1)
+						playerIndexTwo = 2;
+				}
+			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+
 				//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
 				//shoot(program, FIXED_TIMESTEP);
 				//player[0].shots[player[0].ammoIndex].position.y = player[0].position.y;
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
 				if (time(&refireTimerOne) % 2 == 0) {
+					Mix_PlayChannel(-1, laserShot, 0);
 					shoot(player[0]);
 				}
 			}
@@ -827,17 +950,23 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//player[0].shots[player[0].ammoIndex].position.y = player[0].position.y;
 				//player[0].shots[player[0].ammoIndex].position.x = player[0].position.x;
 				if (time(&refireTimerOne) % 2 == 0) {
+					Mix_PlayChannel(-1, laserShot, 0);
 					shoot(player[1]);
 				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
 				if (state == 0) {
+					
+					state = 4;
+				}
+				else if (state == 4) {
 					Mix_PlayChannel(-1, start, 0);
 					player[0].health = 100;
 					player[0].shields = 100;
 					player[1].health = 100;
 					player[1].shields = 100;
 					state = 1;
+
 				}
 				else if (state == 2) {
 					player[0].health = 100;
@@ -941,6 +1070,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
 				if (events.jbutton.button == 5) 
 					if (time(&refireTimerOne) % 2 == 0) {
+						Mix_PlayChannel(-1, laserShot, 0);
 						shoot(player[0]);
 					}
 			}
@@ -953,6 +1083,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//For PS3 Controller, Button 9 IS L1
 				if (events.jbutton.button == 9)
 					if (time(&refireTimerOne) % 2 == 0) {
+						Mix_PlayChannel(-1, laserShot, 0);
 						shoot(player[1]);
 					}
 			}

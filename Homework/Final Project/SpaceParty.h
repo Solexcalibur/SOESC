@@ -33,9 +33,13 @@
 		void blendSprite(GLuint& texture);
 		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
 		void screenSelector(ShaderProgram& program);
+		void SelectCharacter();
+		void SelectCharacter(ShaderProgram & program);
 		//void updateThings(ShaderProgram& program, std::vector<AstralEntity>& objects, Projectile ammo[],
 		//	SDL_Event event, std::vector<SpriteSheet>& spriteSheets, float elasped);
 		void titleEvents(SDL_Event event, ShaderProgram& program);
+		void setupThings();
+		void setupThings(ShaderProgram & program);
 		void inGameEvents(SDL_Event event, ShaderProgram& program, float elasped);
 		void endGameEvents(SDL_Event event);
 		void updateThings(ShaderProgram & program, float elasped);
@@ -68,7 +72,7 @@
 		void setupAndRender(ShaderProgram & program, float vertices[], float texCoords[], GLuint & texture);
 
 		
-		Mix_Chunk *scored, *gameover, *victory, *start;
+		Mix_Chunk *scored, *gameover, *victory, *start, *laserShot, *select;
 	private:
 		SDL_Window* displayWindow;
 		
@@ -86,13 +90,15 @@
 		//Projectile shots[10];
 		SpriteSheet sprites[6];
 		std::vector<AstralEntity> player;
+		std::vector<AstralEntity> levels;
 		std::vector<Projectile> shots;
 		std::vector<float> vertexData;
 		std::vector<float> texCoordData;
 		std::vector<ParticleEmitter> party;
+		AstralEntity particle;
 		//ParticleEmitter party;
 		//ParticleEmitter party;
-		int mapHeight, mapWidth;
+		int mapHeight, mapWidth, playerIndexOne, playerIndexTwo, laserIndexOne, laserIndexTwo;
 		unsigned char** levelData;
 		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];

@@ -5,6 +5,7 @@
 #include "Projectile.h"
 #include "SpriteSheet.h"
 #include "Vector.h"
+#include "ParticleEmitter.h"
 #include <vector>
 
 
@@ -45,6 +46,7 @@ public:
 		, frictionX, frictionY, scaleFactor;
 	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
 	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health, shields;
+	ParticleEmitter party;
 	std::vector<Projectile> shots;
 
 

@@ -20,6 +20,7 @@ The bulk of the functions are in SpaceParty.cpp
 #include "Projectile.h"//
 #include "ParticleEmitter.h"
 //#include "Color.h"
+#include "Cubic.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -72,7 +73,8 @@ int main(int argc, char *argv[]){
 	environment.victory = victory;
 	begin = Mix_LoadWAV("Skyjack.ogg");
 	environment.start = begin;
-	//unsigned int particlecnt = 10;
+	unsigned int particlecnt = 10;
+	Cubic cube;
 	
 	
 	//GLuint words = text.LoadTexture("font2.png");
@@ -84,6 +86,7 @@ int main(int argc, char *argv[]){
 	//environment.particletex = partikle;
 	//environment.particletex = particle;
 	//ParticleEmitter party(particlecnt);
+	//party.texture = partikle;
 	//ParticleEmitter p;
 	/*GLuint particle = party.LoadTexture("fire.png");
 	particletest.texID = particle;*/
@@ -119,9 +122,12 @@ int main(int argc, char *argv[]){
 	
 	text.setOrthoProjection();
 
+	
 	//environment.readFile("Metal Sheet Tiles.txt", program);
 	//environment.render(program);
 	Mix_PlayMusic(mysteriousSound, -1);
+	float cubex = cube.easeIn(0, 2, 3, 4);
+	float cubey = cube.easeInOut(0, 2, 3, 4);
 	bool done = false;
 	float lastFrameTicks = 0.0;
 	SDL_Event event;
@@ -158,15 +164,22 @@ int main(int argc, char *argv[]){
 		environment.updateThings(program, fixedElapsed);
 		//environment.windowCloseChecker(event);
 		
-		
+		//party.Render(&program);
+		//party.Update(elapsed);
 	
 		
 		
 
 		text.setMatrices(program);
 		text.identityMatrix();
-		text.moveMatrix(-2.5, 2.6, 0.0);
-		
+		//text.position.x = 0.0;
+		text.moveMatrix(text.position.x, 2.6, 0.0);
+		//text.incrementXPos(text.lerp(0, 0.5 * cubex, 1));
+		//text.incrementXPos(-1 * cube.easeIn((0,0,2,1),0,1,1));
+		//
+		//text.incrementXPos(0.5 * cubey  * FIXED_TIMESTEP);
+		if (text.position.x > 3.0)
+			text.position.x = -6.0;
 		//particletest.setMatrices(program);
 		//party.Render(&program);
 
