@@ -28,7 +28,7 @@
 		void scoreBoard(ShaderProgram& program);
 		void gameOverScreen(ShaderProgram& program);
 		void VictoryScreen(ShaderProgram & program);
-		void DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing);
+		//void DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing);
 		GLuint LoadTexture(const char* image_path);
 		void blendSprite(GLuint& texture);
 		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
@@ -57,6 +57,7 @@
 		bool windowCloseChecker(SDL_Event event);
 		void clearScreen();
 		void windowSwapping();
+		void DrawText(ShaderProgram & program, int fontTexture, std::string text, float size, float spacing, float x, float y);
 		void sweep(int index);
 		void readFile(const char * levelFile, ShaderProgram & program);
 		bool readEntityData(std::ifstream & stream, ShaderProgram & program);
@@ -70,6 +71,12 @@
 		void render(ShaderProgram & program);
 
 		void setupAndRender(ShaderProgram & program, float vertices[], float texCoords[], GLuint & texture);
+
+		float mapValue(float value, float srcMin, float srcMax, float dstMin, float dstMax);
+
+		float easeIn(float from, float to, float time);
+
+		void DrawTextz(GLuint fontTexture, std::string text, float size, float spacing, float r, float g, float b, float a, float x, float y);
 
 		
 		Mix_Chunk *scored, *gameover, *victory, *start, *laserShot, *select;
@@ -91,6 +98,7 @@
 		SpriteSheet sprites[6];
 		std::vector<AstralEntity> player;
 		std::vector<AstralEntity> levels;
+		std::vector<AstralEntity> text;
 		std::vector<Projectile> shots;
 		std::vector<float> vertexData;
 		std::vector<float> texCoordData;
@@ -105,7 +113,7 @@
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];
-		float r_filter, g_filter, b_filter ,spriteWidth, spriteHeight, tileLength, tileHeight;
+		float r_filter, g_filter, b_filter ,spriteWidth, spriteHeight, tileLength, tileHeight, animationTime;
 		SDL_Joystick * playerOne;
 		SDL_Joystick * playerTwo;
 

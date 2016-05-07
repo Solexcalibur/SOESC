@@ -53,8 +53,8 @@ int main(int argc, char *argv[]){
 	vector<AstralEntity> objects;
 	AstralEntity text(model, projection, view);
 	AstralEntity particletest(model, projection, view);
-	/*AstralEntity text2(model, projection, view);
-	AstralEntity player(model, projection, view);
+	AstralEntity text2(model, projection, view);
+	/*AstralEntity player(model, projection, view);
 	AstralEntity enemy(model, projection, view);
 	AstralEntity enemy2(model, projection, view);*/
 
@@ -121,6 +121,7 @@ int main(int argc, char *argv[]){
 	//int ammoIndex = 0;
 	
 	text.setOrthoProjection();
+	//text2.setOrthoProjection();
 
 	
 	//environment.readFile("Metal Sheet Tiles.txt", program);
@@ -128,6 +129,7 @@ int main(int argc, char *argv[]){
 	Mix_PlayMusic(mysteriousSound, -1);
 	float cubex = cube.easeIn(0, 2, 3, 4);
 	float cubey = cube.easeInOut(0, 2, 3, 4);
+	float animationTime = 0;
 	bool done = false;
 	float lastFrameTicks = 0.0;
 	SDL_Event event;
@@ -144,6 +146,8 @@ int main(int argc, char *argv[]){
 
 		//}
 		done = environment.inputProcessor(program,fixedElapsed);
+		animationTime += elapsed;
+		float animationValue = environment.mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
 		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) 
 		{ fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS; } 
 
@@ -172,8 +176,9 @@ int main(int argc, char *argv[]){
 
 		text.setMatrices(program);
 		text.identityMatrix();
-		//text.position.x = 0.0;
-		text.moveMatrix(text.position.x, 2.6, 0.0);
+		text.position.x = 0.0;
+		text.moveMatrix(0.0, 2.5, 0.0);
+
 		//text.incrementXPos(text.lerp(0, 0.5 * cubex, 1));
 		//text.incrementXPos(-1 * cube.easeIn((0,0,2,1),0,1,1));
 		//

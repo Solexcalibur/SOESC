@@ -47,6 +47,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	playerTwo = nullptr;
 	for (int i = 0; i < 5; i++) {
 		player.push_back(AstralEntity());
+		text.push_back(AstralEntity());
 	}
 	for (int i = 0; i < 10; i++) {
 		shots.push_back(Projectile());
@@ -119,6 +120,8 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	sprites[5].width = 9.0 / 1024.0;
 	sprites[5].height = 54.0 / 1024.0;
 	sprites[5].size = 0.4;
+	player[0].width = sprites[2].width;
+	player[0].height = sprites[2].height;
 	//<SubTexture name="shield1.png" x="0" y="412" width="133" height="108"/>
 	player[0].shots[shotIndex].width = sprites[1].width;
 	player[0].shots[shotIndex].height = sprites[1].height;
@@ -126,6 +129,12 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	player[0].shots[shotIndex].position.x = player[0].position.x;
 	player[0].shots[shotIndex].direction.x = player[0].direction.x;
 	player[0].shots[shotIndex].direction.y = 1.0;
+	player[1].shots[shotIndex].width = sprites[1].width;
+	player[1].shots[shotIndex].height = sprites[1].height;
+	player[1].shots[shotIndex].position.y = player[1].position.y;
+	player[1].shots[shotIndex].position.x = player[1].position.x;
+	player[1].shots[shotIndex].direction.x = player[1].direction.x;
+	player[1].shots[shotIndex].direction.y = 1.0;
 	//player = new AstralEntity();
 	//shots[shotIndex].position.y = player[0].position.y;
 	numEnemies = player.size() - 1;
@@ -139,6 +148,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	playerIndexTwo = 0;
 	laserIndexOne = 1;
 	laserIndexTwo = 1;
+	animationTime = 0;
 	
 }
 
@@ -176,6 +186,10 @@ void SpacialArea::setup() {
 	particletex = LoadTexture("fire.png");
 	party[0].texture = particletex;
 	particle.texID = LoadTexture("fire.png");
+	for (int i = 0; i < 5; i++) {
+		text[i].setOrthoProjection();
+		text[i].texID = wordTexture;
+	}
 	//party.SetTex("fire.png");
 	spriteSheetTexture = LoadTexture("SpaceStuff.png");
 	laserShot = Mix_LoadWAV("Laser_Shoot26.wav");
@@ -209,18 +223,19 @@ void SpacialArea::windowSwapping() {
 
 
 
-void SpacialArea::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing) {
+void SpacialArea::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing, float x, float y) {
 	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;
+	
 	for (int i = 0; i < text.size(); i++) {
 		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
 		float texture_y = (float)(((int)text[i]) / 16) / 16.0f;
 		vertexData.insert(vertexData.end(),
-		{ ((size + spacing) * i) + (-0.5f * size), 0.5f * size,
-			((size + spacing) * i) + (-0.5f * size), -0.5f * size,
-			((size + spacing) * i) + (0.5f * size), 0.5f * size,
-			((size + spacing) * i) + (0.5f * size), -0.5f * size,
-			((size + spacing) * i) + (0.5f * size), 0.5f * size,
-			((size + spacing) * i) + (-0.5f * size), -0.5f * size, });
+		{ ((size + spacing) * i) + (-0.5f * size) + x, 0.5f * size + y,
+			((size + spacing) * i) + (-0.5f * size) + x, -0.5f * size + y,
+			((size + spacing) * i) + (0.5f * size) + x, 0.5f * size + y,
+			((size + spacing) * i) + (0.5f * size) + x, -0.5f * size + y,
+			((size + spacing) * i) + (0.5f * size) + x, 0.5f * size + y,
+			((size + spacing) * i) + (-0.5f * size) + x, -0.5f * size + y, });
 
 		texCoordData.insert(texCoordData.end(),
 		{ texture_x, texture_y, texture_x, texture_y + texture_size, texture_x + texture_size,
@@ -256,7 +271,11 @@ void SpacialArea::blendSprite(GLuint& texture) {
 
 void SpacialArea::TitleScreen(ShaderProgram& program) {
 	//Mix_PlayChannel(-1, start, 0);
-	DrawText(program, wordTexture, "Astral Horizon! 1 V 1! Fight, kill, survive!", 0.077, 0);
+	//DrawText(program, wordTexture, "Astral Horizon! 1 V 1! Fight, kill, survive!", 0.077, 0);
+	DrawText(program, wordTexture, "SCIENCE", 0.077, 0, -2.0, 0.0);
+	//text[0].setMatrices(program);
+	//text[0].identityMatrix();
+	//text[0].moveMatrix(-3.0, 0.0, 0.0);
 	//DrawText(program, fontTex, "2 v 1", 0.25, 0);
 	//DrawText(program, fontTex, "Can you win?", 0.25, 0);
 
@@ -266,7 +285,14 @@ void SpacialArea::TitleScreen(ShaderProgram& program) {
 }
 
 void SpacialArea::scoreBoard(ShaderProgram& program) {
-	DrawText(program, wordTexture,  "P2 HEALTH:" + to_string(player[1].health) + " SHIELDS:" + to_string(player[1].shields), 0.12, 0);
+	DrawText(program, wordTexture, "P2 HEALTH:" + to_string(player[1].health) + " SHIELDS:" + to_string(player[1].shields), 
+		0.12, 0, -2.8, 0.0);
+	DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields),
+		0.12, 0, 0.0, -5.0);
+	//DrawTextz(wordTexture, "P1 HEALTH:", 0.12, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	//text[1].setMatrices(program);
+	//text[1].identityMatrix();
+	
 	//DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields), 0.12, 0);
 	blendSprite(wordTexture); //Blend Particle Sprite
 
@@ -274,7 +300,15 @@ void SpacialArea::scoreBoard(ShaderProgram& program) {
 
 void SpacialArea::gameOverScreen(ShaderProgram& program) {
 	
-	DrawText(program, wordTexture, "GAME OVER! DARE TO PLAY AGAIN? (Press Enter)", 0.11, 0);
+	if (player[0].health == 0 && player[1].health > 0) {
+		DrawText(program, wordTexture, "Player 1 Wins!", 0.11, 0, -2.0, 0.0);
+	}
+	else if (player[1].health == 0 && player[0].health > 0) {
+		DrawText(program, wordTexture, "Player 2 Wins!", 0.11, 0, -2.0, 0.0);
+	}
+	else {
+		DrawText(program, wordTexture, "Mutually Assured Death!", 0.11, 0, -2.0, 0.0);
+	}
 	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
 	blendSprite(wordTexture);
 
@@ -282,7 +316,7 @@ void SpacialArea::gameOverScreen(ShaderProgram& program) {
 
 void SpacialArea::VictoryScreen(ShaderProgram& program) {
 	
-	DrawText(program, wordTexture, "Good work! Go another round? (Press Enter)", 0.1, 0);
+	DrawText(program, wordTexture, "Good work! Go another round? (Press Enter)", 0.1, 0, 0.0, 0.0);
 	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
 	//blendSprite(wordTexture);
 }
@@ -309,7 +343,7 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 }
 
 void SpacialArea::SelectCharacter(ShaderProgram& program) {
-	DrawText(program, wordTexture, "Select your ship", 0.077, 0);
+	DrawText(program, wordTexture, "Select your ship", 0.077, 0, 0.0, 0.0);
 	sprites[playerIndexOne].textureID = spriteSheetTexture;
 	player[0].setMatrices(program);
 	player[0].setOrthoProjection();
@@ -401,7 +435,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	
 	setupThings(program);
 
-
+	animationTime += elapsed;
+	float animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
+	//text[1].moveMatrix(text[1].lerp(0.0, 1.0, animationValue), 0.0, 0.0);
+	//text[1].moveMatrix(-1.0 * elapsed, 0.0, 0.0);
 	/*particle.setOrthoProjection();
 	particle.setMatrices(program);
 	particle.identityMatrix();*/
@@ -431,6 +468,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		shotIndex = 0;
 
 	}
+	
 	
 	//objects[0].setMatrices(program);
 	//sprites[0].textureID = spriteSheetTexture;
@@ -618,6 +656,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[0].shots[player[0].ammoIndex].visible = false;
 		player[0].shots[player[0].ammoIndex].scaleMatrix(0.0, 0.0, 0.0);
 	}
+	if (player[1].shots[player[1].ammoIndex].position.y > 2.4 || player[1].shots[player[1].ammoIndex].position.y < -2.4) {
+		player[1].shots[player[1].ammoIndex].visible = false;
+		player[1].shots[player[1].ammoIndex].scaleMatrix(0.0, 0.0, 0.0);
+	}
 	/*bool collisiontwofromone, collissiononefromtwo;
 	collisiontwofromone = raySegmentIntersect(player[0].shots[player[0].ammoIndex].position, player[0].shots[player[0].ammoIndex].direction,
 		player[1].segment1, player[1].segment2, xdist);
@@ -631,8 +673,8 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy. Incresed hitbox so that hitting any part of ship deals damage
 		if (player[0].shots[player[0].ammoIndex].position.y < player[1].position.y + player[1].height * 0.5
 			&& player[0].shots[player[0].ammoIndex].position.y > player[1].position.y - player[1].height * 0.5
-			&& player[0].shots[player[0].ammoIndex].position.x < player[1].position.x + player[1].width * 3.25
-			&& player[0].shots[player[0].ammoIndex].position.x > player[1].position.x - player[1].width * 1.75) {
+			&& player[0].shots[player[0].ammoIndex].position.x < player[1].position.x + player[1].width * 3.45
+			&& player[0].shots[player[0].ammoIndex].position.x > player[1].position.x - player[1].width * 1.5) {
 			if (player[0].shots[player[0].ammoIndex].visible) {
 
 				player[0].shots[player[0].ammoIndex].position.x = 20.5;
@@ -654,9 +696,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		}
 		if (player[1].shots[player[1].ammoIndex].position.y < player[0].position.y + player[0].height * 0.5
 			&& player[1].shots[player[1].ammoIndex].position.y > player[0].position.y - player[0].height * 0.5
-			&& player[1].shots[player[1].ammoIndex].position.x < player[0].position.x + player[0].width * 3.25
-			&& player[1].shots[player[1].ammoIndex].position.x > player[0].position.x - player[0].width * 1.75) {
+			&& player[1].shots[player[1].ammoIndex].position.x < player[0].position.x + player[0].width * 3.45
+			&& player[1].shots[player[1].ammoIndex].position.x > player[0].position.x - player[0].width * 1.5) {
 			if (player[1].shots[player[1].ammoIndex].visible) {
+
 				player[1].shots[player[1].ammoIndex].position.x = 20.5;
 				player[1].shots[player[1].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
 				player[1].shots[player[1].ammoIndex].visible = false;
@@ -665,13 +708,16 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 					player[0].health -= 4;
 				}
 				else {
-					player[1].shots[player[1].ammoIndex].position.y = 2.5;
+					player[0].shields = 0;
+					player[1].shots[player[0].ammoIndex].position.y = 2.5;
 					player[0].health -= 10;
-					
+
+
 				}
 				//score += 5;
 			}
 		}
+		
 		if (player[0].health < 0 || player[1].health < 0) {
 			state = 2;
 		}
@@ -1442,4 +1488,18 @@ void SpacialArea::setupAndRender(ShaderProgram& program, float vertices[], float
 	glDisableVertexAttribArray(program.texCoordAttribute);
 
 
+}
+float SpacialArea::mapValue(float value, float srcMin, float srcMax, float dstMin, float dstMax) {
+	float retVal = dstMin + ((value - srcMin) / (srcMax - srcMin) * (dstMax - dstMin));
+	if (retVal < dstMin) {
+		retVal = dstMin;
+	}
+	if (retVal > dstMax) {
+		retVal = dstMax;
+	}
+	return retVal;
+}
+float SpacialArea::easeIn(float from, float to, float time) {
+	float tVal = time*time*time*time*time;
+	return (1.0f - tVal)*from + tVal*to;
 }
