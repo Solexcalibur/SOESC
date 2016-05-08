@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
 	environment.start = begin;
 	unsigned int particlecnt = 10;
 	Cubic cube;
-	
+	ParticleEmitter p(10);
 	
 	//GLuint words = text.LoadTexture("font2.png");
 	//GLuint sprites = environment.LoadTexture("SpaceStuff.png");
@@ -124,14 +124,15 @@ int main(int argc, char *argv[]){
 	//text2.setOrthoProjection();
 
 	
-	//environment.readFile("Metal Sheet Tiles.txt", program);
-	//environment.render(program);
+	environment.readFile("Metal Sheet Tiles.txt", program);
+	environment.render(program);
 	Mix_PlayMusic(mysteriousSound, -1);
 	float cubex = cube.easeIn(0, 2, 3, 4);
 	float cubey = cube.easeInOut(0, 2, 3, 4);
 	float animationTime = 0;
 	bool done = false;
 	float lastFrameTicks = 0.0;
+	//p.Render(&program);
 	SDL_Event event;
 	while (!done){
 		float ticks = (float)SDL_GetTicks() / 1000.0f; float elapsed = ticks - lastFrameTicks; lastFrameTicks = ticks;
@@ -190,6 +191,8 @@ int main(int argc, char *argv[]){
 
 
 		environment.windowSwapping();
+		
+//		p.Update(fixedElapsed);
 
 
 	}

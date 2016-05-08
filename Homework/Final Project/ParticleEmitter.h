@@ -26,6 +26,7 @@ class ParticleEmitter {
 public:
 	ParticleEmitter();
 	ParticleEmitter(unsigned int ParticleCount);
+	void SetTex(GLuint & textures);
 	void SetTex(const char * path);
 	//~ParticleEmitter();
 

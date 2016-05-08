@@ -33,6 +33,7 @@
 		void blendSprite(GLuint& texture);
 		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
 		void screenSelector(ShaderProgram& program);
+		void SelectLevel(ShaderProgram & program);
 		void SelectCharacter();
 		void SelectCharacter(ShaderProgram & program);
 		//void updateThings(ShaderProgram& program, std::vector<AstralEntity>& objects, Projectile ammo[],
@@ -63,6 +64,7 @@
 		bool readEntityData(std::ifstream & stream, ShaderProgram & program);
 
 		bool readLayerData(std::ifstream & stream);
+		void readFile(const char * levelFile);
 		void placeEntity(std::string type, float x, float y);
 
 
@@ -85,7 +87,8 @@
 		
 		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT };
 		int state, numEnemies, shotIndex, maxshots, score, index;
-		GLuint wordTexture, spriteSheetTexture, particletex, metalTex;
+		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs;
+		std::vector<GLuint> randTextures;
 		const Uint8* keys;
 		const char* fontSheetPath = "font2.png";
 		const char* spritepath = "SpaceStuff.png";
@@ -98,15 +101,16 @@
 		SpriteSheet sprites[6];
 		std::vector<AstralEntity> player;
 		std::vector<AstralEntity> levels;
-		std::vector<AstralEntity> text;
+		std::vector<AstralEntity> text, randomTiles;
 		std::vector<Projectile> shots;
 		std::vector<float> vertexData;
 		std::vector<float> texCoordData;
 		std::vector<ParticleEmitter> party;
+		std::vector<SpriteSheet> metaltiles;
 		AstralEntity particle;
 		//ParticleEmitter party;
 		//ParticleEmitter party;
-		int mapHeight, mapWidth, playerIndexOne, playerIndexTwo, laserIndexOne, laserIndexTwo;
+		int mapHeight, mapWidth, playerIndexOne, playerIndexTwo, laserIndexOne, laserIndexTwo, levelIndex;
 		unsigned char** levelData;
 		//std::vector<Projectile> enemyshots;
 		//std::vector<AstralEntity> player[5];

@@ -54,8 +54,17 @@ ParticleEmitter::ParticleEmitter(unsigned int particleCount) {
 
 }
 
-void ParticleEmitter::SetTex(const char* path) {
-	texture = LoadTexture(path);
+void ParticleEmitter::SetTex(GLuint& textures) {
+	texture = textures;
+	//SDL_Surface *surface;
+	//glGenTextures(1, &textures);
+	//glBindTexture(GL_TEXTURE_2D, textures);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA,
+	//	GL_UNSIGNED_BYTE, surface->pixels); //USE GL_RGB/A FOR WINDOWS, GL_BGR/A FOR MAC (.PNG files use RGBA, .JPG uses RGB)
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//MUST USE THIS
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//MUST USE THIS
+	//SDL_FreeSurface(surface);
+	
 }
 
 void ParticleEmitter::Render(ShaderProgram* program)

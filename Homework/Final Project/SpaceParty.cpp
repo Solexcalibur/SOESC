@@ -17,8 +17,7 @@
 using namespace std;
 
 #define FIXED_TIMESTEP 0.0166666f 
-#define JOYSTICK_DEADZONE 8000
-
+#define JOYSTICK_DEADZONE 5000
 GLuint SpacialArea::LoadTexture(const char* image_path) {
 
 	SDL_Surface *surface = IMG_Load(image_path);
@@ -57,9 +56,9 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	}
 	//wordTexture = LoadTexture(fontSheetPath);
 	//spriteSheetTexture = LoadTexture(spritepath);
-	r_filter = 0.5;
+	r_filter = 0.0;
 	g_filter = 0.0;
-	b_filter = 0.5;
+	b_filter = 0.0;
 	player[0].position.y = -1.5;
 	player[0].position.x = 1.5;
 
@@ -149,6 +148,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	laserIndexOne = 1;
 	laserIndexTwo = 1;
 	animationTime = 0;
+	levelIndex = 0;
 	
 }
 
@@ -186,14 +186,33 @@ void SpacialArea::setup() {
 	particletex = LoadTexture("fire.png");
 	party[0].texture = particletex;
 	particle.texID = LoadTexture("fire.png");
+	randTextures.push_back(metalTex);
+	randTextures.push_back(particletex);
+	randTextures.push_back(wordTexture);
 	for (int i = 0; i < 5; i++) {
 		text[i].setOrthoProjection();
 		text[i].texID = wordTexture;
 	}
+		for (int i = 0; i < 28; i++) {
+			metaltiles.push_back(SpriteSheet(randTextures[levelIndex], 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2));
+			randomTiles.push_back(AstralEntity());
+			randomTiles[i].position = Vector(rand() % 6 - 3, rand() % 5 - 1, 0.0);
+			randomTiles[i].texID = randTextures[levelIndex];
+			//randomTiles[i].position.x = rand() % 3;
+			//randomTiles[i].position.y = rand() % 3;
+			randomTiles[i].setOrthoProjection();
+		}
+		
+			
+			
 	//party.SetTex("fire.png");
+	//readFile("Metal Sheet Tiles.txt");
 	spriteSheetTexture = LoadTexture("SpaceStuff.png");
 	laserShot = Mix_LoadWAV("Laser_Shoot26.wav");
 	select = Mix_LoadWAV("Blip_Select.wav");
+	
+	
+	
 
 #ifdef _WINDOWS
 	glewInit();
@@ -295,21 +314,22 @@ void SpacialArea::scoreBoard(ShaderProgram& program) {
 	
 	//DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields), 0.12, 0);
 	blendSprite(wordTexture); //Blend Particle Sprite
+	
 
 }
 
 void SpacialArea::gameOverScreen(ShaderProgram& program) {
 	
-	if (player[0].health == 0 && player[1].health > 0) {
-		DrawText(program, wordTexture, "Player 1 Wins!", 0.11, 0, -2.0, 0.0);
-	}
-	else if (player[1].health == 0 && player[0].health > 0) {
+	if (player[0].health == 0 ) {
 		DrawText(program, wordTexture, "Player 2 Wins!", 0.11, 0, -2.0, 0.0);
 	}
-	else {
-		DrawText(program, wordTexture, "Mutually Assured Death!", 0.11, 0, -2.0, 0.0);
+	else if (player[1].health == 0) {
+		DrawText(program, wordTexture, "Player 1 Wins!", 0.11, 0, -2.0, 0.0);
 	}
-	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
+	/*else if (player[0].health == 0 && player[1].health == 0) {
+		DrawText(program, wordTexture, "Mutually Assured Death!", 0.11, 0, -2.0, 0.0);
+	}*/
+	DrawText(program, wordTexture, "DARE TO PLAY AGAIN?", 0.1, 0, -2.0, 0.0);
 	blendSprite(wordTexture);
 
 }
@@ -339,11 +359,34 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 	case STATE_CHARACTER_SELECT:
 		SelectCharacter(program);
 		break;
+	case STATE_LEVEL_SELECT:
+		SelectLevel(program);
+		break;
 	}
 }
+void SpacialArea::SelectLevel(ShaderProgram& program) {
+	DrawText(program, wordTexture, "Choose a Level", 0.077, 0, 0.0, 0.0);
+	for (int i = 0; i < 28; i++) {
+		randomTiles[i].setMatrices(program);
+		randomTiles[i].identityMatrix();
+		randomTiles[i].moveMatrix(randomTiles[i].position.x, randomTiles[i].position.y, 0.0);
+		metaltiles[i].textureID = randTextures[levelIndex];
+		metaltiles[i].Draw(program);
+		//entites[i].XPos = rand() % 3;
+		//entites[i].YPos = rand() % 3;
+		//entites[i].XPos = rand() % 6;
+		//entites[i].YPos = (int)entites[i].XPos % 6;
 
+		//entites[i].setOrthoProjection();
+
+	}
+
+}
 void SpacialArea::SelectCharacter(ShaderProgram& program) {
+	//particle.party.SetTex(particletex);
+	//particle.party.Render(&program);
 	DrawText(program, wordTexture, "Select your ship", 0.077, 0, 0.0, 0.0);
+
 	sprites[playerIndexOne].textureID = spriteSheetTexture;
 	player[0].setMatrices(program);
 	player[0].setOrthoProjection();
@@ -359,6 +402,7 @@ void SpacialArea::SelectCharacter(ShaderProgram& program) {
 	//spriteSheets[0].Draw(program);
 	sprites[playerIndexTwo].Draw(program);
 
+	
 
 }
 void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
@@ -385,6 +429,21 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 }
 
 void SpacialArea::setupThings(ShaderProgram& program) {
+	for (int i = 0; i < 28; i++) {
+		randomTiles[i].setMatrices(program);
+		randomTiles[i].identityMatrix();
+		randomTiles[i].moveMatrix(randomTiles[i].position.x - 2, randomTiles[i].position.y + 0.5, 0.0);
+		metaltiles[i].Draw(program);
+		//entites[i].XPos = rand() % 3;
+		//entites[i].YPos = rand() % 3;
+		//entites[i].XPos = rand() % 6;
+		//entites[i].YPos = (int)entites[i].XPos % 6;
+
+		//entites[i].setOrthoProjection();
+
+	}
+	
+	
 	sprites[playerIndexOne].textureID = spriteSheetTexture;
 	player[0].setMatrices(program);
 	player[0].setOrthoProjection();
@@ -392,6 +451,7 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 	player[0].moveMatrix(player[0].position.x, player[0].position.y, 0.0);
 	//spriteSheets[0].Draw(program);
 	sprites[playerIndexOne].Draw(program);
+	
 	if (playerIndexOne == 0)
 		laserIndexOne = 1;
 	else if (playerIndexOne == 2)
@@ -430,10 +490,15 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 	player[1].shots[player[1].ammoIndex].setMatrices(program);
 	player[1].shots[player[1].ammoIndex].identityMatrix();
 	sprites[laserIndexTwo].Draw(program);
+	
+	
+
 }
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed) {
 	
 	setupThings(program);
+	//render(program);
+	//particle.party.Update(elapsed);
 
 	animationTime += elapsed;
 	float animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
@@ -945,6 +1010,11 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 						playerIndexOne = 0;
 					
 				}
+				else if (state == 5) {
+					levelIndex--;
+					if (levelIndex < 0)
+						levelIndex = randTextures.size() - 1;
+				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_RIGHT) {
 				if (state == 4) {
@@ -954,6 +1024,11 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 						playerIndexOne = 0;
 					else if (playerIndexOne == 1)
 						playerIndexOne = 2;
+				}
+				else if (state == 5) {
+					levelIndex++;
+					if (levelIndex > randTextures.size() - 1)
+						levelIndex = 0;
 				}
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_A) {
@@ -1005,13 +1080,21 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					
 					state = 4;
 				}
-				else if (state == 4) {
+				else if (state == 5) {
 					Mix_PlayChannel(-1, start, 0);
 					player[0].health = 100;
 					player[0].shields = 100;
+					player[0].position.x = 2.0;
+					player[0].position.y = -2.0;
 					player[1].health = 100;
 					player[1].shields = 100;
+					player[1].position.x = -2.0;
+					player[1].position.y = 2.0;
 					state = 1;
+				}
+				else if (state == 4) {
+					state = 5;
+					
 
 				}
 				else if (state == 2) {
@@ -1057,50 +1140,53 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 			//}
 			
 		}
+
 		else if (events.type == SDL_JOYAXISMOTION) {
 
 
 			if (events.jaxis.which == 0) {
-				if (events.jaxis.axis == 0)
+				if (events.jaxis.axis == 2)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
 						/* Left-right movement code goes here */
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[0].incrementXPos(-3.0 * elapsed);
+						player[0].incrementXPos(-9.0 * player[0].acceleration.x * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[0].incrementXPos(3.0 * elapsed);
+						player[0].incrementXPos(9.0 * player[0].acceleration.x * elapsed);
 				}
 
-				else if (events.jaxis.axis == 1)
-				{
+				if (events.jaxis.axis == 3)
+				//if (keys[events.jaxis.axis])
+				{ 
+					//if(keys[events.jaxis.axis])
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
 						/* Left-right movement code goes here */
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[0].incrementYPos(3.0 * elapsed);
+						player[0].incrementYPos(9.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[0].incrementYPos(-3.0 * elapsed);
+						player[0].incrementYPos(-9.0 * elapsed);
 				}
 
 			}
 			if (events.jaxis.which == 1) {
-				if (events.jaxis.axis == 0)
+				if (events.jaxis.axis == 2)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
 						/* Left-right movement code goes here */
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[1].incrementXPos(-3.0 * elapsed);
+						player[1].incrementXPos(-6.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[1].incrementXPos(3.0 * elapsed);
+						player[1].incrementXPos(6.0 * elapsed);
 				}
 
-				else if (events.jaxis.axis == 1)
+				else if (events.jaxis.axis == 3)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
 						/* Left-right movement code goes here */
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[1].incrementYPos(3.0 * elapsed);
+						player[1].incrementYPos(6.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[1].incrementYPos(-3.0 * elapsed);
+						player[1].incrementYPos(-6.0 * elapsed);
 				}
 
 			}
@@ -1108,29 +1194,104 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 			
 		}
 		else if (events.type == SDL_JOYBUTTONDOWN) {
-			if (events.jbutton.which == 0)
+			if (events.jbutton.button == 10) {
+				if (state == 0) {
+
+					state = 4;
+				}
+				else if (state == 4) {
+					Mix_PlayChannel(-1, start, 0);
+					player[0].health = 100;
+					player[0].shields = 100;
+					player[1].health = 100;
+					player[1].shields = 100;
+					state = 1;
+
+				}
+				else if (state == 2) {
+					player[0].health = 100;
+					player[0].shields = 100;
+					player[0].position.x = 2.0;
+					player[0].position.y = -2.0;
+					player[1].health = 100;
+					player[1].shields = 100;
+					player[1].position.x = -2.0;
+					player[1].position.y = 2.0;
+					state = 1;
+				}
+			}
+			
+			else if (events.jbutton.which == 0)
 			{
-				/* code goes here */
+			
 				//Mapping FOR PS4 Controller (and third party PS3 controllers) ONLY
 				//Button 0 is SQUARE, 1 is X, 2 is CIRCLE, 3 is TRANGLE, 4 IS L1, 5 is R1, 6 is L2, 7 is R2, 
 				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
-				if (events.jbutton.button == 5) 
+				if (events.jbutton.button == 9) {
 					if (time(&refireTimerOne) % 2 == 0) {
 						Mix_PlayChannel(-1, laserShot, 0);
 						shoot(player[0]);
 					}
+				}
+				else if (events.jbutton.button == 2) {
+					if (state == 4) {
+						Mix_PlayChannel(-1, select, 0);
+						playerIndexOne--;
+						if (playerIndexOne < 0)
+							playerIndexOne = 3;
+						else if (playerIndexOne == 1)
+							playerIndexOne = 0;
+
+					}
+
+				}
+				else if (events.jbutton.button == 3) {
+					if (state == 4) {
+						Mix_PlayChannel(-1, select, 0);
+						playerIndexOne++;
+						if (playerIndexOne > 3)
+							playerIndexOne = 0;
+						else if (playerIndexOne == 1)
+							playerIndexOne = 2;
+					}
+
+				}
 			}
 			if (events.jbutton.which == 1)
 			{
-				/* code goes here */
+				
 				//Mapping for FOR PS4 Controller ONLY
 				//Button 0 is SQUARE, 1 is X, 2 is CIRCLE, 3 is TRANGLE, 4 IS L1, 5 is R1, 6 is L2, 7 is R2, 
 				//8 is SHARE button, 9 is OPTIONS Button, 10 is L3, 11 IS R3, 12 is PS Button, 13 is touchpad
 				//For PS3 Controller, Button 9 IS L1
-				if (events.jbutton.button == 9)
+				if (events.jbutton.button == 9) {
 					if (time(&refireTimerOne) % 2 == 0) {
 						Mix_PlayChannel(-1, laserShot, 0);
 						shoot(player[1]);
+					}
+				}
+					else if (events.jbutton.button == 2) {
+						if (state == 4) {
+							Mix_PlayChannel(-1, select, 0);
+							playerIndexTwo--;
+							if (playerIndexTwo < 0)
+								playerIndexTwo = 3;
+							else if (playerIndexTwo == 1)
+								playerIndexTwo = 0;
+
+						}
+
+					}
+					else if (events.jbutton.button == 3) {
+						if (state == 4) {
+							Mix_PlayChannel(-1, select, 0);
+							playerIndexTwo++;
+							if (playerIndexTwo > 3)
+								playerIndexTwo = 0;
+							else if (playerIndexTwo == 1)
+								playerIndexTwo = 2;
+						}
+
 					}
 			}
 		}
