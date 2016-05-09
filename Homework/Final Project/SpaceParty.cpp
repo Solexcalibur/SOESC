@@ -161,6 +161,11 @@ SpacialArea::~SpacialArea()
 	playerTwo = nullptr;
 	Mix_FreeChunk(laserShot);
 	Mix_FreeChunk(select);
+	Mix_FreeChunk(scored);
+	Mix_FreeChunk(gameover);
+	Mix_FreeChunk(victory);
+	Mix_FreeChunk(start);
+	Mix_FreeMusic(mysteriousSound);
 	SDL_Quit();
 }
 
@@ -213,9 +218,13 @@ void SpacialArea::setup() {
 	spriteSheetTexture = LoadTexture("SpaceStuff.png");
 	laserShot = Mix_LoadWAV("Laser_Shoot26.wav");
 	select = Mix_LoadWAV("Blip_Select.wav");
+	scored = Mix_LoadWAV("Score.ogg");
+	gameover = Mix_LoadWAV("Game Over.ogg");
+	victory = Mix_LoadWAV("Victory.ogg");
+	start = Mix_LoadWAV("Skyjack.ogg");
+	mysteriousSound = Mix_LoadMUS("UT4 Music Concept - Atrium.mp3");
 	
-	
-	
+	Mix_PlayMusic(mysteriousSound, -1);
 
 #ifdef _WINDOWS
 	glewInit();
@@ -292,14 +301,9 @@ void SpacialArea::blendSprite(GLuint& texture) {
 
 
 void SpacialArea::TitleScreen(ShaderProgram& program) {
-	//Mix_PlayChannel(-1, start, 0);
-	//DrawText(program, wordTexture, "Astral Horizon! 1 V 1! Fight, kill, survive!", 0.077, 0);
-	DrawText(program, wordTexture, "SCIENCE", 0.077, 0, -2.0, 0.0);
-	//text[0].setMatrices(program);
-	//text[0].identityMatrix();
-	//text[0].moveMatrix(-3.0, 0.0, 0.0);
-	//DrawText(program, fontTex, "2 v 1", 0.25, 0);
-	//DrawText(program, fontTex, "Can you win?", 0.25, 0);
+	
+	DrawText(program, wordTexture, "ASTRAL HORIZON", 0.1, 0, -2.0, 0.0);
+	
 
 
 	blendSprite(particletex);
@@ -311,11 +315,6 @@ void SpacialArea::scoreBoard(ShaderProgram& program) {
 		0.12, 0, -2.8, 0.0);
 	DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields),
 		0.12, 0, 0.0, -5.0);
-	//DrawTextz(wordTexture, "P1 HEALTH:", 0.12, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-	//text[1].setMatrices(program);
-	//text[1].identityMatrix();
-	
-	//DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields), 0.12, 0);
 	blendSprite(wordTexture); //Blend Particle Sprite
 	
 
@@ -340,8 +339,7 @@ void SpacialArea::gameOverScreen(ShaderProgram& program) {
 void SpacialArea::VictoryScreen(ShaderProgram& program) {
 	
 	DrawText(program, wordTexture, "Good work! Go another round? (Press Enter)", 0.1, 0, 0.0, 0.0);
-	//DrawText(program, fontTex, "DARE TO PLAY AGAIN?", 0.1, 0);
-	//blendSprite(wordTexture);
+	
 }
 
 void SpacialArea::screenSelector(ShaderProgram& program) {
@@ -567,91 +565,6 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	}
 	
 	
-	//objects[0].setMatrices(program);
-	//sprites[0].textureID = spriteSheetTexture;
-	//player[0].setMatrices(program);
-	//player[0].setOrthoProjection();
-	//player[0].identityMatrix();
-	//player[0].moveMatrix(player[0].position.x, player[0].position.y, 0.0);
-	////spriteSheets[0].Draw(program);
-	//sprites[0].Draw(program);
-	
-	//for (int k = 0; k < 2; k++) {
-	//	player[k].velocity.x += player[k].acceleration.x * FIXED_TIMESTEP;
-	//	player[k].velocity.x = player[k].lerp(player[k].velocity.x, 0.0, FIXED_TIMESTEP * player[k].friction.x);
-	//	player[k].velocity.y += player[k].acceleration.y * FIXED_TIMESTEP;
-	//	player[k].velocity.y = player[k].lerp(player[k].velocity.y, 0.0, FIXED_TIMESTEP * player[k].friction.y);
-	//	//player[k].velocityY = player[k].lerp(player[k].velocityY, 0.0, FIXED_TIMESTEP * player[k].frictionY);
-
-	//	
-	//	//player[k].velocityY += player[k].accelerationY * FIXED_TIMESTEP;
-
-	//	//player[k].incrementAccelerationX(FIXED_TIMESTEP);
-	//}
-	//for (int indx = 1; indx < 5; indx++) {
-		//if (player[indx].alive) {
-			
-		//}
-	//}
-
-
-
-	//sprites[1].textureID = spriteSheetTexture;
-	///*shots[shotIndex].setOrthoProjection();
-	//shots[shotIndex].setMatrices(program);
-	//shots[shotIndex].identityMatrix();*/
-	//player[0].shots[player[0].ammoIndex].setOrthoProjection();
-	//player[0].shots[player[0].ammoIndex].setMatrices(program);
-	//player[0].shots[player[0].ammoIndex].identityMatrix();
-	//sprites[1].Draw(program);
-
-	//sprites[4].textureID = spriteSheetTexture;
-	///*shots[shotIndex].setOrthoProjection();
-	//shots[shotIndex].setMatrices(program);
-	//shots[shotIndex].identityMatrix();*/
-	//player[1].shots[player[1].ammoIndex].setOrthoProjection();
-	//player[1].shots[player[1].ammoIndex].setMatrices(program);
-	//player[1].shots[player[1].ammoIndex].identityMatrix();
-	//sprites[4].Draw(program);
-	
-	/*shots[shotIndex].setMatrices(program);
-	shots[shotIndex].identityMatrix();
-	*/
-	//shots[shotIndex].YPos = player[0].YPos;
-	
-	//spriteSheets[1].Draw(program);
-	
-
-
-
-
-	/*player[1].incrementXPos(1.0 * player[1].HDirection * player[1].velocityX * elapsed);
-	player[2].incrementXPos(-1.0 * player[2].HDirection * player[2].velocityY * elapsed);
-	player[3].incrementXPos(1.75 * player[3].HDirection * player[3].velocityY * elapsed);
-	player[4].incrementXPos(-1.25 * player[4].HDirection * player[4].velocityY * elapsed);*/
-	//shots[shotIndex].visible = false;
-	/*shots[shotIndex].moveMatrix(shots[shotIndex].position.x, shots[shotIndex].position.y, 0.0);*/
-	//while (SDL_PollEvent(&events)) {
-
-	//	if (events.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) { 
-	//		done = true;
-
-	//	}
-	//	else if (events.type == SDL_KEYDOWN) {
-	//		if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-	//			//player[0].shoot(program, ammo, spriteSheets, elapsed);
-	//			//shoot(elapsed);
-	//			//shotIndex++;
-	//			//shots[0].incrementYPos(4.0 * elapsed);
-	//			//shots[0].incrementYPos(4.0 * elapsed);
-	//			//shots[0].moveMatrix(0.0, shots[0].YPos, 0.0);
-	//			//DrawText(program, wordTexture, "Astral Horizon! You are outnumbered, think you can win?", 0.075, 0);
-
-	//		}
-	//		//shots[0].incrementYPos(4.0 * elapsed);
-
-	//	}
-	
 	player[0].shots[player[0].ammoIndex].moveMatrix(player[0].shots[player[0].ammoIndex].position.x, player[0].shots[player[0].ammoIndex].position.y, 0.0);
 	player[0].shots[player[0].ammoIndex].incrementYPos(8.0 * player[0].shots[player[0].ammoIndex].direction.y * elapsed);
 
@@ -660,55 +573,31 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	player[1].shots[player[1].ammoIndex].moveMatrix(player[1].shots[player[1].ammoIndex].position.x, player[1].shots[player[1].ammoIndex].position.y, 0.0);
 	//player[1].shots[player[1].ammoIndex].direction.y = -1.0;
 	player[1].shots[player[1].ammoIndex].incrementYPos(8.0 * player[1].shots[player[1].ammoIndex].direction.y * elapsed);
-	//}
-	// time_t timer;
-	//if (time(&timer) > 5) {
-	//if (events.type == SDL_KEYDOWN) {
-	//	if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-	//		//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
-	//		shots[shotIndex].position.x = player[0].position.x;
-	//		shoot(program, FIXED_TIMESTEP);
-	//	}
-	//}
-			//shots[shotIndex].YPos = player[0].YPos;
-			
-			/*shoot(program, FIXED_TIMESTEP);*/
-		//}
-	//}
+	
 
 
 	
 	player[0].model.Scale(1.0, player[0].scaleFactor, 1.0);
 	player[1].shots[player[1].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 	player[1].model.Scale(1.0, player[1].scaleFactor, 1.0);
-	//for (int i = 1; i < 5; i++) {
+	
 		if (player[1].position.x > 2.7) {
 			player[1].position.x = 2.7;
-			//player[1].HDirection *= -1;
-			//player[i].incrementYPos(-0.25 * player[i].velocityY);
+			
 		}
 		if (player[1].position.x < -2.7) {
 			player[1].position.x = -2.7;
-			//player[1].HDirection *= -1;
-			//player[i].incrementYPos(-0.25 * player[i].velocityY);
+			
 		}
 		if (player[0].position.x > 2.7) {
 			player[0].position.x = 2.7;
-			//player[1].HDirection *= -1;
-			//player[i].incrementYPos(-0.25 * player[i].velocityY);
+			
 		}
 		if (player[0].position.x < -2.7) {
 			player[0].position.x = -2.7;
-			//player[1].HDirection *= -1;
-			//player[i].incrementYPos(-0.25 * player[i].velocityY);
+			
 		}
-		//if (objects[i].YPos == -1.5){
-		//	//state = 2;
-		//	objects[i].YPos = 1.5;
-		//}
 		
-
-	//}
 	
 	if (player[0].position.y < -2.5) {
 		player[0].position.y = -2.5;
@@ -717,18 +606,17 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[0].position.y = 2.5;
 	}
 	else if (player[0].position.y > 0.0) {
-		//player[0].model.Rotate(180.0 * (3.1415926 / 180.0));
+		
 		player[0].scaleFactor = -1.0;
 		player[0].shots[player[0].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 		player[0].shots[player[0].ammoIndex].direction.y = -1.0;
 	}
 	else if (player[0].position.y < 0.0) {
-		//player[0].model.Rotate(180.0 * (3.1415926 / 180.0));
-		//shots[shotIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
+	
 		player[0].scaleFactor = 1.0;
 		player[0].shots[player[0].ammoIndex].direction.y = 1.0;
 	}
-	//shots[shotIndex].direction.y = 1.0;
+
 	if (player[1].position.y < -2.5) {
 		player[1].position.y = -2.5;
 	}
@@ -736,13 +624,13 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[1].position.y = 2.5;
 	}
 	else if (player[1].position.y < 0.0) {
-		//player[1].model.Rotate(180.0 * (3.1415926 / 180.0));
+		
 		player[1].scaleFactor = 1.0;
 		player[1].shots[player[1].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 		player[1].shots[player[1].ammoIndex].direction.y = 1.0;
 	}
 	else if (player[1].position.y > 0.0) {
-		//player[1].model.Rotate(180.0 * (3.1415926 / 180.0));
+		
 		player[1].scaleFactor = -1.0;
 		player[1].shots[player[1].ammoIndex].direction.y = -1.0;
 	}
@@ -757,16 +645,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[1].shots[player[1].ammoIndex].visible = false;
 		player[1].shots[player[1].ammoIndex].scaleMatrix(0.0, 0.0, 0.0);
 	}
-	/*bool collisiontwofromone, collissiononefromtwo;
-	collisiontwofromone = raySegmentIntersect(player[0].shots[player[0].ammoIndex].position, player[0].shots[player[0].ammoIndex].direction,
-		player[1].segment1, player[1].segment2, xdist);
-	if (collisiontwofromone) {
-		shots[player[0].ammoIndex].visible = false;
-		score += 5;
-		player[1].health -= 10;
-	}*/
 	
-	//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
 	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy. Incresed hitbox so that hitting any part of ship deals damage
 		if (player[0].shots[player[0].ammoIndex].position.y < player[1].position.y + player[1].height * 0.5
 			&& player[0].shots[player[0].ammoIndex].position.y > player[1].position.y - player[1].height * 0.5
@@ -788,7 +667,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 					
 					
 				}
-				//score += 5;
+				
 			}
 		}
 		if (player[1].shots[player[1].ammoIndex].position.y < player[0].position.y + player[0].height * 0.5
@@ -818,82 +697,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		if (player[0].health < 0 || player[1].health < 0) {
 			state = 2;
 		}
-	//}
-	//		if (player[i].health <= 0) {
-	//			player[i].alive = false;
-	//			//player[i].setWidthAndHeight(0.0, 0.0);
-	//			//player.erase(remove_if(player.begin(), player.end(), player[i].alive), player.end());
-	//			score += 100;
-	//			state = 2;
-	//			/*shots[shotIndex].remove = true;
-	//			numEnemies -= 1;
-	//			Mix_PlayChannel(-1, scored, 0);*/
-	//			//shots.erase(remove_if(shots.begin(), shots.end(), shouldRemoveBullet), shots.end());
-
-	//			//numEnemies--;
-	//		}
-	//	}
-	//	/*if (player[i].YPos < -1.5) {
-	//		Mix_PlayChannel(-1, gameover, 0);
-	//		state = 2;
-	//	}
-	//	if (numEnemies == 0) {
-	//		Mix_PlayChannel(-1, victory, 0);
-	//		state = 3;
-	//	}*/
-
-	//}
-
-
-
-	//if (keys[SDL_SCANCODE_B]) {
-	//	state = 2;
-	//	//player.XPos = 0.0;
-	//	//objects[0].XPos = 0.0;
-	//	player[0].position.x = 0.0;
-	//}
-	//if (keys[SDL_SCANCODE_LEFT]) {
-	//	//player.incrementXPos(-2.0 * elapsed);
-	//	player[0].incrementXPos(-1.5 * player[0].direction.x * player[0].velocity.x * elapsed);
-	//	shots[shotIndex].incrementXPos(-1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
-	//	//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
-	//	//ammo[1].incrementXPos(-2.0 * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_RIGHT]) {
-	//	//player.incrementXPos(2.0 * elapsed);
-	//	player[0].incrementXPos(1.5 * player[0].direction.x *  player[0].velocity.x * elapsed);
-	//	shots[shotIndex].incrementXPos(1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
-	//	//player[0].incrementAccelerationX(FIXED_TIMESTEP);
-	//	//score += 100;
-	//	//ammo[1].incrementXPos(2.0 * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_UP]) {
-	//	//player.incrementXPos(-2.0 * elapsed);
-	//	player[0].incrementYPos(1.5 *player[0].direction.y * player[0].velocity.y * elapsed);
-	//	shots[shotIndex].incrementYPos(1.5 *player[0].direction.y * player[0].velocity.y *  elapsed);
-	//	//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
-	//	//ammo[1].incrementXPos(-2.0 * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_DOWN]) {
-	//	//player.incrementXPos(2.0 * elapsed);
-	//	player[0].incrementYPos(-1.5 *player[0].direction.y *  player[0].velocity.y * elapsed);
-	//	shots[shotIndex].incrementYPos(-1.5 * player[0].direction.y * player[0].velocity.y *  elapsed);
-	//	//player[0].incrementAccelerationX(FIXED_TIMESTEP);
-	//	//score += 100;
-	//	//ammo[1].incrementXPos(2.0 * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_A]) {
-	//	player[1].incrementXPos(-2.0 * player[1].velocity.x * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_D]) {
-	//	player[1].incrementXPos(2.0 * player[1].velocity.x * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_S]) {
-	//	player[1].incrementYPos(-2.0 * player[1].velocity.y * elapsed);
-	//}
-	//if (keys[SDL_SCANCODE_W]) {
-	//	player[1].incrementYPos(2.0 * player[1].velocity.y * elapsed);
-	//}
+	
 
 
 
@@ -948,11 +752,7 @@ void SpacialArea::updateThings(ShaderProgram& program, float elasped) {
 }
 
 void SpacialArea::shoot(AstralEntity& player) {
-	//shots[0].setMatrices(program);
-	////shots[0].YPos = -1.5;
-	//sprite.Draw(program);
-	//shots[0].incrementYPos(7.5 * elapsed);
-	//if (shotfired) {
+	
 		if (player.position.y < 0) {
 			player.shots[shotIndex].position.y = player.position.y + 0.5;
 		}
@@ -1160,35 +960,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					state = 4;
 				}
 			}
-			//shots[0].incrementYPos(4.0 * elapsed);
-			//else if (events.type == SDL_JOYAXISMOTION) {
-			//	//shoot(player[0]);
-			//	if (events.jaxis.which == 0) {
-			//		if (events.jaxis.axis == 0) {
-			//			player[0].incrementXPos(2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
-			//			if (events.jaxis.value < 0)
-			//				player[0].direction.x = -1.0;
-			//			else if (events.jaxis.value > 0)
-			//				player[0].direction.x = 1.0;
-			//		}
-			//		else if (events.jaxis.axis == 1) {
-
-			//			player[0].incrementYPos(2.0 * player[0].direction.y * player[0].velocity.y * elapsed);
-			//			if (events.jaxis.value < 0)
-			//				player[0].direction.y = -1.0;
-			//			else if (events.jaxis.value > 0)
-			//				player[0].direction.y = 1.0;
-
-			//		}
-			//	}
-			//	
-			//}
-			//if (events.type = SDL_JOYBUTTONDOWN) {
-			//	//cout << SDL_JoystickNameForIndex(0) << endl;
-			//	//cout << events.jbutton.button << endl;
-			//	shoot(player[0]);
-
-			//}
+			
 			
 		}
 
@@ -1199,7 +971,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				if (events.jaxis.axis == 2)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-						/* Left-right movement code goes here */
+					
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
 						player[0].incrementXPos(-9.0 * player[0].acceleration.x * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
@@ -1207,11 +979,11 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				}
 
 				if (events.jaxis.axis == 3)
-				//if (keys[events.jaxis.axis])
+				
 				{ 
 					//if(keys[events.jaxis.axis])
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-						/* Left-right movement code goes here */
+						
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
 						player[0].incrementYPos(9.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
@@ -1223,7 +995,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				if (events.jaxis.axis == 2)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-						/* Left-right movement code goes here */
+					
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
 						player[1].incrementXPos(-6.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
@@ -1233,7 +1005,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				else if (events.jaxis.axis == 3)
 				{
 					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-						/* Left-right movement code goes here */
+					
 						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
 						player[1].incrementYPos(6.0 * elapsed);
 					else if (events.jaxis.value > JOYSTICK_DEADZONE)
@@ -1346,53 +1118,34 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					}
 			}
 		}
-		//if (events.type == SDL_KEYDOWN) {
-			//if (events.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-			//	//if (keys[SDL_SCANCODE_SPACE]) { //Hold to shoot. FULL AUTO
-			//	//shots[shotIndex].position.x = player[0].position.x;
-			//	shoot(program, FIXED_TIMESTEP);
-			//}
-		//}
+		
 
 	}
 	if (keys[SDL_SCANCODE_B]) {
 		state = 2;
-		//player.XPos = 0.0;
-		//objects[0].XPos = 0.0;
+		
 		player[0].position.x = 0.0;
 	}
 	if (keys[SDL_SCANCODE_LEFT]) {
-		//player.incrementXPos(-2.0 * elapsed);
+		
 		player[0].incrementXPos(-2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
-		//player[0].shots[player[0].ammoIndex].incrementXPos(-2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
-		//shots[shotIndex].incrementXPos(-1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
-		//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
-		//ammo[1].incrementXPos(-2.0 * elapsed);
+		
 	}
 
 	if (keys[SDL_SCANCODE_RIGHT]) {
-		//player.incrementXPos(2.0 * elapsed);
+		
 		player[0].incrementXPos(2.0 * player[0].direction.x *  player[0].velocity.x * elapsed);
-		//player[0].shots[player[0].ammoIndex].incrementXPos(2.0 * player[0].direction.x * player[0].velocity.x * elapsed);
-		//shots[shotIndex].incrementXPos(1.5 * player[0].direction.x * player[0].velocity.x *  elapsed);
-		//player[0].incrementAccelerationX(FIXED_TIMESTEP);
-		//score += 100;
-		//ammo[1].incrementXPos(2.0 * elapsed);
+		
 	}
 	if (keys[SDL_SCANCODE_UP]) {
-		//player.incrementXPos(-2.0 * elapsed);
+		
 		player[0].incrementYPos(2.0 *player[0].direction.y * player[0].velocity.y * elapsed);
-		//shots[shotIndex].incrementYPos(1.5 *player[0].direction.y * player[0].velocity.y *  elapsed);
-		//player[0].incrementAccelerationX(-1 * FIXED_TIMESTEP);
-		//ammo[1].incrementXPos(-2.0 * elapsed);
+		
 	}
 	if (keys[SDL_SCANCODE_DOWN]) {
-		//player.incrementXPos(2.0 * elapsed);
+		
 		player[0].incrementYPos(-2.0 *player[0].direction.y *  player[0].velocity.y * elapsed);
-		//shots[shotIndex].incrementYPos(-1.5 * player[0].direction.y * player[0].velocity.y *  elapsed);
-		//player[0].incrementAccelerationX(FIXED_TIMESTEP);
-		//score += 100;
-		//ammo[1].incrementXPos(2.0 * elapsed);
+	
 	}
 	if (keys[SDL_SCANCODE_A]) {
 		player[1].incrementXPos(-2.0 * player[1].velocity.x * elapsed);
@@ -1664,23 +1417,14 @@ void SpacialArea::render(ShaderProgram& program) {
 
 
 				
-				/*if (player.XPos < -2.6) {
-				player.XPos = -2.59999999999;
-				}
-				if (player.XPos > 2.5) {
-				player.XPos = 2.49999999999;
-				}*/
+				
 			}
 
 
 		}
 
 	}
-	//bool x = solid[20][20];
-
-	//player.setupAndRender(program, vertexData.data(), texCoordData.data(), texture);
-	//worldToTileCoordinates(LEVEL_WIDTH, LEVEL_HEIGHT, &gridX, &gridY);
-
+	
 
 }
 void SpacialArea::setupAndRender(ShaderProgram& program, float vertices[], float texCoords[], GLuint& texture) {

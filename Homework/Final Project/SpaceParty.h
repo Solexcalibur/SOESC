@@ -82,10 +82,10 @@
 		void DrawTextz(GLuint fontTexture, std::string text, float size, float spacing, float r, float g, float b, float a, float x, float y);
 
 		
-		Mix_Chunk *scored, *gameover, *victory, *start, *laserShot, *select;
 	private:
 		SDL_Window* displayWindow;
-		
+		Mix_Music *mysteriousSound, *bgm;
+		Mix_Chunk *scored, *gameover, *victory, *start, *laserShot, *select;
 		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT, STATE_PAUSE_GAME };
 		int state, numEnemies, shotIndex, maxshots, score, index, previousState;
 		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks;
