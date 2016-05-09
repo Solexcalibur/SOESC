@@ -33,6 +33,7 @@
 		void blendSprite(GLuint& texture);
 		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
 		void screenSelector(ShaderProgram& program);
+		void PausedGame(ShaderProgram & program);
 		void SelectLevel(ShaderProgram & program);
 		void SelectCharacter();
 		void SelectCharacter(ShaderProgram & program);
@@ -85,8 +86,8 @@
 	private:
 		SDL_Window* displayWindow;
 		
-		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT };
-		int state, numEnemies, shotIndex, maxshots, score, index;
+		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT, STATE_PAUSE_GAME };
+		int state, numEnemies, shotIndex, maxshots, score, index, previousState;
 		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks;
 		std::vector<GLuint> randTextures;
 		const Uint8* keys;

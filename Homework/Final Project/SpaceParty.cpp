@@ -149,6 +149,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	laserIndexTwo = 1;
 	animationTime = 0;
 	levelIndex = 0;
+	previousState = 0;
 	
 }
 
@@ -364,7 +365,14 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 	case STATE_LEVEL_SELECT:
 		SelectLevel(program);
 		break;
+	case STATE_PAUSE_GAME:
+		PausedGame(program);
+		break;
 	}
+}
+void SpacialArea::PausedGame(ShaderProgram& program) {
+	DrawText(program, wordTexture, "Press ESC to return to game", 0.1, 0, -2.0, 0.0);
+	DrawText(program, wordTexture, "Press Q to quit game", 0.1, 0, -2.0, -1.0);
 }
 void SpacialArea::SelectLevel(ShaderProgram& program) {
 	DrawText(program, wordTexture, "Choose a Level", 0.077, 0, 0.0, 0.0);
@@ -1024,6 +1032,22 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 				//player[1].YPos = 1.5;
 				//SpacialArea();
 			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+				if (state != 6) {
+					previousState = state;
+					state = 6;
+				}
+				else  {
+					if (events.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+						state = previousState;
+					}
+					
+				}
+			}
+			else if (events.key.keysym.scancode == SDL_SCANCODE_Q) { //Press Q to quit game
+				if (state == 6)
+				return true;
+			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_LEFT) {
 				if (state == 4) {
 					Mix_PlayChannel(-1, select, 0);
@@ -1101,10 +1125,11 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 			}
 			else if (events.key.keysym.scancode == SDL_SCANCODE_RETURN) {
 				if (state == 0) {
-					
+					previousState = 0;
 					state = 4;
 				}
 				else if (state == 5) {
+					previousState = 5;
 					Mix_PlayChannel(-1, start, 0);
 					player[0].health = 100;
 					player[0].shields = 100;
@@ -1117,6 +1142,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					state = 1;
 				}
 				else if (state == 4) {
+					previousState = 4;
 					state = 5;
 					
 
@@ -1130,6 +1156,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					player[1].shields = 100;
 					player[1].position.x = -2.0;
 					player[1].position.y = 2.0;*/
+					previousState = 2;
 					state = 4;
 				}
 			}
