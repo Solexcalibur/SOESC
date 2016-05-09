@@ -189,6 +189,7 @@ void SpacialArea::setup() {
 	randTextures.push_back(metalTex);
 	randTextures.push_back(particletex);
 	randTextures.push_back(wordTexture);
+	
 	for (int i = 0; i < 5; i++) {
 		text[i].setOrthoProjection();
 		text[i].texID = wordTexture;
@@ -203,7 +204,8 @@ void SpacialArea::setup() {
 			randomTiles[i].setOrthoProjection();
 		}
 		
-			
+		metaltiles[1].width = 20.0f / 256.0f;
+		metaltiles[1].height = 20.0f / 256.0f;
 			
 	//party.SetTex("fire.png");
 	//readFile("Metal Sheet Tiles.txt");
@@ -320,16 +322,16 @@ void SpacialArea::scoreBoard(ShaderProgram& program) {
 
 void SpacialArea::gameOverScreen(ShaderProgram& program) {
 	
-	if (player[0].health == 0 ) {
+	if (player[0].health < 0 ) {
 		DrawText(program, wordTexture, "Player 2 Wins!", 0.11, 0, -2.0, 0.0);
 	}
-	else if (player[1].health == 0) {
+	else if (player[1].health < 0) {
 		DrawText(program, wordTexture, "Player 1 Wins!", 0.11, 0, -2.0, 0.0);
 	}
-	/*else if (player[0].health == 0 && player[1].health == 0) {
+	else if (player[0].health < 0 && player[1].health < 0) {
 		DrawText(program, wordTexture, "Mutually Assured Death!", 0.11, 0, -2.0, 0.0);
-	}*/
-	DrawText(program, wordTexture, "DARE TO PLAY AGAIN?", 0.1, 0, -2.0, 0.0);
+	}
+	DrawText(program, wordTexture, "Press Enter or X to play again", 0.1, 0, -2.0, -2.0);
 	blendSprite(wordTexture);
 
 }
@@ -366,12 +368,17 @@ void SpacialArea::screenSelector(ShaderProgram& program) {
 }
 void SpacialArea::SelectLevel(ShaderProgram& program) {
 	DrawText(program, wordTexture, "Choose a Level", 0.077, 0, 0.0, 0.0);
+	float* vertices = randomTiles[0].grabVertices();
+	float* texCoords = randomTiles[0].grabTexCoords();
 	for (int i = 0; i < 28; i++) {
 		randomTiles[i].setMatrices(program);
 		randomTiles[i].identityMatrix();
 		randomTiles[i].moveMatrix(randomTiles[i].position.x, randomTiles[i].position.y, 0.0);
+		//randomTiles[i].texID = randTextures[levelIndex];
+		//randomTiles[i].setupAndRender(program, vertices, texCoords, randomTiles[i].texID);
 		metaltiles[i].textureID = randTextures[levelIndex];
 		metaltiles[i].Draw(program);
+
 		//entites[i].XPos = rand() % 3;
 		//entites[i].YPos = rand() % 3;
 		//entites[i].XPos = rand() % 6;
@@ -432,7 +439,8 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 	for (int i = 0; i < 28; i++) {
 		randomTiles[i].setMatrices(program);
 		randomTiles[i].identityMatrix();
-		randomTiles[i].moveMatrix(randomTiles[i].position.x - 2, randomTiles[i].position.y + 0.5, 0.0);
+		randomTiles[i].moveMatrix(randomTiles[i].position.x - 2, randomTiles[i].position.y - 0.5, 0.0);
+		//randomTiles[i].setupAndRender(program, randomTiles[i].grabVertices(), randomTiles[i].grabTexCoords(), randomTiles[i].texID);
 		metaltiles[i].Draw(program);
 		//entites[i].XPos = rand() % 3;
 		//entites[i].YPos = rand() % 3;
@@ -502,6 +510,22 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 
 	animationTime += elapsed;
 	float animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
+	for (int i = 0; i < 28; i+=3) {
+	//randomTiles[0].identityMatrix();
+		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+		randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0, 0.0);
+	}
+	for (int i = 0; i < 28; i += 9) {
+		//randomTiles[0].identityMatrix();
+		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+		randomTiles[i].moveMatrix(0.0, -1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
+	}
+	for (int i = 0; i < 27; i ++) {
+		//randomTiles[0].identityMatrix();
+		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+		randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 1.0, easeIn(0.0, 1.0, animationValue)), -1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
+	}
+
 	//text[1].moveMatrix(text[1].lerp(0.0, 1.0, animationValue), 0.0, 0.0);
 	//text[1].moveMatrix(-1.0 * elapsed, 0.0, 0.0);
 	/*particle.setOrthoProjection();
@@ -1098,15 +1122,15 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 
 				}
 				else if (state == 2) {
-					player[0].health = 100;
+					/*player[0].health = 100;
 					player[0].shields = 100;
 					player[0].position.x = 2.0;
 					player[0].position.y = -2.0;
 					player[1].health = 100;
 					player[1].shields = 100;
 					player[1].position.x = -2.0;
-					player[1].position.y = 2.0;
-					state = 1;
+					player[1].position.y = 2.0;*/
+					state = 4;
 				}
 			}
 			//shots[0].incrementYPos(4.0 * elapsed);

@@ -65,6 +65,7 @@ AstralEntity::AstralEntity()
 	shots[ammoIndex].direction.y = 1.0;
 	//width = 1.0;
 	//height = 1.0;
+	
 }
 
 AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix) {
@@ -109,6 +110,25 @@ void AstralEntity::setWidthAndHeight(float widthv, float heightv)
 {
 	width = widthv;
 	height = heightv;
+}
+float* AstralEntity::grabVertices() {
+	float vertices[] = { -0.5, -0.5,
+	0.5, -0.5,
+	0.5, 0.5,
+	-0.5, -0.5,
+	0.5, 0.5,
+	-0.5, 0.5 };
+	return vertices;
+	
+}
+float* AstralEntity::grabTexCoords() {
+float texcoords[] = { 0.0, 1.0,
+	1.0, 1.0,
+	1.0, 0.0,
+	0.0, 1.0,
+	1.0, 0.0,
+	0.0, 0.0 };
+return texcoords;
 }
 void AstralEntity::DrawText(ShaderProgram& program, int fontTexture, std::string text, float size, float spacing){
 	float texture_size = 1.0 / 16.0f;     std::vector<float> vertexData;     std::vector<float> texCoordData;

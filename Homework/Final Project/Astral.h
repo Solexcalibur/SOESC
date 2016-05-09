@@ -17,6 +17,8 @@ public:
 	AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix);
 	AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix, SpriteSheet& spritez);
 	void setWidthAndHeight(float widthv, float heightv);
+	float * grabVertices();
+	float * grabTexCoords();
 	void DrawUsingSpriteSheet(ShaderProgram& program, int index, int spriteCountX, int spriteCountY);
 	bool lifeChecker();
 	void setMatrices(ShaderProgram& program);
@@ -44,6 +46,7 @@ public:
 	Vector position, direction, acceleration, friction, velocity, segment1, segment2;
 	float XPos, YPos, HDirection, VDirection, width, height, spriteIndex, accelerationX, accelerationY, velocityX, velocityY
 		, frictionX, frictionY, scaleFactor;
+	
 	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
 	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health, shields;
 	ParticleEmitter party;

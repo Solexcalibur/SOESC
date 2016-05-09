@@ -87,7 +87,7 @@
 		
 		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT };
 		int state, numEnemies, shotIndex, maxshots, score, index;
-		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs;
+		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks;
 		std::vector<GLuint> randTextures;
 		const Uint8* keys;
 		const char* fontSheetPath = "font2.png";
