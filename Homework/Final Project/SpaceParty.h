@@ -91,6 +91,8 @@
 		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks;
 		std::vector<GLuint> randTextures;
 		const Uint8* keys;
+		Uint8 hatz;
+		Sint16 joystickPlayer0x, joystickPlayer0y, joystickPlayer1x, joystickPlayer1y;
 		const char* fontSheetPath = "font2.png";
 		const char* spritepath = "SpaceStuff.png";
 		bool done = false;

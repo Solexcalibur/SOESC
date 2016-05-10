@@ -42,6 +42,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	score = 0;
 	state = 0;
 	keys = SDL_GetKeyboardState(nullptr);
+	//joystickPlayer0 = SDL_JoystickGetAxis(nullptr, 0);
 	playerOne = nullptr;
 	playerTwo = nullptr;
 	for (int i = 0; i < 5; i++) {
@@ -150,6 +151,10 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	animationTime = 0;
 	levelIndex = 0;
 	previousState = 0;
+	joystickPlayer0x = 0;
+	joystickPlayer0y = 0;
+	joystickPlayer1x = 0;
+	joystickPlayer1y = 0;
 	
 }
 
@@ -195,6 +200,12 @@ void SpacialArea::setup() {
 	randTextures.push_back(metalTex);
 	randTextures.push_back(particletex);
 	randTextures.push_back(wordTexture);
+	joystickPlayer0x = SDL_JoystickGetAxis(playerOne, 0);
+	joystickPlayer0y = SDL_JoystickGetAxis(playerOne, 1);
+	joystickPlayer1x = SDL_JoystickGetAxis(playerTwo, 0);
+	joystickPlayer1y = SDL_JoystickGetAxis(playerTwo, 1);
+	int hat = SDL_JoystickNumHats(playerOne);
+	hatz = SDL_JoystickGetHat(playerOne, 0);
 	
 	for (int i = 0; i < 5; i++) {
 		text[i].setOrthoProjection();
@@ -203,7 +214,7 @@ void SpacialArea::setup() {
 		for (int i = 0; i < 28; i++) {
 			metaltiles.push_back(SpriteSheet(randTextures[levelIndex], 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2));
 			randomTiles.push_back(AstralEntity());
-			randomTiles[i].position = Vector(rand() % 6 - 3, rand() % 5 - 1, 0.0);
+			randomTiles[i].position = Vector(rand() % 6 - 3.0, rand() % 5 - 1.0, 0.0);
 			randomTiles[i].texID = randTextures[levelIndex];
 			//randomTiles[i].position.x = rand() % 3;
 			//randomTiles[i].position.y = rand() % 3;
@@ -963,58 +974,69 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 			
 			
 		}
+		
 
 		else if (events.type == SDL_JOYAXISMOTION) {
 
 
-			if (events.jaxis.which == 0) {
-				if (events.jaxis.axis == 2)
-				{
-					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-					
-						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[0].incrementXPos(-9.0 * player[0].acceleration.x * elapsed);
-					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[0].incrementXPos(9.0 * player[0].acceleration.x * elapsed);
-				}
-
-				if (events.jaxis.axis == 3)
-				
-				{ 
-					//if(keys[events.jaxis.axis])
-					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-						
-						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+			/*	if (events.jhat.which == 0) {
+					if (events.jhat.value && SDL_HAT_UP) {
 						player[0].incrementYPos(9.0 * elapsed);
-					else if (events.jaxis.value > JOYSTICK_DEADZONE)
+					}
+					if (events.jhat.value &&  SDL_HAT_DOWN) {
 						player[0].incrementYPos(-9.0 * elapsed);
-				}
+					}
+					if (events.jhat.value && SDL_HAT_LEFT) {
+						player[0].incrementXPos(-9.0 * elapsed);
+					}
+					if (events.jhat.value && SDL_HAT_RIGHT) {
+						player[0].incrementXPos(9.0 * elapsed);
+					}*/
+			if (events.jaxis.which == 0) {
+				if (events.jaxis.axis == 0) {
+					if (state == 1) 
+						////if (&joystickPlayer0x[events.jaxis.axis] ) {
+						if (events.jaxis.value < -JOYSTICK_DEADZONE)
 
+							//		//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+							player[0].incrementXPos(-0.05 * player[0].acceleration.x);
+						else if (events.jaxis.value > JOYSTICK_DEADZONE)
+							player[0].incrementXPos(0.05 * player[0].acceleration.x);
+					}
+					if (events.jaxis.axis == 1) {
+						////if (&joystickPlayer0x[events.jaxis.axis] ) {
+						if (events.jaxis.value < -JOYSTICK_DEADZONE)
+
+							//		//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+							player[0].incrementYPos(0.05 * player[0].acceleration.y);
+						else if (events.jaxis.value > JOYSTICK_DEADZONE)
+							player[0].incrementYPos(-0.05 * player[0].acceleration.y);
+					}
+				
+				
 			}
 			if (events.jaxis.which == 1) {
-				if (events.jaxis.axis == 2)
-				{
-					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-					
-						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[1].incrementXPos(-6.0 * elapsed);
-					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[1].incrementXPos(6.0 * elapsed);
-				}
+				if (events.jaxis.axis == 0) {
+					if (state == 1) 
+						////if (&joystickPlayer0x[events.jaxis.axis] ) {
+						if (events.jaxis.value < -JOYSTICK_DEADZONE)
 
-				else if (events.jaxis.axis == 3)
-				{
-					if (events.jaxis.value < -JOYSTICK_DEADZONE)
-					
-						//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
-						player[1].incrementYPos(6.0 * elapsed);
-					else if (events.jaxis.value > JOYSTICK_DEADZONE)
-						player[1].incrementYPos(-6.0 * elapsed);
-				}
+							//		//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+							player[1].incrementXPos(-0.05 * player[1].acceleration.x);
+						else if (events.jaxis.value > JOYSTICK_DEADZONE)
+							player[1].incrementXPos(0.05 * player[1].acceleration.x);
+					}
+					if (events.jaxis.axis == 1) {
+						////if (&joystickPlayer0x[events.jaxis.axis] ) {
+						if (events.jaxis.value < -JOYSTICK_DEADZONE)
+
+							//		//player[0].moveMatrix(events.jaxis.value * player[0].position.x, 0.0, 0.0);
+							player[1].incrementYPos(0.05 * player[1].acceleration.y);
+						else if (events.jaxis.value > JOYSTICK_DEADZONE)
+							player[1].incrementYPos(-0.05 * player[1].acceleration.y);
+					}
 
 			}
-
-			
 		}
 		else if (events.type == SDL_JOYBUTTONDOWN) {
 			if (events.jbutton.button == 10) {
@@ -1077,6 +1099,7 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 						else if (playerIndexOne == 1)
 							playerIndexOne = 2;
 					}
+					
 
 				}
 			}
