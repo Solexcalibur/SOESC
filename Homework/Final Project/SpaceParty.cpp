@@ -234,7 +234,7 @@ void SpacialArea::setup() {
 	gameover = Mix_LoadWAV("Game Over.ogg");
 	victory = Mix_LoadWAV("Victory.ogg");
 	start = Mix_LoadWAV("Skyjack.ogg");
-	mysteriousSound = Mix_LoadMUS("ASDF.mp3");
+	mysteriousSound = Mix_LoadMUS("UT4 Music Concept - Atrium.mp3");
 	
 	Mix_PlayMusic(mysteriousSound, -1);
 
