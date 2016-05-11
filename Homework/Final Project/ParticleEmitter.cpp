@@ -26,9 +26,9 @@ ParticleEmitter::ParticleEmitter()
 	sizeDeviation = 0.1;
 	minLifeTime = 0.0;
 	maxLifeTime = 5.0;
-	gravity = Vector(0.0, -9.81, 0.0);
+	gravity = Vector(0.0, 0.0, 0.0);
 	velocity = Vector(0.0, 0.0, 0.0);
-	velocityDeviation = Vector(0.5, 0.5, 0.0);
+	velocityDeviation = Vector(0.0, 0.0, 0.0);
 	startColor = Color(1.0, 0.0, 0.0, 1.0);
 	endColor = Color(0.0, 1.0, 0.0, 1.0);
 }
@@ -47,7 +47,8 @@ ParticleEmitter::ParticleEmitter(unsigned int particleCount) {
 	maxLifeTime = 5.0;
 	gravity = Vector(0.0, -9.81, 0.0);
 	velocity = Vector(0.0, 0.0, 0.0);
-	velocityDeviation = Vector(0.5, 0.5, 0.0);
+	velocityDeviation = Vector(0.0, 0.0, 0.0);
+	position = Vector(0.0, 0.0, 0.0);
 	startColor = Color(1.0, 1.0, 0.0, 1.0);
 	endColor = Color(0.0, 1.0, 0.0, 1.0);
 	//texture = LoadTexture("fire.png");

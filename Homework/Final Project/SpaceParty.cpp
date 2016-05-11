@@ -155,6 +155,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	joystickPlayer0y = 0;
 	joystickPlayer1x = 0;
 	joystickPlayer1y = 0;
+	animationValue = 0;
 	
 }
 
@@ -182,7 +183,7 @@ void SpacialArea::setup() {
 	displayWindow = SDL_CreateWindow("Astral Horizon", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
-	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	Mix_OpenAudio(34100, MIX_DEFAULT_FORMAT, 2, 4096);
 	//SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN);
 	SDL_JoystickEventState(SDL_ENABLE);
 	playerOne = SDL_JoystickOpen(0);
@@ -233,7 +234,7 @@ void SpacialArea::setup() {
 	gameover = Mix_LoadWAV("Game Over.ogg");
 	victory = Mix_LoadWAV("Victory.ogg");
 	start = Mix_LoadWAV("Skyjack.ogg");
-	mysteriousSound = Mix_LoadMUS("UT4 Music Concept - Atrium.mp3");
+	mysteriousSound = Mix_LoadMUS("ASDF.mp3");
 	
 	Mix_PlayMusic(mysteriousSound, -1);
 
@@ -311,12 +312,29 @@ void SpacialArea::blendSprite(GLuint& texture) {
 }
 
 
-void SpacialArea::TitleScreen(ShaderProgram& program) {
+void SpacialArea::TitleScreen(ShaderProgram& program, float elapsed) {
 	
 	DrawText(program, wordTexture, "ASTRAL HORIZON", 0.1, 0, -2.0, 0.0);
+	DrawText(program, wordTexture, "FIGHT, KILL, SURVIVE!", 0.1, 0, -2.0, -1.0);
 	
+	animationTime += elapsed;
+	animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
+	sprites[3].textureID = spriteSheetTexture;
+	player[2].setMatrices(program);
+	player[2].setOrthoProjection();
+	player[2].identityMatrix();
+	player[2].moveMatrix(easeOutElastic(0.0,2.0, animationValue), easeIn(0.0, 2.0, animationValue), 0.0);
+	
+	//spriteSheets[0].Draw(program);
+	sprites[3].Draw(program);
+	sprites[2].textureID = spriteSheetTexture;
+	player[3].setMatrices(program);
+	player[3].setOrthoProjection();
+	player[3].identityMatrix();
+	player[3].moveMatrix(easeOutElastic(0.0, -2.0, animationValue), easeIn(0.0, -2.0, animationValue), 0.0);
 
-
+	//spriteSheets[0].Draw(program);
+	sprites[2].Draw(program);
 	blendSprite(particletex);
 
 }
@@ -353,11 +371,11 @@ void SpacialArea::VictoryScreen(ShaderProgram& program) {
 	
 }
 
-void SpacialArea::screenSelector(ShaderProgram& program) {
+void SpacialArea::screenSelector(ShaderProgram& program, float elapsed) {
 
 	switch (state) {
 	case STATE_TITLE:
-		TitleScreen(program);
+		TitleScreen(program, elapsed);
 		break;
 	case STATE_GAME_LEVEL:
 		scoreBoard(program);
@@ -453,6 +471,11 @@ void SpacialArea::titleEvents(SDL_Event event, ShaderProgram& program) {
 }
 
 void SpacialArea::setupThings(ShaderProgram& program) {
+	/*party[0].texture = metalTex;
+	party[0].Render(&program);
+	
+	party[0].Update(FIXED_TIMESTEP);*/
+	//party[0].EmitXDirection(2, false);
 	for (int i = 0; i < 28; i++) {
 		randomTiles[i].setMatrices(program);
 		randomTiles[i].identityMatrix();
@@ -522,53 +545,43 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float elapsed) {
 	
 	setupThings(program);
+	
 	//render(program);
 	//particle.party.Update(elapsed);
-
+	time_t mover;
 	animationTime += elapsed;
-	float animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
-	for (int i = 0; i < 28; i+=3) {
-	//randomTiles[0].identityMatrix();
-		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
-		randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0, 0.0);
-	}
-	for (int i = 0; i < 28; i += 9) {
-		//randomTiles[0].identityMatrix();
-		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
-		randomTiles[i].moveMatrix(0.0, -1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
-	}
-	for (int i = 0; i < 27; i ++) {
-		//randomTiles[0].identityMatrix();
-		//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
-		randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 1.0, easeIn(0.0, 1.0, animationValue)), -1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
+	animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
+	float ticks = (float)SDL_GetTicks() / 1000.0f;
+	if (state == 1) {
+		for (int i = 0; i < 28; i += 3) {
+			//randomTiles[0].identityMatrix();
+				//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+				//if (time(&mover) % 2 == 0)
+				//if (ticks > 1000)
+			randomTiles[i].moveMatrix(easeOutElastic(0.0, 0.5, animationValue), easeIn(0.0, -0.5, animationValue), 0.0);
+
+			//randomTiles[i].moveMatrix(easeOutElastic(0.5, 0.0, animationValue), easeIn(-0.5, 0.0, animationValue), 0.0);
+
+		}
+		for (int i = 0; i < 28; i += 9) {
+			//randomTiles[0].identityMatrix();
+			//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+			//if (time(&mover) > 15)
+			//if (ticks > 2)
+			//if (time(&mover) % 4 == 0)
+			randomTiles[i].moveMatrix(easeIn(0.0, -1.0, animationValue), -1.0 * randomTiles[i].lerp(0.0, 3.0, animationValue), 0.0);
+		}
+		for (int i = 0; i < 27; i++) {
+			//if (time(&mover) > 10)
+			//if (time(&mover) % 6 == 0)
+			randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 1.0, easeIn(0.0, 1.0, animationValue)),
+				-1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
+		}
 	}
 
-	//text[1].moveMatrix(text[1].lerp(0.0, 1.0, animationValue), 0.0, 0.0);
-	//text[1].moveMatrix(-1.0 * elapsed, 0.0, 0.0);
-	/*particle.setOrthoProjection();
-	particle.setMatrices(program);
-	particle.identityMatrix();*/
 	
-
-	//party[0].Update(elapsed);
-	//blendSprite(party[0].texture);
-
-	//numEnemies = player.size() - 1;
-	/*time_t timer;
-	if (time(&timer) % 5 == 0) {
-		score += 1;
-	}*/
-	/*for (int i = 0; i < particles.size(); i++) {
-		particles[i].Render(&program);
-		particles[i].Update(elapsed);
-
-		
-	}
-	particles[0].EmitXDirection(2, true);*/
-	//render(program);
-	//setupAndRender(program, vertexData.data(), texCoordData.data(), metalTex);
 	int ammoIndex = 0;
-	//int maxshots = 10;
+	
 
 	if (shotIndex > maxshots - 1) {
 		shotIndex = 0;
@@ -576,12 +589,14 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	}
 	
 	
-	player[0].shots[player[0].ammoIndex].moveMatrix(player[0].shots[player[0].ammoIndex].position.x, player[0].shots[player[0].ammoIndex].position.y, 0.0);
+	player[0].shots[player[0].ammoIndex].moveMatrix(player[0].shots[player[0].ammoIndex].position.x, 
+		player[0].shots[player[0].ammoIndex].position.y, 0.0);
 	player[0].shots[player[0].ammoIndex].incrementYPos(8.0 * player[0].shots[player[0].ammoIndex].direction.y * elapsed);
 
 
 
-	player[1].shots[player[1].ammoIndex].moveMatrix(player[1].shots[player[1].ammoIndex].position.x, player[1].shots[player[1].ammoIndex].position.y, 0.0);
+	player[1].shots[player[1].ammoIndex].moveMatrix(player[1].shots[player[1].ammoIndex].position.x, 
+		player[1].shots[player[1].ammoIndex].position.y, 0.0);
 	//player[1].shots[player[1].ammoIndex].direction.y = -1.0;
 	player[1].shots[player[1].ammoIndex].incrementYPos(8.0 * player[1].shots[player[1].ammoIndex].direction.y * elapsed);
 	
@@ -658,15 +673,15 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	}
 	
 	//for (int i = 0; i < 2; i++) { //Bullet collision with enemy. Incresed hitbox so that hitting any part of ship deals damage
-		if (player[0].shots[player[0].ammoIndex].position.y < player[1].position.y + player[1].height * 0.5
-			&& player[0].shots[player[0].ammoIndex].position.y > player[1].position.y - player[1].height * 0.5
+		if (player[0].shots[player[0].ammoIndex].position.y < player[1].position.y + player[1].height * 3.45
+			&& player[0].shots[player[0].ammoIndex].position.y > player[1].position.y - player[1].height * 1.5
 			&& player[0].shots[player[0].ammoIndex].position.x < player[1].position.x + player[1].width * 3.45
 			&& player[0].shots[player[0].ammoIndex].position.x > player[1].position.x - player[1].width * 1.5) {
 			if (player[0].shots[player[0].ammoIndex].visible) {
 
 				player[0].shots[player[0].ammoIndex].position.x = 20.5;
 				player[0].shots[player[0].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
-				player[0].shots[player[0].ammoIndex].visible = false;
+				//player[0].shots[player[0].ammoIndex].visible = false;
 				if (player[1].shields > 0) {
 					player[1].shields -= 6;
 					player[1].health -= 4;
@@ -681,15 +696,15 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 				
 			}
 		}
-		if (player[1].shots[player[1].ammoIndex].position.y < player[0].position.y + player[0].height * 0.5
-			&& player[1].shots[player[1].ammoIndex].position.y > player[0].position.y - player[0].height * 0.5
+		if (player[1].shots[player[1].ammoIndex].position.y < player[0].position.y + player[0].height * 3.45
+			&& player[1].shots[player[1].ammoIndex].position.y > player[0].position.y - player[0].height * 1.5
 			&& player[1].shots[player[1].ammoIndex].position.x < player[0].position.x + player[0].width * 3.45
 			&& player[1].shots[player[1].ammoIndex].position.x > player[0].position.x - player[0].width * 1.5) {
 			if (player[1].shots[player[1].ammoIndex].visible) {
 
 				player[1].shots[player[1].ammoIndex].position.x = 20.5;
 				player[1].shots[player[1].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
-				player[1].shots[player[1].ammoIndex].visible = false;
+				//player[1].shots[player[1].ammoIndex].visible = false;
 				if (player[0].shields > 0) {
 					player[0].shields -= 6;
 					player[0].health -= 4;
@@ -1041,19 +1056,17 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 		else if (events.type == SDL_JOYBUTTONDOWN) {
 			if (events.jbutton.button == 10) {
 				if (state == 0) {
-
+					previousState = 0;
 					state = 4;
 				}
 				else if (state == 4) {
-					Mix_PlayChannel(-1, start, 0);
-					player[0].health = 100;
-					player[0].shields = 100;
-					player[1].health = 100;
-					player[1].shields = 100;
-					state = 1;
+					previousState = 4;
+					state = 5;
+					//state = 1;
 
 				}
 				else if (state == 2) {
+					previousState = 2;
 					player[0].health = 100;
 					player[0].shields = 100;
 					player[0].position.x = 2.0;
@@ -1064,6 +1077,20 @@ bool SpacialArea::inputProcessor(ShaderProgram& program,float elapsed) {
 					player[1].position.y = 2.0;
 					state = 1;
 				}
+				else if (state == 5) {
+					previousState = 5;
+					Mix_PlayChannel(-1, start, 0);
+					player[0].health = 100;
+					player[0].shields = 100;
+					player[0].position.x = 2.0;
+					player[0].position.y = -2.0;
+					player[1].health = 100;
+					player[1].shields = 100;
+					player[1].position.x = -2.0;
+					player[1].position.y = 2.0;
+					state = 1;
+				}
+				
 			}
 			
 			else if (events.jbutton.which == 0)
@@ -1481,4 +1508,10 @@ float SpacialArea::mapValue(float value, float srcMin, float srcMax, float dstMi
 float SpacialArea::easeIn(float from, float to, float time) {
 	float tVal = time*time*time*time*time;
 	return (1.0f - tVal)*from + tVal*to;
+}
+float SpacialArea::easeOutElastic(float from, float to, float time) {
+	float p = 0.3f;
+	float s = p / 4.0f;
+	float diff = (to - from);
+	return from + diff + (diff*pow(2.0f, -10.0f*time) * sin((time - s)*(2 * 3.14) / p));
 }

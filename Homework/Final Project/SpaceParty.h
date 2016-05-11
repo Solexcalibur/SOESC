@@ -24,7 +24,7 @@
 		void render();
 		void update();
 		void updatePlusRender();
-		void TitleScreen(ShaderProgram& program);
+		void TitleScreen(ShaderProgram& program, float elapsed);
 		void scoreBoard(ShaderProgram& program);
 		void gameOverScreen(ShaderProgram& program);
 		void VictoryScreen(ShaderProgram & program);
@@ -32,7 +32,7 @@
 		GLuint LoadTexture(const char* image_path);
 		void blendSprite(GLuint& texture);
 		//bool windowCloseChecker(SDL_Event event, std::vector<AstralEntity>& objects, Projectile ammo[], std::vector<SpriteSheet>& spriteSheets, ShaderProgram& program, float elasped);
-		void screenSelector(ShaderProgram& program);
+		void screenSelector(ShaderProgram& program, float elapsed);
 		void PausedGame(ShaderProgram & program);
 		void SelectLevel(ShaderProgram & program);
 		void SelectCharacter();
@@ -79,6 +79,8 @@
 
 		float easeIn(float from, float to, float time);
 
+		float easeOutElastic(float from, float to, float time);
+
 		void DrawTextz(GLuint fontTexture, std::string text, float size, float spacing, float r, float g, float b, float a, float x, float y);
 
 		
@@ -120,7 +122,7 @@
 		//AstralEntity player;
 		//AstralEntity* enemies = new AstralEntity[MAX_BAD_GUYS];
 		//AstralEntity* playerGun = new AstralEntity[MAX_HUMAN_SHOTS];
-		float r_filter, g_filter, b_filter ,spriteWidth, spriteHeight, tileLength, tileHeight, animationTime;
+		float r_filter, g_filter, b_filter ,spriteWidth, spriteHeight, tileLength, tileHeight, animationTime, animationValue;
 		SDL_Joystick * playerOne;
 		SDL_Joystick * playerTwo;
 

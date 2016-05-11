@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
 		environment.clearScreen();
 
 		
-		environment.screenSelector(program);
+		environment.screenSelector(program, elapsed);
 		
 		environment.updateThings(program, fixedElapsed);
 		
