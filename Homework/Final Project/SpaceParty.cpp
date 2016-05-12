@@ -332,17 +332,17 @@ void SpacialArea::TitleScreen(ShaderProgram& program, float elapsed) {
 	player[2].setMatrices(program);
 	player[2].setOrthoProjection();
 	player[2].identityMatrix();
-	player[2].moveMatrix(easeOutElastic(0.0,2.0, animationValue), easeIn(0.0, 2.0, animationValue), 0.0);
-	
+	player[2].moveMatrix(easeOutElastic(0.0,2.5, animationValue), easeIn(0.0, 2.5, animationValue), 0.0);
+	//easeIn(0.0, 2.0, animationValue)
 	//player[2].model.Rotate()
-	
+	//easeIn(0.0, -2.0, animationValue)
 	//spriteSheets[0].Draw(program);
 	sprites[3].Draw(program);
 	sprites[2].textureID = spriteSheetTexture;
 	player[3].setMatrices(program);
 	player[3].setOrthoProjection();
 	player[3].identityMatrix();
-	player[3].moveMatrix(easeOutElastic(0.0, -2.0, animationValue), easeIn(0.0, -2.0, animationValue), 0.0);
+	player[3].moveMatrix(easeOutElastic(0.0, -2.5, animationValue), easeIn(0.0, -2.5, animationValue), 0.0);
 
 	//spriteSheets[0].Draw(program);
 	sprites[2].Draw(program);
