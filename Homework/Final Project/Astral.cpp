@@ -65,7 +65,7 @@ AstralEntity::AstralEntity()
 	shots[ammoIndex].direction.y = 1.0;
 	//width = 1.0;
 	//height = 1.0;
-	
+	wins = 0;
 }
 
 AstralEntity::AstralEntity(Matrix& modelMatrix, Matrix& projectionMatrix, Matrix& viewMatrix) {

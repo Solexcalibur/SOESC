@@ -178,13 +178,13 @@ SpacialArea::~SpacialArea()
 
 void SpacialArea::setup() {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
-	int x_resolution = 800;
-	int y_resolution = 600;
+	int x_resolution = 1280;
+	int y_resolution = 800;
 	displayWindow = SDL_CreateWindow("Astral Horizon", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, x_resolution, y_resolution, SDL_WINDOW_OPENGL);// <-OUTER BOUND
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 	Mix_OpenAudio(34100, MIX_DEFAULT_FORMAT, 2, 4096);
-	//SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN);
+	SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_JoystickEventState(SDL_ENABLE);
 	playerOne = SDL_JoystickOpen(0);
 	//SDL_JoystickEventState(SDL_ENABLE);
@@ -256,7 +256,7 @@ bool SpacialArea::windowCloseChecker(SDL_Event event) {
 }
 
 void SpacialArea::clearScreen() {
-	glClearColor(r_filter, g_filter, b_filter, 1.0f);
+	glClearColor(r_filter + 0.2, g_filter, b_filter, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -325,6 +325,8 @@ void SpacialArea::TitleScreen(ShaderProgram& program, float elapsed) {
 	player[2].identityMatrix();
 	player[2].moveMatrix(easeOutElastic(0.0,2.0, animationValue), easeIn(0.0, 2.0, animationValue), 0.0);
 	
+	//player[2].model.Rotate()
+	
 	//spriteSheets[0].Draw(program);
 	sprites[3].Draw(program);
 	sprites[2].textureID = spriteSheetTexture;
@@ -340,10 +342,10 @@ void SpacialArea::TitleScreen(ShaderProgram& program, float elapsed) {
 }
 
 void SpacialArea::scoreBoard(ShaderProgram& program) {
-	DrawText(program, wordTexture, "P2 HEALTH:" + to_string(player[1].health) + " SHIELDS:" + to_string(player[1].shields), 
-		0.12, 0, -2.8, 0.0);
-	DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields),
-		0.12, 0, 0.0, -5.0);
+	DrawText(program, wordTexture, "P2 HEALTH:" + to_string(player[1].health) + " SHIELDS:" + to_string(player[1].shields) + " WINS:" +
+		to_string(player[1].wins), 0.12, 0, -2.8, 0.0);
+	DrawText(program, wordTexture, "P1 HEALTH:" + to_string(player[0].health) + " SHIELDS:" + to_string(player[0].shields) + " WINS:" +
+		to_string(player[0].wins), 0.12, 0, -2.8, -5.0);
 	blendSprite(wordTexture); //Blend Particle Sprite
 	
 
@@ -352,10 +354,12 @@ void SpacialArea::scoreBoard(ShaderProgram& program) {
 void SpacialArea::gameOverScreen(ShaderProgram& program) {
 	
 	if (player[0].health < 0 ) {
-		DrawText(program, wordTexture, "Player 2 Wins!", 0.11, 0, -2.0, 0.0);
+		DrawText(program, wordTexture, "Player 2 Wins the Round!", 0.11, 0, -2.0, 0.0);
+		
 	}
 	else if (player[1].health < 0) {
-		DrawText(program, wordTexture, "Player 1 Wins!", 0.11, 0, -2.0, 0.0);
+		DrawText(program, wordTexture, "Player 1 Wins the Round!", 0.11, 0, -2.0, 0.0);
+		
 	}
 	else if (player[0].health < 0 && player[1].health < 0) {
 		DrawText(program, wordTexture, "Mutually Assured Death!", 0.11, 0, -2.0, 0.0);
@@ -366,8 +370,10 @@ void SpacialArea::gameOverScreen(ShaderProgram& program) {
 }
 
 void SpacialArea::VictoryScreen(ShaderProgram& program) {
-	
-	DrawText(program, wordTexture, "Good work! Go another round? (Press Enter)", 0.1, 0, 0.0, 0.0);
+	if (player[0].wins == 2)
+		DrawText(program, wordTexture, "Player 1 wins the match!", 0.1, 0, 0.0, 0.0);
+	else
+		DrawText(program, wordTexture, "Player 2 wins the match!", 0.1, 0, 0.0, 0.0);
 	
 }
 
@@ -480,14 +486,10 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 		randomTiles[i].setMatrices(program);
 		randomTiles[i].identityMatrix();
 		randomTiles[i].moveMatrix(randomTiles[i].position.x - 2, randomTiles[i].position.y - 0.5, 0.0);
-		//randomTiles[i].setupAndRender(program, randomTiles[i].grabVertices(), randomTiles[i].grabTexCoords(), randomTiles[i].texID);
-		metaltiles[i].Draw(program);
-		//entites[i].XPos = rand() % 3;
-		//entites[i].YPos = rand() % 3;
-		//entites[i].XPos = rand() % 6;
-		//entites[i].YPos = (int)entites[i].XPos % 6;
+		
 
-		//entites[i].setOrthoProjection();
+		metaltiles[i].Draw(program);
+	
 
 	}
 	
@@ -508,9 +510,7 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 		laserIndexOne = 5;
 
 	sprites[laserIndexOne].textureID = spriteSheetTexture;
-	/*shots[shotIndex].setOrthoProjection();
-	shots[shotIndex].setMatrices(program);
-	shots[shotIndex].identityMatrix();*/
+	
 	player[0].shots[player[0].ammoIndex].setOrthoProjection();
 	player[0].shots[player[0].ammoIndex].setMatrices(program);
 	player[0].shots[player[0].ammoIndex].identityMatrix();
@@ -526,14 +526,10 @@ void SpacialArea::setupThings(ShaderProgram& program) {
 	player[1].setOrthoProjection();
 	player[1].identityMatrix();
 	player[1].moveMatrix(player[1].position.x, player[1].position.y, 0.0);
-	//player[indx].alive = true;
-	//spriteSheets[2].Draw(program);
+
 	sprites[playerIndexTwo].Draw(program);
 
 	sprites[laserIndexTwo].textureID = spriteSheetTexture;
-	/*shots[shotIndex].setOrthoProjection();
-	shots[shotIndex].setMatrices(program);
-	shots[shotIndex].identityMatrix();*/
 	player[1].shots[player[1].ammoIndex].setOrthoProjection();
 	player[1].shots[player[1].ammoIndex].setMatrices(program);
 	player[1].shots[player[1].ammoIndex].identityMatrix();
@@ -553,30 +549,22 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 	animationValue = mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
 	float ticks = (float)SDL_GetTicks() / 1000.0f;
 	if (state == 1) {
-		for (int i = 0; i < 28; i += 3) {
-			//randomTiles[0].identityMatrix();
-				//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
-				//if (time(&mover) % 2 == 0)
-				//if (ticks > 1000)
-			randomTiles[i].moveMatrix(easeOutElastic(0.0, 0.5, animationValue), easeIn(0.0, -0.5, animationValue), 0.0);
-
-			//randomTiles[i].moveMatrix(easeOutElastic(0.5, 0.0, animationValue), easeIn(-0.5, 0.0, animationValue), 0.0);
-
-		}
-		for (int i = 0; i < 28; i += 9) {
-			//randomTiles[0].identityMatrix();
-			//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
-			//if (time(&mover) > 15)
-			//if (ticks > 2)
-			//if (time(&mover) % 4 == 0)
-			randomTiles[i].moveMatrix(easeIn(0.0, -1.0, animationValue), -1.0 * randomTiles[i].lerp(0.0, 3.0, animationValue), 0.0);
-		}
-		for (int i = 0; i < 27; i++) {
-			//if (time(&mover) > 10)
-			//if (time(&mover) % 6 == 0)
-			randomTiles[i].moveMatrix(randomTiles[i].lerp(0.0, 1.0, easeIn(0.0, 1.0, animationValue)),
-				-1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
-		}
+		
+		//}
+		//for (int i = 0; i < 28; i += 9) {
+		//	//randomTiles[0].identityMatrix();
+		//	//randomTiles[0].incrementXPos(0.1 * randomTiles[0].lerp(0.0, 1.0, animationValue));
+		//	//if (time(&mover) > 15)
+		//	//if (ticks > 2)
+		//	//if (time(&mover) % 20 == 0)
+		//	randomTiles[i].moveMatrix(easeIn(0.0, -1.0, animationValue), -1.0 * easeOutElastic(0.0, 1.0, animationValue), 0.0);
+		//}
+		//for (int i = 0; i < 27; i++) {
+		//	//if (time(&mover) > 10)
+		//	//if (time(&mover) % 6 == 0)
+		//	//if (time(&mover) % 10 == 0)
+		//	randomTiles[i].moveMatrix(0.0, -1.0 * randomTiles[i].lerp(0.0, 2.0, animationValue), 0.0);
+		//}
 	}
 
 	
@@ -638,7 +626,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[0].shots[player[0].ammoIndex].direction.y = -1.0;
 	}
 	else if (player[0].position.y < 0.0) {
-	
+		for (int i = 0; i < 28; i += 3) {
+			randomTiles[i].moveMatrix(easeOutElastic(0.0, 2.5, animationValue), easeIn(0.0, -0.5, animationValue), 0.0);
+			//randomTiles[i].incrementYPos(easeOutElastic(0.0, 2.5, animationValue));
+		}
 		player[0].scaleFactor = 1.0;
 		player[0].shots[player[0].ammoIndex].direction.y = 1.0;
 	}
@@ -650,7 +641,10 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		player[1].position.y = 2.5;
 	}
 	else if (player[1].position.y < 0.0) {
-		
+		for (int i = 0; i < 28; i += 9) {
+			randomTiles[i].moveMatrix(0.0, easeIn(0.0, -0.5, animationValue), 0.0);
+			//randomTiles[i].incrementYPos(easeOutElastic(0.0, 2.5, animationValue));
+		}
 		player[1].scaleFactor = 1.0;
 		player[1].shots[player[1].ammoIndex].model.Rotate(180.0 * (3.1415926 / 180.0));
 		player[1].shots[player[1].ammoIndex].direction.y = 1.0;
@@ -687,6 +681,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 					player[1].health -= 4;
 				}
 				else {
+					
 					player[1].shields = 0;
 					player[0].shots[player[0].ammoIndex].position.y = 2.5;
 					player[1].health -= 10;
@@ -722,8 +717,17 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 		
 		if (player[0].health < 0 || player[1].health < 0) {
 			state = 2;
+			if (player[0].health < 0) {
+				player[1].wins++;
+			}
+			else {
+				player[0].wins++;
+			}
 		}
-	
+
+		if (player[0].wins == 2 || player[1].wins == 2) {
+			state = 3;
+		}
 
 
 

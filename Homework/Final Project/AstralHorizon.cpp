@@ -66,8 +66,7 @@ int main(int argc, char *argv[]){
 	environment.readFile("Metal Sheet Tiles.txt", program);
 	environment.render(program);
 	
-	float cubex = cube.easeIn(0, 2, 3, 4);
-	float cubey = cube.easeInOut(0, 2, 3, 4);
+
 	float animationTime = 0;
 	bool done = false;
 	float lastFrameTicks = 0.0;
@@ -78,8 +77,6 @@ int main(int argc, char *argv[]){
 		float fixedElapsed = elapsed;
 	
 		done = environment.inputProcessor(program,fixedElapsed);
-		animationTime += elapsed;
-		float animationValue = environment.mapValue(animationTime, 0.0, 2.0, 0.0, 1.0);
 		if (fixedElapsed > FIXED_TIMESTEP * MAX_TIMESTEPS) 
 		{ fixedElapsed = FIXED_TIMESTEP * MAX_TIMESTEPS; } 
 

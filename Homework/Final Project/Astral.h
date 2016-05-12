@@ -48,7 +48,7 @@ public:
 		, frictionX, frictionY, scaleFactor;
 	
 	bool alive, isStatic, collideTop, collideBottom, collideLeft, collideRight;
-	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health, shields;
+	int firstSpriteIndex, lastSpriteIndex, score, ammoIndex, maxshots, health, shields, wins;
 	ParticleEmitter party;
 	std::vector<Projectile> shots;
 
