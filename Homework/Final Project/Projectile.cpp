@@ -48,6 +48,8 @@ Projectile::Projectile(){
 	direction.x = 1.0;
 	direction.y = 1.0;
 	direction.z = 0.0;
+
+	damage = 10;
 	/*float vertices[] = { -0.04, -0.04,
 		0.04, -0.04,
 		0.04, 0.04,

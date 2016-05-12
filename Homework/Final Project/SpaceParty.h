@@ -90,7 +90,7 @@
 		Mix_Chunk *scored, *gameover, *victory, *start, *laserShot, *select;
 		enum gameState { STATE_TITLE, STATE_GAME_LEVEL, STATE_GAME_OVER, STATE_VICTORY, STATE_CHARACTER_SELECT, STATE_LEVEL_SELECT, STATE_PAUSE_GAME };
 		int state, numEnemies, shotIndex, maxshots, score, index, previousState;
-		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks;
+		GLuint wordTexture, spriteSheetTexture, particletex, metalTex, tiles, fireballs, rocks, blue, purple;
 		std::vector<GLuint> randTextures;
 		const Uint8* keys;
 		Uint8 hatz;

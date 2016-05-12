@@ -14,6 +14,7 @@ public:
 	Vector position, velocity, acceleration, direction;
 	float XPos, YPos, flightTime, width, height, velocityX, velocityY, accelertionX, accelerationY;
 	float vertices[12];
+	int damage;
 	Matrix model, projection, view;
 	GLuint texID;
 	bool remove, visible;

@@ -48,6 +48,7 @@ SpacialArea::SpacialArea() { //Ridiciously long initalizer
 	for (int i = 0; i < 5; i++) {
 		player.push_back(AstralEntity());
 		text.push_back(AstralEntity());
+		levels.push_back(AstralEntity());
 	}
 	for (int i = 0; i < 10; i++) {
 		shots.push_back(Projectile());
@@ -192,7 +193,10 @@ void SpacialArea::setup() {
 	metalTex = LoadTexture("MetalSheet.png");
 	//scored = Mix_LoadWAV("Score.ogg");
 	//party.texture = LoadTexture("fire.png");
-	
+	purple = LoadTexture("uipackSpace_sheet.png");
+	//levels[0].texID = purple;
+	blue = LoadTexture("blueSheet.png");
+	//levels[1].texID = blue;
 	particle.party = ParticleEmitter(2);
 	wordTexture = LoadTexture("font2.png");
 	particletex = LoadTexture("fire.png");
@@ -201,6 +205,8 @@ void SpacialArea::setup() {
 	randTextures.push_back(metalTex);
 	randTextures.push_back(particletex);
 	randTextures.push_back(wordTexture);
+	randTextures.push_back(purple);
+	randTextures.push_back(blue);
 	joystickPlayer0x = SDL_JoystickGetAxis(playerOne, 0);
 	joystickPlayer0y = SDL_JoystickGetAxis(playerOne, 1);
 	joystickPlayer1x = SDL_JoystickGetAxis(playerTwo, 0);
@@ -212,10 +218,10 @@ void SpacialArea::setup() {
 		text[i].setOrthoProjection();
 		text[i].texID = wordTexture;
 	}
-		for (int i = 0; i < 28; i++) {
+		for (int i = 0; i < 30; i++) {
 			metaltiles.push_back(SpriteSheet(randTextures[levelIndex], 0.0f / 512.0f, 280.0f / 512.0f, 70.0f / 512.0f, 70.0f / 512.0f, 0.2));
 			randomTiles.push_back(AstralEntity());
-			randomTiles[i].position = Vector(rand() % 6 - 3.0, rand() % 5 - 1.0, 0.0);
+			randomTiles[i].position = Vector(rand() % 6 - 3.0, rand() % 5 - 1.5, 0.0);
 			randomTiles[i].texID = randTextures[levelIndex];
 			//randomTiles[i].position.x = rand() % 3;
 			//randomTiles[i].position.y = rand() % 3;
@@ -224,6 +230,9 @@ void SpacialArea::setup() {
 		
 		metaltiles[1].width = 20.0f / 256.0f;
 		metaltiles[1].height = 20.0f / 256.0f;
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_TRUE);
 			
 	//party.SetTex("fire.png");
 	//readFile("Metal Sheet Tiles.txt");
@@ -257,7 +266,7 @@ bool SpacialArea::windowCloseChecker(SDL_Event event) {
 
 void SpacialArea::clearScreen() {
 	glClearColor(r_filter + 0.2, g_filter, b_filter, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void SpacialArea::windowSwapping() {
@@ -370,11 +379,16 @@ void SpacialArea::gameOverScreen(ShaderProgram& program) {
 }
 
 void SpacialArea::VictoryScreen(ShaderProgram& program) {
-	if (player[0].wins == 2)
+	if (player[0].wins == 2) {
 		DrawText(program, wordTexture, "Player 1 wins the match!", 0.1, 0, 0.0, 0.0);
-	else
+		
+	}
+	else {
 		DrawText(program, wordTexture, "Player 2 wins the match!", 0.1, 0, 0.0, 0.0);
+		
+	}
 	
+
 }
 
 void SpacialArea::screenSelector(ShaderProgram& program, float elapsed) {
@@ -677,14 +691,14 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 				player[0].shots[player[0].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
 				//player[0].shots[player[0].ammoIndex].visible = false;
 				if (player[1].shields > 0) {
-					player[1].shields -= 6;
-					player[1].health -= 4;
+					player[1].shields -= 0.8 * player[0].shots[player[0].ammoIndex].damage;
+					player[1].health -= 0.2 * player[0].shots[player[0].ammoIndex].damage;
 				}
 				else {
 					
 					player[1].shields = 0;
 					player[0].shots[player[0].ammoIndex].position.y = 2.5;
-					player[1].health -= 10;
+					player[1].health -= player[0].shots[player[0].ammoIndex].damage;
 					
 					
 				}
@@ -701,13 +715,13 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 				player[1].shots[player[1].ammoIndex].direction.y = 1.0;//still gotta remove bullet, just a temp fix
 				//player[1].shots[player[1].ammoIndex].visible = false;
 				if (player[0].shields > 0) {
-					player[0].shields -= 6;
-					player[0].health -= 4;
+					player[0].shields -= 0.8 * player[1].shots[player[1].ammoIndex].damage;
+					player[0].health -= 0.2 * player[1].shots[player[1].ammoIndex].damage;
 				}
 				else {
 					player[0].shields = 0;
 					player[1].shots[player[0].ammoIndex].position.y = 2.5;
-					player[0].health -= 10;
+					player[0].health -= player[1].shots[player[1].ammoIndex].damage;
 
 
 				}
@@ -727,6 +741,7 @@ void SpacialArea::inGameEvents(SDL_Event event, ShaderProgram& program, float el
 
 		if (player[0].wins == 2 || player[1].wins == 2) {
 			state = 3;
+			Mix_PlayChannel(-1, gameover, 0);
 		}
 
 
@@ -782,28 +797,29 @@ void SpacialArea::updateThings(ShaderProgram& program, float elasped) {
 }
 
 void SpacialArea::shoot(AstralEntity& player) {
-	
+		
 		if (player.position.y < 0) {
-			player.shots[shotIndex].position.y = player.position.y + 0.5;
+			player.shots[player.ammoIndex].position.y = player.position.y + 0.5;
 		}
 		else {
-			player.shots[shotIndex].position.y = player.position.y - 0.5;
+			player.shots[player.ammoIndex].position.y = player.position.y - 0.5;
 		}
-		player.shots[shotIndex].position.x = player.position.x;
+		player.shots[player.ammoIndex].position.x = player.position.x;
 
-		player.shots[shotIndex].visible = true;
+		player.shots[player.ammoIndex].visible = true;
 		//player.shots[player.ammoIndex].incrementYPos(8.0 * player.shots[player.ammoIndex].direction.y * elapsed);
-
-		if (shots[shotIndex].position.y > 2.0) {
-			shots[shotIndex].position.y = -1.5;
+		
+		if (player.shots[player.ammoIndex].position.y > 3.0) {
+			player.shots[player.ammoIndex].position.x = -4.5;
 		}
-		shotIndex++;
+		
 
-
-		if (shotIndex > maxshots - 1) {
-			shotIndex = 0;
+		player.ammoIndex++;
+		if (player.ammoIndex > maxshots - 1) {
+			player.ammoIndex = 0;
 
 		}
+		//shotIndex++;
 	//}
 	
 
