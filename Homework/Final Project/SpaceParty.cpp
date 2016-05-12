@@ -186,6 +186,7 @@ void SpacialArea::setup() {
 	SDL_GL_MakeCurrent(displayWindow, context);
 	Mix_OpenAudio(34100, MIX_DEFAULT_FORMAT, 2, 4096);
 	SDL_SetWindowFullscreen(displayWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_ShowCursor(0);
 	SDL_JoystickEventState(SDL_ENABLE);
 	playerOne = SDL_JoystickOpen(0);
 	//SDL_JoystickEventState(SDL_ENABLE);
@@ -422,13 +423,13 @@ void SpacialArea::PausedGame(ShaderProgram& program) {
 	DrawText(program, wordTexture, "Press Q to quit game", 0.1, 0, -2.0, -1.0);
 }
 void SpacialArea::SelectLevel(ShaderProgram& program) {
-	DrawText(program, wordTexture, "Choose a Level", 0.077, 0, 0.0, 0.0);
+	DrawText(program, wordTexture, "Choose a Level", 0.077, 0, -1.0, 0.0);
 	float* vertices = randomTiles[0].grabVertices();
 	float* texCoords = randomTiles[0].grabTexCoords();
 	for (int i = 0; i < 28; i++) {
 		randomTiles[i].setMatrices(program);
 		randomTiles[i].identityMatrix();
-		randomTiles[i].moveMatrix(randomTiles[i].position.x, randomTiles[i].position.y, 0.0);
+		randomTiles[i].moveMatrix(randomTiles[i].position.x - 1.0, randomTiles[i].position.y - 0.5, 0.0);
 		//randomTiles[i].texID = randTextures[levelIndex];
 		//randomTiles[i].setupAndRender(program, vertices, texCoords, randomTiles[i].texID);
 		metaltiles[i].textureID = randTextures[levelIndex];
@@ -447,8 +448,9 @@ void SpacialArea::SelectLevel(ShaderProgram& program) {
 void SpacialArea::SelectCharacter(ShaderProgram& program) {
 	//particle.party.SetTex(particletex);
 	//particle.party.Render(&program);
-	DrawText(program, wordTexture, "Select your ship", 0.077, 0, 0.0, 0.0);
-
+	DrawText(program, wordTexture, "Select your ship", 0.097, 0, 0.0, 0.0);
+	DrawText(program, wordTexture, "Note: Choosing a differently colored ship will not provide any advantage", 0.077, 0, -2.7, -1.0);
+	DrawText(program, wordTexture, "Choosing the same ship may cause confusion among players", 0.077, 0, -2.7, -2.0);
 	sprites[playerIndexOne].textureID = spriteSheetTexture;
 	player[0].setMatrices(program);
 	player[0].setOrthoProjection();
